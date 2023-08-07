@@ -1,0 +1,74 @@
+.container,
+.noteContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.noteContainer {
+  align-items: center;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  margin: 0;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.inputContainer > div {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: min-content;
+  margin: auto;
+}
+
+.inputContainer > div > div {
+  display: flex;
+  place-items: center;
+  gap: 5px;
+  position: absolute;
+  right: 5px;
+}
+
+input {
+  min-height: 35px;
+  width: min-content;
+  margin: auto;
+}
+
+.inputContainer button {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  background-color: #ccc;
+  color: #222;
+}
+.inputContainer button:active {
+  box-shadow: inset 0 0 3px #888;
+}
+
+.timerContainer {
+  position: relative;
+}
+
+.timerContainer span {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}

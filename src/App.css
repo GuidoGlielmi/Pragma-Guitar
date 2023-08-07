@@ -1,0 +1,38 @@
+#root {
+  width: 100vw;
+  text-align: center;
+}
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 5vh;
+
+  min-width: max-content;
+  width: 200px;
+  margin: auto;
+}
+main > *:last-child {
+  height: 200px;
+}
+.navBar {
+  margin-top: 5vh;
+}
+
+.navBar button:is(:first-child, :last-child) {
+  border-radius: none;
+}
+
+.navBar button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.navBar button:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.selected {
+  background: #ccc;
+  color: #222;
+}

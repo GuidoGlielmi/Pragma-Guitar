@@ -1,0 +1,16 @@
+.detuneBar {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 1em;
+}
+.detuneLeft {
+  background: linear-gradient(to right, #831515, #1a9c1a);
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.detuneRight {
+  background: linear-gradient(to right, #1a9c1a, #831515);
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
