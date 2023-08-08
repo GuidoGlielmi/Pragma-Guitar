@@ -6,13 +6,12 @@ main {
   display: flex;
   flex-direction: column;
   gap: 5vh;
-
   min-width: max-content;
-  width: 200px;
-  margin: auto;
 }
+
 main > *:last-child {
-  height: 200px;
+  width: max-content;
+  margin: auto;
 }
 .navBar {
   margin-top: 5vh;

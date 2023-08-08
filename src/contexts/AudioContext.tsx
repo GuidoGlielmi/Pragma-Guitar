@@ -27,7 +27,6 @@ type AudioProviderProps = {children: React.ReactNode};
 export const AudioContext = createContext<AudioProps | null>(null);
 const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) => {
   const [audio, setAudio] = useState(audioCtx);
-  const [started, setStarted] = useState(false);
   const [source, setSource] = useState<MediaStreamAudioSourceNode | null>(null);
 
   useEffect(() => {
@@ -53,18 +52,16 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
     if (audio.state === 'suspended') {
       await audio.resume();
     }
-    setStarted(true);
     setSource(audio.createMediaStreamSource(input));
   };
 
   const stop = () => {
     if (source !== null) source.disconnect(analyser);
-    setStarted(false);
+    setSource(null);
   };
 
   const decodeAudioData = async (audioData: ArrayBuffer) => {
     const decodedData = await audioCtx.decodeAudioData(audioData);
-    console.log(decodedData);
     return decodedData;
   };
 
@@ -74,12 +71,12 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
       audio,
       analyser,
       decodeAudioData,
-      started,
+      started: !!source,
       start,
       stop,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [audio, started],
+    [audio, source],
   );
   return <AudioContext.Provider value={contextValue}>{children}</AudioContext.Provider>;
 };

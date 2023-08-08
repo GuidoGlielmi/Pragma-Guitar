@@ -70,6 +70,7 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
   useEffect(() => {
     if (!started) {
       setCorrect(false);
+      setNoteToPlay('');
       return;
     }
     if (trigger) {
@@ -81,15 +82,45 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
   return (
     <div className='noteContainer'>
       <Timer triggerChange={() => setTrigger({})} updateFrecuency={updateFrecuency} />
-      <div>Note to play: {noteToPlay}</div>
+      <div>
+        Note to play:{' '}
+        <div className='noteToPlay' style={started ? {} : {background: 'transparent'}}>
+          {noteToPlay}
+        </div>
+      </div>
       <div>Your note: {playedNote}</div>
       <AnimatePresence>
-        {correct && (
-          <motion.div initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}>
-            <Tick />
+        {started && (
+          <motion.div
+            initial={{opacity: 0, height: 0}}
+            animate={{opacity: 1, height: 60}}
+            exit={{opacity: 0, height: 0}}
+          >
+            <AnimatePresence mode='wait'>
+              <motion.div
+                className='result'
+                key={correct ? 'tick' : 'ellipsis'}
+                initial={{opacity: 0, y: -10}}
+                animate={{opacity: 1, y: 0}}
+                exit={{opacity: 0}}
+                transition={{duration: 0.1}}
+              >
+                {correct ? <Tick /> : <Ellipsis />}
+              </motion.div>
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+};
+
+export const Ellipsis = ({size = 5}) => {
+  return (
+    <div className='ellipsis'>
+      <div style={{width: size, height: size}} />
+      <div style={{width: size, height: size}} />
+      <div style={{width: size, height: size}} />
     </div>
   );
 };
@@ -164,7 +195,7 @@ const Timer = ({
           r={radius}
           fill='none'
           strokeWidth={strokeWidth}
-          stroke='#ccc'
+          stroke='#333'
         />
         <circle
           cx={center}
@@ -172,7 +203,7 @@ const Timer = ({
           r={radius}
           fill='none'
           strokeWidth={strokeWidth}
-          stroke='#00aaff'
+          stroke='#646cff'
           strokeDasharray={circumference}
           strokeDashoffset={-dashOffset}
           transform={`rotate(-90 ${center} ${center})`}

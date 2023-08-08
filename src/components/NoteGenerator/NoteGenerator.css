@@ -2,11 +2,18 @@
 .noteContainer {
   display: flex;
   flex-direction: column;
+}
+
+.container {
   gap: 10px;
 }
 
 .noteContainer {
   align-items: center;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #ccc;
+  color: #222;
 }
 
 input[type='number'] {
@@ -71,4 +78,89 @@ input {
   top: 0;
   left: 50%;
   transform: translate(-50%, 50%);
+}
+
+.noteContainer > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.noteContainer > :nth-child(2) {
+  margin: 10px 0;
+}
+
+.noteToPlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  font-size: 1.4em;
+  background: #494949;
+  color: #646cff;
+  text-shadow: 1.5px 1.5px 1px rgba(0, 0, 0, 0.548);
+  border: 2px solid rgb(221, 221, 221);
+  border-radius: 5px;
+}
+
+.noteContainer > div:last-child {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.ellipsis {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ellipsis > * {
+  display: inline-block;
+  background-color: #222;
+  border-radius: 50%;
+  opacity: 0;
+  animation: twinkle 1.2s infinite;
+}
+
+.ellipsis > :nth-child(1) {
+  animation-delay: 0s;
+}
+
+.ellipsis > :nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.ellipsis > :nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+.result,
+.result > * {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.result {
+  width: 100%;
+  height: 100%;
+}
+
+.result > * {
+  position: absolute;
 }
