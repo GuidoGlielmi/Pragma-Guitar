@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from 'react';
+import {useContext, useEffect, useState, useCallback} from 'react';
 import usePitch from '../../hooks/usePitch';
 import {AudioContext, AudioProps} from '../../contexts/AudioContext';
 import {notes} from '../../constants/notes';
@@ -9,7 +9,6 @@ import Plus from '../../icons/Plus';
 import Tick from '../../icons/Tick';
 
 const notesAsArray = Object.values(notes);
-let interval: number;
 
 const NoteGenerator = () => {
   const {start, stop, started} = useContext(AudioContext) as AudioProps;
@@ -43,13 +42,14 @@ const NoteGenerator = () => {
         </div>
       </div>
       <button onClick={started ? stop : start}>{started ? 'Stop' : 'Start'}</button>
-      {/* {started && <Note updateFrecuency={updateFrecuency} />} */}
       {<Note updateFrecuency={updateFrecuency || 1000} />}
     </div>
   );
 };
 
 const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
+  const {started} = useContext(AudioContext) as AudioProps;
+
   const [noteToPlay, setNoteToPlay] = useState('');
   const [correct, setCorrect] = useState(false);
   const [trigger, setTrigger] = useState<object | null>(null);
@@ -68,11 +68,15 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
   }, [playedNote]);
 
   useEffect(() => {
+    if (!started) {
+      setCorrect(false);
+      return;
+    }
     if (trigger) {
       setNoteToPlay(notesAsArray[~~(Math.random() * notesAsArray.length)]);
       setCorrect(false);
     }
-  }, [trigger]);
+  }, [trigger, started]);
 
   return (
     <div className='noteContainer'>
@@ -91,9 +95,8 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
 };
 
 let ringInterval: number;
-
-const steps = 200;
-const percentageStep = 100 / steps;
+let previousMs = 0;
+const STEPS = 200;
 
 const Timer = ({
   triggerChange,
@@ -102,27 +105,43 @@ const Timer = ({
   triggerChange: () => void;
   updateFrecuency: number;
 }) => {
+  const {started} = useContext(AudioContext) as AudioProps;
+
   const [percentage, setPercentage] = useState(100);
 
-  const {started} = useContext(AudioContext) as AudioProps;
+  const resetInterval = useCallback(() => {
+    const ringUpdateInterval = updateFrecuency / STEPS;
+    previousMs = new Date().getTime();
+    ringInterval = setInterval(() => {
+      const currentMs = new Date().getTime();
+      const msPassed = currentMs - previousMs;
+      previousMs = currentMs;
+      setPercentage(ps => {
+        if (ps > 0) return ps - (msPassed / updateFrecuency) * 100;
+        setTimeout(triggerChange);
+        return 100;
+      });
+    }, ringUpdateInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateFrecuency]);
+
   useEffect(() => {
-    clearInterval(interval);
     clearInterval(ringInterval);
     if (started) {
       triggerChange();
-
-      const ringUpdateInterval = updateFrecuency / (steps * 1.5);
-
-      ringInterval = setInterval(() => {
-        setPercentage(ps => {
-          if (ps > 0) return ps - percentageStep;
-          setTimeout(triggerChange);
-          return 100;
-        });
-      }, ringUpdateInterval);
+      resetInterval();
     } else setPercentage(100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
+
+  useEffect(() => {
+    clearInterval(ringInterval);
+    setPercentage(100);
+    if (started) {
+      resetInterval();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetInterval]);
 
   // console.log(percentage);
 
