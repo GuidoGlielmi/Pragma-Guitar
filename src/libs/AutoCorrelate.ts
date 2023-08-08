@@ -7,7 +7,7 @@ export default function autoCorrelate(buf: Float32Array, sampleRate: number) {
     rms += val * val;
   }
   rms = Math.sqrt(rms / SIZE);
-  if (rms < 0.05) return -1; // not enough signal
+  if (rms < 0.02) return -1; // not enough signal
 
   let r1 = 0;
   let r2 = SIZE - 1;

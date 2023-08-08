@@ -3,12 +3,12 @@ const Tick = () => {
     <svg width='50' xmlns='http://www.w3.org/2000/svg' viewBox='3 3 16 16'>
       <defs>
         <linearGradient gradientUnits='userSpaceOnUse' y2='-2.623' x2='0' y1='986.67' id='0'>
-          <stop stop-color='#ffce3b' />
-          <stop offset='1' stop-color='#ffd762' />
+          <stop stopColor='#ffce3b' />
+          <stop offset='1' stopColor='#ffd762' />
         </linearGradient>
         <linearGradient y2='-2.623' x2='0' y1='986.67' gradientUnits='userSpaceOnUse'>
-          <stop stop-color='#ffce3b' />
-          <stop offset='1' stop-color='#fef4ab' />
+          <stop stopColor='#ffce3b' />
+          <stop offset='1' stopColor='#fef4ab' />
         </linearGradient>
       </defs>
       <g transform='matrix(1.99997 0 0 1.99997-10.994-2071.68)' fill='#da4453'>
@@ -18,7 +18,7 @@ const Tick = () => {
           fill='#fff'
           transform='matrix(.0436 0 0 .0436 8.177 1039.72)'
           stroke='none'
-          stroke-width='9.512'
+          strokeWidth='9.512'
         />
       </g>
     </svg>

@@ -6,17 +6,21 @@ import {notes} from '../constants/notes';
 
 const buflen = 2048;
 const buf = new Float32Array(buflen);
+
 let updateInterval: number;
-const usePitch = () => {
+
+const usePitch = ({interval = 50} = {}) => {
   const {audio: audioCtx, analyser, started} = useContext(AudioContext) as AudioProps;
 
   const [detune, setDetune] = useState(0);
-  const [note, setNote] = useState<keyof typeof notes | null>(null);
+  const [note, setNote] = useState<Note | null>(null);
   const [notePosition, setNotePosition] = useState(4);
   const [frecuency, setFrecuency] = useState(0);
   const [notification, setNotification] = useState(false);
+  const [noteNumber, setNoteNumber] = useState(0);
 
   useEffect(() => {
+    clearInterval(updateInterval);
     const updatePitch = () => {
       analyser.getFloatTimeDomainData(buf);
       const frecuency = autoCorrelate(buf, audioCtx.sampleRate);
@@ -30,18 +34,20 @@ const usePitch = () => {
         setNotePosition(notePosition);
         setDetune(detune);
         setNotification(false);
+        setNoteNumber(noteNumber);
         console.log({noteNumber, note, notePosition, detune, frecuency});
       }
     };
     if (started) {
-      updateInterval = setInterval(updatePitch, 50);
+      updateInterval = setInterval(updatePitch, interval);
     }
     return () => {
       clearInterval(updateInterval);
     };
-  }, [audioCtx, started, analyser]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [started]);
 
-  return {detune, note, notePosition, frecuency: `${frecuency} Hz`, notification};
+  return {detune, note, noteNumber, notePosition, frecuency: `${frecuency} Hz`, notification};
 };
 
 export default usePitch;

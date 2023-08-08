@@ -1,12 +1,13 @@
 import {useContext, useEffect, useState, useCallback} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
+import Select from 'react-select';
 import usePitch from '../../hooks/usePitch';
 import {AudioContext, AudioProps} from '../../contexts/AudioContext';
-import {notes} from '../../constants/notes';
 import './NoteGenerator.css';
-import {AnimatePresence, motion} from 'framer-motion';
 import Minus from '../../icons/Minus';
 import Plus from '../../icons/Plus';
 import Tick from '../../icons/Tick';
+import {notes} from '../../constants/notes';
 
 const notesAsArray = Object.values(notes);
 
@@ -47,35 +48,61 @@ const NoteGenerator = () => {
   );
 };
 
+const notesArray = Object.values(notes);
+const C1_NUMBER = 24;
+const OCTAVES_COVERED = 6;
+
+const strings: gtrString[] = [{value: 0, label: 'Any'}];
+for (let noteIndex = 0; noteIndex < notesArray.length; noteIndex++) {
+  for (let octave = 1; octave <= OCTAVES_COVERED; octave++) {
+    const label = `${notesArray[noteIndex]}${octave}` as NoteWithOctave;
+    strings.push({value: octave * 12 + noteIndex, label});
+  }
+}
+
+const customStyles = {
+  control: (defaultStyles: any) => ({
+    ...defaultStyles,
+    minWidth: 120,
+    height: 30,
+    minHeight: 30,
+  }),
+  indicatorsContainer: (provided: any, _state: any) => ({
+    ...provided,
+    height: 30,
+    minHeight: 30,
+  }),
+};
+
 const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
   const {started} = useContext(AudioContext) as AudioProps;
 
+  const {note, noteNumber} = usePitch();
+
   const [noteToPlay, setNoteToPlay] = useState('');
-  const [correct, setCorrect] = useState(false);
   const [trigger, setTrigger] = useState<object | null>(null);
-  const {note: playedNote} = usePitch();
+  const [playedNote, setPlayedNote] = useState<Note | null>(note);
+  const [selectedString, setSelectedString] = useState<gtrString>(strings[0]);
 
   useEffect(() => {
-    setCorrect(ps => {
-      if (ps) return true;
-      if (playedNote === noteToPlay) {
+    if (playedNote === null) {
+      const openStringNoteNumber = selectedString!.value;
+      if (note === noteToPlay && noteNumber >= openStringNoteNumber) {
         new Audio('correct.mp3').play();
-        return true;
+        setPlayedNote(note);
       }
-      return false;
-    });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playedNote]);
+  }, [note]);
 
   useEffect(() => {
     if (!started) {
-      setCorrect(false);
       setNoteToPlay('');
       return;
     }
     if (trigger) {
       setNoteToPlay(notesAsArray[~~(Math.random() * notesAsArray.length)]);
-      setCorrect(false);
+      setPlayedNote(null);
     }
   }, [trigger, started]);
 
@@ -83,12 +110,22 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
     <div className='noteContainer'>
       <Timer triggerChange={() => setTrigger({})} updateFrecuency={updateFrecuency} />
       <div>
+        <span>Choose a string</span>
+        <Select
+          isSearchable={false}
+          styles={customStyles}
+          options={strings}
+          value={selectedString}
+          onChange={e => setSelectedString(e!)}
+        />
+      </div>
+      <div>
         Note to play:{' '}
         <div className='noteToPlay' style={started ? {} : {background: 'transparent'}}>
           {noteToPlay}
         </div>
       </div>
-      <div>Your note: {playedNote}</div>
+      <div>Your note: {playedNote || note}</div>
       <AnimatePresence>
         {started && (
           <motion.div
@@ -99,13 +136,13 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
             <AnimatePresence mode='wait'>
               <motion.div
                 className='result'
-                key={correct ? 'tick' : 'ellipsis'}
+                key={playedNote ? 'tick' : 'ellipsis'}
                 initial={{opacity: 0, y: -10}}
                 animate={{opacity: 1, y: 0}}
                 exit={{opacity: 0}}
                 transition={{duration: 0.1}}
               >
-                {correct ? <Tick /> : <Ellipsis />}
+                {playedNote ? <Tick /> : <Ellipsis />}
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -214,3 +251,19 @@ const Timer = ({
 };
 
 export default NoteGenerator;
+
+// option: (defaultStyles: any, state: any) => ({
+//   ...defaultStyles,
+// }),
+// valueContainer: (provided: any, state: any) => ({
+//   ...provided,
+//   height: 30,
+//   padding: 0,
+// }),
+// input: (provided: any, state: any) => ({
+//   ...provided,
+//   margin: 0,
+//   padding: 0,
+//   height: 20,
+//   minHeight: 30,
+// }),
