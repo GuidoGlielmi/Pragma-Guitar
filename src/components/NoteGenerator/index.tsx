@@ -17,7 +17,7 @@ const NoteGenerator = () => {
   const [updateFrecuency, setUpdateFrecuency] = useState<number>(5000);
 
   const handleUpdateFrecuency = (value: number) => {
-    setUpdateFrecuency(Math.max(1_000, Math.min(value, 60_000)));
+    setUpdateFrecuency(ps => (value === 0 ? value : Math.max(0, Math.min(value, 60_000)) || ps));
   };
 
   return (
@@ -28,7 +28,6 @@ const NoteGenerator = () => {
           <input
             id='updateFrecuency'
             value={updateFrecuency / 1000 || ''}
-            type='number'
             onChange={e => {
               handleUpdateFrecuency(+e.target.value * 1000);
             }}
@@ -45,7 +44,7 @@ const NoteGenerator = () => {
       </div>
       <button onClick={started ? stop : start}>{started ? 'Stop' : 'Start'}</button>
       {/* {started && <Note updateFrecuency={updateFrecuency} />} */}
-      {<Note updateFrecuency={updateFrecuency} />}
+      {<Note updateFrecuency={updateFrecuency || 1000} />}
     </div>
   );
 };
@@ -57,8 +56,8 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
   const {note: playedNote} = usePitch();
 
   useEffect(() => {
-    if (correct) return;
-    setCorrect(() => {
+    setCorrect(ps => {
+      if (ps) return true;
       if (playedNote === noteToPlay) {
         new Audio('correct.mp3').play();
         return true;
@@ -66,7 +65,7 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
       return false;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playedNote, correct]);
+  }, [playedNote]);
 
   useEffect(() => {
     if (trigger) {
