@@ -24,26 +24,19 @@ const NoteGenerator = () => {
     <div className='container'>
       <div className='inputContainer'>
         <label htmlFor='updateFrecuency'>Set your Interval (seconds)</label>
-        <div>
-          <input
-            id='updateFrecuency'
-            value={updateFrecuency / 1000 || ''}
-            onChange={e => {
-              handleUpdateFrecuency(+e.target.value * 1000);
-            }}
-          />
-          <div>
-            <button onClick={() => handleUpdateFrecuency(updateFrecuency - 1000)}>
-              <Minus />
-            </button>
-            <button onClick={() => handleUpdateFrecuency(updateFrecuency + 1000)}>
-              <Plus />
-            </button>
-          </div>
-        </div>
+        <input
+          id='updateFrecuency'
+          value={updateFrecuency / 1000 || ''}
+          onChange={e => {
+            handleUpdateFrecuency(+e.target.value * 1000);
+          }}
+        />
       </div>
       <button onClick={started ? stop : start}>{started ? 'Stop' : 'Start'}</button>
-      {<Note updateFrecuency={updateFrecuency || 1000} />}
+      <Note
+        updateFrecuency={updateFrecuency || 1000}
+        handleUpdateFrecuency={handleUpdateFrecuency}
+      />
     </div>
   );
 };
@@ -79,7 +72,13 @@ const getPitchAndOctave = (pitch: number | null) => {
   return strings[pitch!].label.split(/(\d)/);
 };
 
-const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
+const Note = ({
+  handleUpdateFrecuency,
+  updateFrecuency,
+}: {
+  handleUpdateFrecuency: (value: number) => void;
+  updateFrecuency: number;
+}) => {
   const {started} = useContext(AudioContext) as AudioProps;
 
   const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);
@@ -109,7 +108,7 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
     [exact, pitchToPlay, from, to],
   );
 
-  const {pitch, correct, notification} = useCorrectPitch({condition});
+  const {pitch, correct} = useCorrectPitch({condition});
 
   useEffect(() => {
     if (correct) new Audio('correct.mp3').play();
@@ -150,7 +149,11 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
         setExact={setExact}
         setPitchRange={setPitchRange}
       />
-      <Timer triggerChange={() => setTrigger({})} updateFrecuency={updateFrecuency} />
+      <Timer
+        triggerChange={() => setTrigger({})}
+        updateFrecuency={updateFrecuency}
+        handleUpdateFrecuency={handleUpdateFrecuency}
+      />
       <AnimatePresence>
         {started && (
           <motion.div
@@ -354,9 +357,11 @@ const STEPS = 200;
 const Timer = ({
   triggerChange,
   updateFrecuency,
+  handleUpdateFrecuency,
 }: {
   triggerChange: () => void;
   updateFrecuency: number;
+  handleUpdateFrecuency: (value: number) => void;
 }) => {
   const {started} = useContext(AudioContext) as AudioProps;
 
@@ -410,28 +415,41 @@ const Timer = ({
 
   return (
     <div className='timerContainer'>
-      <span>{Math.ceil(initialCountdownValue * (percentage / 100)) || initialCountdownValue}</span>
-      <svg width='70' height='70' viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'>
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill='none'
-          strokeWidth={strokeWidth}
-          stroke='#333'
-        />
-        <circle
-          cx={center}
-          cy={center}
-          r={radius}
-          fill='none'
-          strokeWidth={strokeWidth}
-          stroke='#646cff'
-          strokeDasharray={circumference}
-          strokeDashoffset={-dashOffset}
-          transform={`rotate(-90 ${center} ${center})`}
-        />
-      </svg>
+      <h3>Countdown</h3>
+      <div className='countdownContainer'>
+        <button onClick={() => handleUpdateFrecuency(updateFrecuency - 1000)}>
+          <Minus />
+        </button>
+        <div>
+          <span>
+            {Math.ceil(initialCountdownValue * (percentage / 100)) || initialCountdownValue}
+          </span>
+          <svg width='70' height='70' viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'>
+            <circle
+              cx={center}
+              cy={center}
+              r={radius}
+              fill='none'
+              strokeWidth={strokeWidth}
+              stroke='#333'
+            />
+            <circle
+              cx={center}
+              cy={center}
+              r={radius}
+              fill='none'
+              strokeWidth={strokeWidth}
+              stroke='#646cff'
+              strokeDasharray={circumference}
+              strokeDashoffset={-dashOffset}
+              transform={`rotate(-90 ${center} ${center})`}
+            />
+          </svg>
+        </div>
+        <button onClick={() => handleUpdateFrecuency(updateFrecuency + 1000)}>
+          <Plus />
+        </button>
+      </div>
     </div>
   );
 };

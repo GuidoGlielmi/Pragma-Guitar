@@ -111,7 +111,6 @@ const useCorrectPitch = ({target, condition, delay = 75}: Condition): UseCorrect
     getNotePosition,
     frecuency,
     correct,
-    notification,
   };
 };
 

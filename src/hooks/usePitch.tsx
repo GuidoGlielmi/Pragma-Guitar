@@ -13,7 +13,6 @@ export type UsePitch = {
   pitch: number | null;
   detune: number | null;
   getNotePosition: () => number | null;
-  notification: boolean;
 };
 
 let updateInterval: number;
@@ -25,7 +24,6 @@ const usePitch = ({interval = 50, started = true} = {}): UsePitch => {
   const [frecuency, setFrecuency] = useState<number | null>(null);
   const [pitch, setPitch] = useState<number | null>(null);
   const [detune, setDetune] = useState<number | null>(null);
-  const [notification, setNotification] = useState(false);
 
   useEffect(() => {
     setPitchDetector(PitchDetector.forFloat32Array(buflen));
@@ -43,7 +41,6 @@ const usePitch = ({interval = 50, started = true} = {}): UsePitch => {
       setFrecuency(~~frecuency);
       setNote(note);
       setDetune(detune);
-      setNotification(false);
       setPitch(pitch);
       // console.log({pitch, note, detune, frecuency});
     };
@@ -59,7 +56,6 @@ const usePitch = ({interval = 50, started = true} = {}): UsePitch => {
       setPitch(null);
       setNote(null);
       setDetune(null);
-      setNotification(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started, contextStarted]);
@@ -68,7 +64,7 @@ const usePitch = ({interval = 50, started = true} = {}): UsePitch => {
     return pitch ? Math.floor(pitch / 12) - 1 : null;
   };
 
-  return {detune, note, pitch, getNotePosition, frecuency, notification};
+  return {detune, note, pitch, getNotePosition, frecuency};
 };
 
 export default usePitch;
