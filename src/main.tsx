@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
-import AudioProvider from './contexts/AudioContext.tsx';
+import AudioProvider from './contexts/AudioContext/index.tsx';
 import {ErrorBoundary} from './ErrorBoundary/index.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

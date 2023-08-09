@@ -9,6 +9,9 @@ import {
   useEffect,
 } from 'react';
 
+import './AudioContext.css';
+import ChevronDown from '../../icons/ChevronDown';
+
 export interface AudioProps {
   setAudio: Dispatch<SetStateAction<AudioContext>>;
   audio: AudioContext;
@@ -28,6 +31,18 @@ export const AudioContext = createContext<AudioProps | null>(null);
 const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) => {
   const [audio, setAudio] = useState(audioCtx);
   const [source, setSource] = useState<MediaStreamAudioSourceNode | null>(null);
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+  const [showDevices, setShowDevices] = useState(false);
+  useEffect(() => {
+    (async () => {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      setDevices(devices);
+      navigator.mediaDevices.ondevicechange = async function () {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        setDevices(devices);
+      };
+    })();
+  }, []);
 
   useEffect(() => {
     if (source !== null) {
@@ -80,7 +95,35 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [audio, source],
   );
-  return <AudioContext.Provider value={contextValue}>{children}</AudioContext.Provider>;
+
+  return (
+    <AudioContext.Provider value={contextValue}>
+      <div className='devicesContainer'>
+        <div>
+          <span>Devices</span>
+          <button onClick={() => setShowDevices(ps => !ps)}>
+            <ChevronDown />
+          </button>
+        </div>
+        {showDevices &&
+          devices
+            .filter(d => d.kind === 'audioinput')
+            .map(d => (
+              <div key={d.deviceId}>
+                {formatMediaKind(d.kind)} - {d.label}
+              </div>
+            ))}
+      </div>
+      {children}
+    </AudioContext.Provider>
+  );
 };
 
 export default AudioProvider;
+
+const formatMediaKind = (media: string) => {
+  const [, type, direction] = media.match(/(\w+)(input|output)/i) as Device;
+  return `${type[0].toUpperCase()}${type.slice(1)} ${direction[0].toUpperCase()}${direction.slice(
+    1,
+  )}`;
+};

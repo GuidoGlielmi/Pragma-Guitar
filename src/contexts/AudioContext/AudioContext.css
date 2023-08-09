@@ -1,0 +1,45 @@
+.devicesContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  position: fixed;
+  right: 0;
+  margin: 20px;
+  padding: 5px 5px 5px 10px;
+  background-color: #ccc;
+  color: #222;
+  border-radius: 5px;
+  line-height: 1em;
+}
+.devicesContainer > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.devicesContainer span {
+  transform: translateY(-2px);
+}
+
+.devicesContainer button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+}
+.devicesContainer button:hover {
+  background: #afafaf;
+}
+.devicesContainer button svg {
+  width: 10px;
+  height: 10px;
+}

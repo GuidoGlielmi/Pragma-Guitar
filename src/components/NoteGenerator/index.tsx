@@ -9,8 +9,7 @@ import Plus from '../../icons/Plus';
 import Tick from '../../icons/Tick';
 import {notes} from '../../constants/notes';
 import ArrowRight from '../../icons/ArrowRight';
-
-// const notesAsArray = Object.values(notes);
+import useCorrectPitch from '../../hooks/useCorrectPitch';
 
 const NoteGenerator = () => {
   const {start, stop, started} = useContext(AudioContext) as AudioProps;
@@ -76,44 +75,41 @@ const customStyles = {
 };
 
 const getPitchAndOctave = (pitch: number | null) => {
-  console.log(pitch, strings.at(-1)!.value);
-  if (pitch === null || pitch! > strings.at(-1)!.value) {
-    return ['', ''];
-  }
-  return strings[pitch].label.split(/(\d)/);
+  if (strings[pitch!] === undefined) return ['', ''];
+  return strings[pitch!].label.split(/(\d)/);
 };
 
 const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
   const {started} = useContext(AudioContext) as AudioProps;
 
-  const {note, pitch} = usePitch();
-
   const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);
   const [trigger, setTrigger] = useState<object | null>(null);
-  const [correct, setCorrect] = useState(false);
   const [exact, setExact] = useState(false);
   const [[from, to], setPitchRange] = useState<[gtrString, gtrString]>([
     strings[0],
     strings.at(-1)!,
   ]);
 
-  useEffect(() => {
-    if (correct || !pitch) return;
-
-    if (exact) {
-      if (pitch === pitchToPlay) {
-        setCorrect(true);
+  const condition = useCallback(
+    (pitch: number) => {
+      if (exact) {
+        if (pitch === pitchToPlay) {
+          return true;
+        }
+      } else if (
+        pitch >= from.value &&
+        pitch <= to.value &&
+        pitchToPlay &&
+        !(Math.abs(pitch - pitchToPlay) % 12)
+      ) {
+        return true;
       }
-    } else if (
-      pitch >= from.value &&
-      pitch <= to.value &&
-      pitchToPlay &&
-      !(Math.abs(pitch - pitchToPlay) % 12)
-    ) {
-      setCorrect(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note]);
+      return false;
+    },
+    [exact, pitchToPlay, from, to],
+  );
+
+  const {pitch, correct} = useCorrectPitch({condition});
 
   useEffect(() => {
     if (correct) new Audio('correct.mp3').play();
@@ -122,7 +118,7 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
   useEffect(() => {
     if (!started) {
       setPitchToPlay(null);
-      setCorrect(false);
+      // setCorrect(false);
     } else {
       setTrigger({});
     }
@@ -135,10 +131,12 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
     const fromIndex = strings.findIndex(s => s === from);
     const toIndex = strings.findIndex(s => s === to);
     setPitchToPlay(strings[(~~(Math.random() * (toIndex - fromIndex)) || 1) + fromIndex].value);
-    setCorrect(false);
+    // setCorrect(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trigger]);
-  console.log({pitchToPlay});
+
+  // console.log({pitchToPlay});
+
   const [noteToPlay, octaveToPlay] = getPitchAndOctave(pitchToPlay);
   const [notePlayed, octavePlayed] = getPitchAndOctave(pitch);
   const anyOctave = from === strings[0] && to === strings.at(-1) && !exact;

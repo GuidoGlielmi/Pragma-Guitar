@@ -201,6 +201,7 @@ input[type='number']::-webkit-outer-spin-button {
   border-radius: 5px;
   overflow: visible;
   padding: 5px 10px;
+  position: relative;
 }
 .rangeSelectorContainer label {
   color: white;
@@ -211,14 +212,7 @@ input[type='number']::-webkit-outer-spin-button {
   border-top: none;
   border-right: none;
   border-left: none;
-}
-
-.rangeSelectorContainer > div:first-child button:first-child {
-  border-top-left-radius: 10px;
-}
-
-.rangeSelectorContainer > div:first-child button:last-child {
-  border-top-right-radius: 10px;
+  position: relative;
 }
 
 .rangeSelectorSection {

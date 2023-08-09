@@ -1,4 +1,4 @@
-const noteFromPitch = (frequency: number) => {
+const pitchFromFrecuency = (frequency: number) => {
   const noteNum = 12 * (Math.log(frequency / 440) / Math.log(2));
   return Math.round(noteNum) + 69;
 };
@@ -19,4 +19,4 @@ const getDetunePercent = (detune: number) => {
   }
 };
 
-export {noteFromPitch, centsOffFromPitch, getDetunePercent};
+export {pitchFromFrecuency, centsOffFromPitch, getDetunePercent};
