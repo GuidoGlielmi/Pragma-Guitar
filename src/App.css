@@ -11,6 +11,7 @@ main {
 
 main > *:last-child {
   width: max-content;
+  min-width: 350px;
   margin: auto;
 }
 .navBar {
@@ -29,9 +30,4 @@ main > *:last-child {
 .navBar button:last-child {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-}
-
-.selected {
-  background: #ccc;
-  color: #222;
 }
