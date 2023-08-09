@@ -36,7 +36,7 @@ const usePitch = ({interval = 50, started = true} = {}): UsePitch => {
     const updatePitch = () => {
       analyser.getFloatTimeDomainData(buf);
       const [frecuency, clarity] = pitchDetector.findPitch(buf, audio.sampleRate);
-      if (clarity < 0.5) return;
+      if (clarity < 0.9) return;
       const pitch = pitchFromFrecuency(frecuency);
       const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
       const detune = centsOffFromPitch(frecuency, pitch);

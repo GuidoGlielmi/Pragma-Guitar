@@ -20,6 +20,8 @@ export interface AudioProps {
   start: () => void;
   stop: () => void;
   decodeAudioData: (audioData: ArrayBuffer) => Promise<AudioBuffer>;
+  notification: boolean;
+  setNotification: Dispatch<SetStateAction<boolean>>;
 }
 const audioCtx = new window.AudioContext();
 const analyser = audioCtx.createAnalyser();
@@ -33,6 +35,8 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
   const [source, setSource] = useState<MediaStreamAudioSourceNode | null>(null);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [showDevices, setShowDevices] = useState(false);
+  const [notification, setNotification] = useState(false);
+
   useEffect(() => {
     (async () => {
       const devices = await navigator.mediaDevices.enumerateDevices();
@@ -91,9 +95,11 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
       started: !!source,
       start,
       stop,
+      notification,
+      setNotification,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [audio, source],
+    [audio, source, notification],
   );
 
   return (
@@ -114,6 +120,7 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
               </div>
             ))}
       </div>
+      {notification && <div className='notification'>Please, get closer to the microphone</div>}
       {children}
     </AudioContext.Provider>
   );
