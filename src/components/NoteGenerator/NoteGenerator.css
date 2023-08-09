@@ -11,7 +11,7 @@
 .noteContainer {
   align-items: center;
   padding: 10px 10px 0 10px;
-  overflow: hidden;
+  /* overflow: hidden; */
   border-radius: 10px;
   background-color: #ccc;
   color: #222;
@@ -89,6 +89,7 @@ input[type='number']::-webkit-outer-spin-button {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
 }
 .notesDisplay {
   display: flex;

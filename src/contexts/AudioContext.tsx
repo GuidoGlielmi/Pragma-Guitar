@@ -47,6 +47,7 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
   };
 
   const start = async () => {
+    console.log('getting mic source');
     const input = await getMicInput();
 
     if (audio.state === 'suspended') {
@@ -56,6 +57,7 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
   };
 
   const stop = () => {
+    console.log('disconnecting mic');
     if (source !== null) source.disconnect(analyser);
     setSource(null);
   };

@@ -73,14 +73,14 @@ const customStyles = {
     height: 30,
     minHeight: 30,
   }),
-  listBox: (provided: any, _state: any) => ({
-    ...provided,
-    zIndex: 12837,
-  }),
 };
 
 const getPitchAndOctave = (pitch: number | null) => {
-  return pitch !== null ? strings[pitch].label.split(/(\d)/) : ['', ''];
+  console.log(pitch, strings.at(-1)!.value);
+  if (pitch === null || pitch! > strings.at(-1)!.value) {
+    return ['', ''];
+  }
+  return strings[pitch].label.split(/(\d)/);
 };
 
 const Note = ({updateFrecuency}: {updateFrecuency: number}) => {

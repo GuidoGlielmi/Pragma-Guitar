@@ -10,19 +10,18 @@ const buf = new Float32Array(buflen);
 let updateInterval: number;
 
 const usePitch = ({interval = 50} = {}) => {
-  const {audio: audioCtx, analyser, started} = useContext(AudioContext) as AudioProps;
+  const {audio, analyser, started} = useContext(AudioContext) as AudioProps;
 
   const [note, setNote] = useState<Note | null>(null);
-  const [frecuency, setFrecuency] = useState<number | null>(0);
-  const [pitch, setPitch] = useState<number | null>(0);
-  const [detune, setDetune] = useState<number | null>(0);
+  const [frecuency, setFrecuency] = useState<number | null>(null);
+  const [pitch, setPitch] = useState<number | null>(null);
+  const [detune, setDetune] = useState<number | null>(null);
   const [notification, setNotification] = useState(false);
 
   useEffect(() => {
-    clearInterval(updateInterval);
     const updatePitch = () => {
       analyser.getFloatTimeDomainData(buf);
-      const frecuency = autoCorrelate(buf, audioCtx.sampleRate);
+      const frecuency = autoCorrelate(buf, audio.sampleRate);
       if (frecuency > -1) {
         const pitch = noteFromPitch(frecuency);
         const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
@@ -36,17 +35,19 @@ const usePitch = ({interval = 50} = {}) => {
       }
     };
     if (started) {
+      console.log('usePitch started!');
       updateInterval = setInterval(updatePitch, interval);
+      return () => {
+        clearInterval(updateInterval);
+      };
     } else {
+      console.log('usePitch stopped!');
       setFrecuency(null);
       setPitch(null);
       setNote(null);
       setDetune(null);
       setNotification(false);
     }
-    return () => {
-      clearInterval(updateInterval);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
 
