@@ -5,11 +5,10 @@ import usePitch from '../../hooks/usePitch';
 import './Tuner.css';
 const Tuner = () => {
   const {started, start, stop} = useContext(AudioContext) as AudioProps;
-  const {note, notification, detune, frecuency, pitch} = usePitch();
+  const {note, detune, frecuency, pitch} = usePitch();
 
   return (
     <div className='flex justify-center items-center h-screen'>
-      {notification && <div>Please, bring your instrument near to the microphone!</div>}
       <div className='flex flex-col items-center'>
         <div>
           <div className='flex items-start font-mono'>

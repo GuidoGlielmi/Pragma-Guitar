@@ -159,7 +159,7 @@ const Note = ({
           <motion.div
             className='mainBoard'
             initial={{opacity: 0, height: 0}}
-            animate={{opacity: 1, height: 150, marginBottom: 10}}
+            animate={{opacity: 1, height: 160, marginBottom: 10}}
             exit={{opacity: 0.5, height: 0, marginBottom: 0}}
           >
             <div className='notesDisplay'>
@@ -179,7 +179,7 @@ const Note = ({
                 </p>
               </div>
             </div>
-            <AnimatePresence mode='wait'>
+            <AnimatePresence>
               <motion.div
                 className='result'
                 key={correct ? 'tick' : 'ellipsis'}
