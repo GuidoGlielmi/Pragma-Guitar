@@ -45,7 +45,7 @@ const usePitch = ({interval = 50, started = true} = {}): UsePitch => {
       setDetune(detune);
       setNotification(false);
       setPitch(pitch);
-      console.log({pitch, note, detune, frecuency});
+      // console.log({pitch, note, detune, frecuency});
     };
     if (started && contextStarted) {
       console.log('usePitch started!');

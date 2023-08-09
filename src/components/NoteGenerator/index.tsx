@@ -14,7 +14,7 @@ import useCorrectPitch from '../../hooks/useCorrectPitch';
 const NoteGenerator = () => {
   const {start, stop, started} = useContext(AudioContext) as AudioProps;
 
-  const [updateFrecuency, setUpdateFrecuency] = useState<number>(5000);
+  const [updateFrecuency, setUpdateFrecuency] = useState<number>(15000);
 
   const handleUpdateFrecuency = (value: number) => {
     setUpdateFrecuency(ps => (value === 0 ? value : Math.max(0, Math.min(value, 60_000)) || ps));
@@ -108,6 +108,10 @@ const Note = ({updateFrecuency}: {updateFrecuency: number}) => {
     },
     [exact, pitchToPlay, from, to],
   );
+
+  useEffect(() => {
+    console.log(pitchToPlay);
+  }, [pitchToPlay]);
 
   const {pitch, correct} = useCorrectPitch({condition});
 
