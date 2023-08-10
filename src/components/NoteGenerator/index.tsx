@@ -10,6 +10,7 @@ import Tick from '../../icons/Tick';
 import {notes} from '../../constants/notes';
 import ArrowRight from '../../icons/ArrowRight';
 import useCorrectPitch from '../../hooks/useCorrectPitch';
+import ProgressRing from '../../icons/ProgressRing';
 
 const NoteGenerator = () => {
   const {start, stop, started} = useContext(AudioContext) as AudioProps;
@@ -65,12 +66,18 @@ const customStyles = {
     height: 30,
     minHeight: 30,
   }),
+  option: (provided: any, _state: any) => ({
+    ...provided,
+    color: '#333',
+  }),
 };
 
 const getPitchAndOctave = (pitch: number | null) => {
   if (strings[pitch!] === undefined) return ['', ''];
   return strings[pitch!].label.split(/(\d)/);
 };
+
+const initialPitchRange = [strings[0], strings.at(-1)!] as [gtrString, gtrString];
 
 const Note = ({
   handleUpdateFrecuency,
@@ -82,12 +89,11 @@ const Note = ({
   const {started} = useContext(AudioContext) as AudioProps;
 
   const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);
-  const [trigger, setTrigger] = useState<object | null>(null);
+  const [pitchTrigger, setPitchTrigger] = useState<object | null>(null);
+  const [countdownTrigger, setCountdownTrigger] = useState<object | null>(null);
   const [exact, setExact] = useState(false);
-  const [[from, to], setPitchRange] = useState<[gtrString, gtrString]>([
-    strings[0],
-    strings.at(-1)!,
-  ]);
+  const [pitchRange, setPitchRange] = useState<[gtrString, gtrString]>(initialPitchRange);
+  const [from, to] = pitchRange;
 
   const condition = useCallback(
     (pitch: number) => {
@@ -122,15 +128,22 @@ const Note = ({
   }, [started]);
 
   useEffect(() => {
-    if (!trigger || !started || !updateFrecuency) return;
+    if (!started) return;
 
     const fromIndex = strings.findIndex(s => s === from);
     const toIndex = strings.findIndex(s => s === to);
     setPitchToPlay(strings[(~~(Math.random() * (toIndex - fromIndex)) || 1) + fromIndex].value);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trigger, started, updateFrecuency]);
+  }, [pitchTrigger, started, updateFrecuency, from, to]);
 
-  const triggerChange = () => setTrigger({});
+  const triggerPitch = () => setPitchTrigger({});
+  const triggerCountdown = () => setCountdownTrigger({});
+
+  useEffect(() => {
+    if (pitchRange === initialPitchRange) return;
+    triggerCountdown();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [from, to]);
 
   const [noteToPlay, octaveToPlay] = getPitchAndOctave(pitchToPlay);
   const [notePlayed, octavePlayed] = getPitchAndOctave(pitch);
@@ -146,7 +159,8 @@ const Note = ({
         setPitchRange={setPitchRange}
       />
       <Timer
-        triggerChange={triggerChange}
+        triggerPitch={triggerPitch}
+        countdownTrigger={countdownTrigger}
         updateFrecuency={updateFrecuency}
         handleUpdateFrecuency={handleUpdateFrecuency}
       />
@@ -284,6 +298,7 @@ const RangeSelector = ({
       className='rangeSelectorContainer'
       style={{overflow: overflowHidden ? 'hidden' : 'visible'}}
     >
+      <h3>Play Note</h3>
       <div>
         {buttons.map((title, i) => (
           <button
@@ -351,11 +366,13 @@ let previousMs = 0;
 const STEPS = 200;
 
 const Timer = ({
-  triggerChange,
+  triggerPitch,
+  countdownTrigger,
   updateFrecuency,
   handleUpdateFrecuency,
 }: {
-  triggerChange: () => void;
+  triggerPitch: () => void;
+  countdownTrigger: object | null;
   updateFrecuency: number;
   handleUpdateFrecuency: (value: number) => void;
 }) => {
@@ -363,48 +380,32 @@ const Timer = ({
 
   const [percentage, setPercentage] = useState(100);
 
-  const resetInterval = useCallback(() => {
-    const ringUpdateInterval = updateFrecuency / STEPS;
-    previousMs = new Date().getTime();
-    ringInterval = setInterval(() => {
-      const currentMs = new Date().getTime();
-      const msPassed = currentMs - previousMs;
-      previousMs = currentMs;
-      setPercentage(ps => {
-        if (ps > 0) return ps - (msPassed / updateFrecuency) * 100;
-        setTimeout(triggerChange);
-        return 100;
-      });
-    }, ringUpdateInterval);
+  const resetInterval = useCallback(
+    () => {
+      clearInterval(ringInterval);
+      setPercentage(100);
+      if (!started) return;
+      const ringUpdateInterval = updateFrecuency / STEPS;
+      previousMs = new Date().getTime();
+      ringInterval = setInterval(() => {
+        const currentMs = new Date().getTime();
+        const msPassed = currentMs - previousMs;
+        previousMs = currentMs;
+        setPercentage(ps => {
+          if (ps > 0) return ps - (msPassed / updateFrecuency) * 100;
+          setTimeout(triggerPitch);
+          return 100;
+        });
+      }, ringUpdateInterval);
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateFrecuency]);
+    [updateFrecuency, started],
+  );
 
   useEffect(() => {
-    clearInterval(ringInterval);
-    if (started) {
-      resetInterval();
-    } else setPercentage(100);
+    resetInterval();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [started]);
-
-  useEffect(() => {
-    clearInterval(ringInterval);
-    setPercentage(100);
-    if (started) {
-      triggerChange();
-      resetInterval();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetInterval]);
-
-  // console.log(percentage);
-
-  const radius = 20;
-  const strokeWidth = 5;
-  const viewBoxSize = radius * 2 + strokeWidth * 2;
-  const center = viewBoxSize / 2;
-  const circumference = 2 * Math.PI * radius;
-  const dashOffset = circumference - circumference * (percentage / 100);
+  }, [resetInterval, started, countdownTrigger]);
 
   const initialCountdownValue = updateFrecuency / 1000;
 
@@ -419,27 +420,7 @@ const Timer = ({
           <span>
             {Math.ceil(initialCountdownValue * (percentage / 100)) || initialCountdownValue}
           </span>
-          <svg width='70' height='70' viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'>
-            <circle
-              cx={center}
-              cy={center}
-              r={radius}
-              fill='none'
-              strokeWidth={strokeWidth}
-              stroke='#333'
-            />
-            <circle
-              cx={center}
-              cy={center}
-              r={radius}
-              fill='none'
-              strokeWidth={strokeWidth}
-              stroke='#646cff'
-              strokeDasharray={circumference}
-              strokeDashoffset={-dashOffset}
-              transform={`rotate(-90 ${center} ${center})`}
-            />
-          </svg>
+          <ProgressRing percentage={percentage} />
         </div>
         <button onClick={() => handleUpdateFrecuency(updateFrecuency + 1000)}>
           <Plus />

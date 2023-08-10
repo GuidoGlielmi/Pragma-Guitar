@@ -220,16 +220,24 @@ input[type='number']::-webkit-outer-spin-button {
   overflow: visible;
   position: relative;
 }
+.rangeSelectorContainer h3 {
+  margin-top: 7px;
+  color: white;
+  font-size: 1.3em;
+}
 .rangeSelectorContainer label {
   color: white;
 }
 
-.rangeSelectorContainer > div:first-child button {
+.rangeSelectorContainer > div:first-of-type button {
   border-radius: 0;
   border-top: none;
   border-right: none;
   border-left: none;
   position: relative;
+}
+.rangeSelectorContainer > :last-child {
+  margin-top: 5px;
 }
 
 .rangeSelectorSection {
