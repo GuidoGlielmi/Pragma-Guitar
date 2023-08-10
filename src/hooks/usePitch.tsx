@@ -12,7 +12,6 @@ export type UsePitch = {
   frecuency: number | null;
   pitch: number | null;
   detune: number | null;
-  getNotePosition: () => number | null;
 };
 
 let updateInterval: number;
@@ -68,11 +67,16 @@ const usePitch = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started, contextStarted]);
 
-  const getNotePosition = () => {
-    return pitch ? Math.floor(pitch / 12) - 1 : null;
-  };
-
-  return {detune, note, pitch, getNotePosition, frecuency};
+  return {detune, note, pitch, frecuency};
 };
 
+export const getNoteFromPitch = (pitch: number | null) => {
+  if (pitch === null) return null;
+  const coveredOctaves = Math.floor(pitch / 12) * 12;
+  return Object.values(notes)[pitch - coveredOctaves];
+};
+
+export const getOctave = (pitch: number | null) => {
+  return pitch ? Math.floor(pitch / 12) - 1 : null;
+};
 export default usePitch;

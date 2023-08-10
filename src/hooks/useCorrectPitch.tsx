@@ -123,15 +123,10 @@ const useCorrectPitch = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target, condition, started]);
 
-  const getNotePosition = () => {
-    return pitch ? Math.floor(pitch / 12) - 1 : null;
-  };
-
   return {
     detune,
     note,
     pitch,
-    getNotePosition,
     frecuency,
     correct,
   };

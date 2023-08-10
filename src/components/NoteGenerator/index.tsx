@@ -385,22 +385,25 @@ const Timer = ({
       clearInterval(ringInterval);
       setPercentage(100);
       if (!started) return;
+
       const ringUpdateInterval = updateFrecuency / STEPS;
-      previousMs = new Date().getTime();
-      ringInterval = setInterval(() => {
-        const currentMs = new Date().getTime();
-        const msPassed = currentMs - previousMs;
-        previousMs = currentMs;
+      executeAtInterval(msPassed => {
         setPercentage(ps => {
-          if (ps > 0) return ps - (msPassed / updateFrecuency) * 100;
-          setTimeout(triggerPitch);
-          return 100;
+          return ps - (msPassed / updateFrecuency) * 100;
         });
       }, ringUpdateInterval);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [updateFrecuency, started],
   );
+
+  useEffect(() => {
+    if (percentage <= 0) {
+      setPercentage(100);
+      triggerPitch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [percentage]);
 
   useEffect(() => {
     resetInterval();
@@ -431,6 +434,16 @@ const Timer = ({
 };
 
 export default NoteGenerator;
+
+const executeAtInterval = (fn: (msPassed: number) => void, delay = 50) => {
+  previousMs = new Date().getTime();
+  ringInterval = setInterval(() => {
+    const currentMs = new Date().getTime();
+    const msPassed = currentMs - previousMs;
+    previousMs = currentMs;
+    fn(msPassed);
+  }, delay);
+};
 
 // option: (defaultStyles: any, state: any) => ({
 //   ...defaultStyles,
