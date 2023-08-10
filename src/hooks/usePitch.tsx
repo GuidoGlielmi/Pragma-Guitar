@@ -16,7 +16,12 @@ export type UsePitch = {
 };
 
 let updateInterval: number;
-const usePitch = ({interval = 50, started = true} = {}): UsePitch => {
+const usePitch = ({
+  interval = 50,
+  started = true,
+  minFrecuency = 60,
+  maxFrecuency = 10000,
+} = {}): UsePitch => {
   const {audio, analyser, started: contextStarted} = useContext(AudioContext) as AudioProps;
 
   const [pitchDetector, setPitchDetector] = useState<PitchDetector<Float32Array> | null>(null);
@@ -34,7 +39,10 @@ const usePitch = ({interval = 50, started = true} = {}): UsePitch => {
     const updatePitch = () => {
       analyser.getFloatTimeDomainData(buf);
       const [frecuency, clarity] = pitchDetector.findPitch(buf, audio.sampleRate);
+
+      if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
       if (clarity < 0.9) return;
+
       const pitch = pitchFromFrecuency(frecuency);
       const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
       const detune = centsOffFromPitch(frecuency, pitch);

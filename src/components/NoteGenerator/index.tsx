@@ -117,24 +117,20 @@ const Note = ({
   useEffect(() => {
     if (!started) {
       setPitchToPlay(null);
-      // setCorrect(false);
-    } else {
-      setTrigger({});
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
 
   useEffect(() => {
-    if (!trigger) return;
+    if (!trigger || !started || !updateFrecuency) return;
 
     const fromIndex = strings.findIndex(s => s === from);
     const toIndex = strings.findIndex(s => s === to);
     setPitchToPlay(strings[(~~(Math.random() * (toIndex - fromIndex)) || 1) + fromIndex].value);
-    // setCorrect(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trigger]);
+  }, [trigger, started, updateFrecuency]);
 
-  // console.log({pitchToPlay});
+  const triggerChange = () => setTrigger({});
 
   const [noteToPlay, octaveToPlay] = getPitchAndOctave(pitchToPlay);
   const [notePlayed, octavePlayed] = getPitchAndOctave(pitch);
@@ -150,7 +146,7 @@ const Note = ({
         setPitchRange={setPitchRange}
       />
       <Timer
-        triggerChange={() => setTrigger({})}
+        triggerChange={triggerChange}
         updateFrecuency={updateFrecuency}
         handleUpdateFrecuency={handleUpdateFrecuency}
       />
@@ -386,7 +382,6 @@ const Timer = ({
   useEffect(() => {
     clearInterval(ringInterval);
     if (started) {
-      triggerChange();
       resetInterval();
     } else setPercentage(100);
     // eslint-disable-next-line react-hooks/exhaustive-deps

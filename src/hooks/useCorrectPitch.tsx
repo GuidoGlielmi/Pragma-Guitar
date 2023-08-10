@@ -13,6 +13,8 @@ const buf = new Float32Array(buflen);
 
 type Condition = {
   delay?: number;
+  minFrecuency?: number;
+  maxFrecuency?: number;
 } & (
   | {
       target?: number | null;
@@ -29,7 +31,13 @@ type UseCorrectPitch = UsePitch & {correct: boolean};
 /**
  * @param condition Should be memoized
  */
-const useCorrectPitch = ({target, condition, delay = 75}: Condition): UseCorrectPitch => {
+const useCorrectPitch = ({
+  target,
+  condition,
+  delay = 75,
+  minFrecuency = 60,
+  maxFrecuency = 10000,
+}: Condition): UseCorrectPitch => {
   const {audio, analyser, started, setNotification} = useContext(AudioContext) as AudioProps;
 
   const [pitchDetector, setPitchDetector] = useState<PitchDetector<Float32Array> | null>(null);
@@ -46,29 +54,43 @@ const useCorrectPitch = ({target, condition, delay = 75}: Condition): UseCorrect
   useEffect(() => {
     if (!started || !pitchDetector) return;
 
-    const notificationIntent = debounce(() => setNotification(true), 300);
+    const notificationIntent = debounce(() => setNotification(true), 500);
     const cancelNotificationIntent = () => notificationIntent(true);
 
+    const notificationCancelIntent = debounce(() => setNotification(false), 200);
+    const cancelNotificationCancelIntent = () => notificationCancelIntent(true);
+
     let savedPitch: number;
+
     const getPitch = () => {
       analyser.getFloatTimeDomainData(buf);
 
       const [frecuency, clarity] = pitchDetector.findPitch(buf, audio.sampleRate);
 
+      if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
+
       const pitch = pitchFromFrecuency(frecuency);
       const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
       const detune = centsOffFromPitch(frecuency, pitch);
 
-      console.log({note, clarity});
+      console.log({
+        frecuency,
+        pitch,
+        note,
+        clarity,
+        status: clarity >= 0.95 ? 'Clear' : clarity <= 0.85 ? 'Unclear' : 'Almost clear',
+      });
 
       if (clarity <= 0.95) {
-        if (clarity >= 0.85) {
+        if (clarity >= 0.87) {
+          cancelNotificationCancelIntent();
           notificationIntent();
-        } else setNotification(false);
+        }
         return;
       }
 
       cancelNotificationIntent();
+      notificationCancelIntent();
       setNotification(false);
       setFrecuency(~~frecuency);
       setNote(note);
@@ -95,6 +117,8 @@ const useCorrectPitch = ({target, condition, delay = 75}: Condition): UseCorrect
       setCorrect(false);
       setNotification(false);
       clearInterval(interval);
+      cancelNotificationIntent();
+      cancelNotificationCancelIntent();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target, condition, started]);
@@ -120,8 +144,7 @@ export const debounce = (fn: () => any, delay = 50): ((cancel?: boolean) => any)
 
   return (cancel = false) => {
     if (cancel) return clearTimeout(timer);
-    if (timer !== undefined) clearTimeout(timer);
-    timer = setTimeout(fn, delay);
+    if (timer === undefined) timer = setTimeout(fn, delay);
   };
 };
 
