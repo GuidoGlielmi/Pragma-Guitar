@@ -55,7 +55,7 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
     (async () => {
       console.log(1, audioCtx.state);
       const devices = await navigator.mediaDevices.enumerateDevices();
-      setDevices(devices);
+      setDevices(devices.filter(d => d.kind === 'audioinput'));
       navigator.mediaDevices.ondevicechange = async function () {
         const devices = await navigator.mediaDevices.enumerateDevices();
         setDevices(ps => [
@@ -168,7 +168,7 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
         {showDevices &&
           devices.map(d => (
             <button onClick={() => setDevice(d)} key={d.deviceId}>
-              {formatMediaKind(d.kind)} - {d.label}
+              {d.label}
             </button>
           ))}
       </div>

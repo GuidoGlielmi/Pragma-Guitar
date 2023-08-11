@@ -24,7 +24,7 @@
   transform: translateY(-2px);
 }
 
-.devicesContainer button {
+.devicesContainer > div > button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -36,10 +36,10 @@
   background: transparent;
   border: none;
 }
-.devicesContainer button:hover {
+.devicesContainer > div > button:hover {
   background: #afafaf;
 }
-.devicesContainer button svg {
+.devicesContainer > div > button svg {
   width: 10px;
   height: 10px;
 }
@@ -51,4 +51,15 @@
   left: 0;
   background-color: rgb(150, 76, 76);
   border-radius: 5px;
+}
+
+.devicesContainer > button {
+  max-width: 200px;
+  background-color: #909090;
+  color: black;
+  font-size: 0.8em;
+}
+.devicesContainer > button:hover {
+  border-color: transparent;
+  background-color: #999;
 }

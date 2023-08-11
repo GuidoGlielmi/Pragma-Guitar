@@ -1,0 +1,41 @@
+.container {
+  position: relative;
+}
+
+.container > button {
+  background: #eee;
+  position: absolute;
+  bottom: 50%;
+  right: -10px;
+  padding: 5px;
+  transform: translate(110%, 50%);
+}
+.container > button:hover {
+  animation: example 2s infinite;
+}
+
+.tooltip {
+  color: #222;
+  z-index: 123123;
+}
+
+.highlight {
+  border: 3px solid #9393e7;
+  background: #9393e738;
+  transform: translate(-1.2%, -3%);
+}
+
+@keyframes example {
+  0% {
+    transform: translate(110%, 50%) scale(1);
+  }
+  15% {
+    transform: translate(110%, 50%) scale(0.98);
+  }
+  40% {
+    transform: translate(110%, 50%) scale(1.05);
+  }
+  50% {
+    transform: translate(110%, 50%) scale(1);
+  }
+}

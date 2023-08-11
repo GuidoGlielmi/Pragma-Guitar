@@ -69,6 +69,12 @@ button:focus-visible {
   cursor: pointer;
 }
 
+.introjs-tooltiptext {
+  padding-bottom: 5px !important;
+  max-height: 40vh;
+  overflow-y: scroll;
+  /* background-color: #646cff; */
+}
 .button:hover {
   border-color: inherit;
 }

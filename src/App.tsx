@@ -5,7 +5,10 @@ import NoteGenerator from './components/NoteGenerator';
 import {AnimatePresence, motion} from 'framer-motion';
 import {AudioContext, AudioProps} from './contexts/AudioContext';
 
-const sections = {'Note Generator': <NoteGenerator />, Tuner: <Tuner />};
+const sections = {
+  'Note Generator': <NoteGenerator />,
+  Tuner: <Tuner />,
+};
 
 function App() {
   const {stop, source} = useContext(AudioContext) as AudioProps;
