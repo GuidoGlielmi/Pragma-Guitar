@@ -136,7 +136,13 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
   };
 
   const setOscillatorFrecuency = async (frecuency: number) => {
-    frecuency ? oscilatorOn(frecuency) : oscillatorOff();
+    if (frecuency) {
+      micInputNode?.disconnect(analyserNode);
+      oscilatorOn(frecuency);
+    } else {
+      oscillatorOff();
+      micInputNode?.connect(analyserNode);
+    }
   };
 
   const contextValue = useMemo(
