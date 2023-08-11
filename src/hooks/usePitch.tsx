@@ -21,7 +21,7 @@ const usePitch = ({
   minFrecuency = 60,
   maxFrecuency = 10000,
 } = {}): UsePitch => {
-  const {audio, analyser, started: contextStarted} = useContext(AudioContext) as AudioProps;
+  const {source, analyserNode: analyser} = useContext(AudioContext) as AudioProps;
 
   const [pitchDetector, setPitchDetector] = useState<PitchDetector<Float32Array> | null>(null);
   const [note, setNote] = useState<Note | null>(null);
@@ -34,10 +34,10 @@ const usePitch = ({
   }, []);
 
   useEffect(() => {
-    if (!pitchDetector) return;
+    if (!pitchDetector || !source) return;
     const updatePitch = () => {
       analyser.getFloatTimeDomainData(buf);
-      const [frecuency, clarity] = pitchDetector.findPitch(buf, audio.sampleRate);
+      const [frecuency, clarity] = pitchDetector.findPitch(buf, source?.context.sampleRate);
 
       if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
       if (clarity < 0.9) return;
@@ -51,7 +51,7 @@ const usePitch = ({
       setPitch(pitch);
       // console.log({pitch, note, detune, frecuency});
     };
-    if (started && contextStarted) {
+    if (started && source) {
       console.log('usePitch started!');
       updateInterval = setInterval(updatePitch, interval);
       return () => {
@@ -65,18 +65,9 @@ const usePitch = ({
       setDetune(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [started, contextStarted]);
+  }, [started, source]);
 
   return {detune, note, pitch, frecuency};
 };
 
-export const getNoteFromPitch = (pitch: number | null) => {
-  if (pitch === null) return null;
-  const coveredOctaves = Math.floor(pitch / 12) * 12;
-  return Object.values(notes)[pitch - coveredOctaves];
-};
-
-export const getOctave = (pitch: number | null) => {
-  return pitch ? Math.floor(pitch / 12) - 1 : null;
-};
 export default usePitch;

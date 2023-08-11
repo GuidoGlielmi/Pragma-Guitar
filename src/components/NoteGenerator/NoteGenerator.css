@@ -75,6 +75,9 @@ input[type='number']::-webkit-outer-spin-button {
   gap: 10px;
   position: relative;
 }
+.countdownContainer > div {
+  display: flex;
+}
 
 .timerContainer button {
   display: grid;
@@ -90,14 +93,22 @@ input[type='number']::-webkit-outer-spin-button {
 .timerContainer button:active {
   box-shadow: inset 0 0 3px #888;
 }
-.timerContainer span {
+
+.timerContainer input {
   position: absolute;
-  top: 50%;
+  bottom: 50%;
   left: 50%;
-  transform: translateX(-50%) translateY(-0.9em);
-  height: 1em;
+  width: 1.25em;
+  height: 1.25em;
+  transform: translateX(-50%) translateY(50%);
+  background: transparent;
+  border: none;
   font-weight: 600;
   font-size: 1.5em;
+  text-align: center;
+}
+.timerContainer input:focus-visible {
+  border: none;
 }
 
 .mainBoard {
@@ -112,7 +123,7 @@ input[type='number']::-webkit-outer-spin-button {
   gap: 10px;
 }
 
-.notesDisplay > div {
+.notesDisplay > :not(svg) {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -126,11 +137,12 @@ input[type='number']::-webkit-outer-spin-button {
   border-radius: 5px;
   transition: all 0.2s ease;
 }
-.notesDisplay > div > span {
+
+.notesDisplay > :not(svg) > span {
   line-height: 1em;
 }
 
-.notesDisplay > div p {
+.notesDisplay > :not(svg) p {
   position: relative;
   margin: 0;
   font-size: 2em;

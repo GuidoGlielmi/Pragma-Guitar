@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import {
   createContext,
   useMemo,
@@ -13,50 +14,94 @@ import './AudioContext.css';
 import ChevronDown from '../../icons/ChevronDown';
 
 export interface AudioProps {
-  setAudio: Dispatch<SetStateAction<AudioContext>>;
-  audio: AudioContext;
-  analyser: AnalyserNode;
-  started: boolean;
+  analyserNode: AnalyserNode;
+  source: MediaStreamAudioSourceNode | null;
   start: () => void;
   stop: () => void;
   decodeAudioData: (audioData: ArrayBuffer) => Promise<AudioBuffer>;
   notification: boolean;
   setNotification: Dispatch<SetStateAction<boolean>>;
+  chosenDevice: MediaDeviceInfo;
+  startOscillator: (frec: number) => void;
+  stopOscillator: () => void;
 }
-const audioCtx = new window.AudioContext();
-const analyser = audioCtx.createAnalyser();
-analyser.fftSize = 2048;
+// the audio context is, among other things, a NODES factory.
+// each possible NODE represents a media processor of some kind, for example:
+// const gainNode = audioContext.createGain();
+// track.connect(gainNode).connect(audioContext.destination);
+
+export const audioCtx = new window.AudioContext(); // starts suspended
+const analyserNode = audioCtx.createAnalyser();
+analyserNode.fftSize = 2048;
+let oscillatorNode: OscillatorNode;
+let gainNode: GainNode;
 
 type AudioProviderProps = {children: React.ReactNode};
 
 export const AudioContext = createContext<AudioProps | null>(null);
+
 const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) => {
-  const [audio, setAudio] = useState(audioCtx);
-  const [source, setSource] = useState<MediaStreamAudioSourceNode | null>(null);
+  // audio stream NODE to manipulate, the source that gets connected through the context to its destination (the analyser NODE)
+  const [micInputNode, setMicInputNode] = useState<MediaStreamAudioSourceNode | null>(null);
+  // AUDIO STREAM, to get into an AudioContext it must be transformed into a NODE
+  const [micInputStream, setMicInputStream] = useState<MediaStream | null>(null);
+
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [showDevices, setShowDevices] = useState(false);
   const [notification, setNotification] = useState(false);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
     (async () => {
+      console.log(1, audioCtx.state);
       const devices = await navigator.mediaDevices.enumerateDevices();
       setDevices(devices);
       navigator.mediaDevices.ondevicechange = async function () {
         const devices = await navigator.mediaDevices.enumerateDevices();
-        setDevices(devices);
+        setDevices(ps => [
+          ps[0],
+          ...devices.filter(d => d.kind === 'audioinput' && d.deviceId !== ps[0].deviceId),
+        ]);
       };
     })();
+    console.log(4, audioCtx.state);
+    audioCtx.addEventListener('statechange', e => {
+      console.log(`AudioContext: ${audioCtx.state}`);
+      setStarted(audioCtx.state === 'running');
+    });
+    console.log(5, audioCtx.state);
   }, []);
 
   useEffect(() => {
-    if (source !== null) {
-      source.connect(analyser);
-    }
-  }, [source]);
+    if (!devices.length || audioCtx.state !== 'running' || !micInputStream) return;
+    console.log(2, audioCtx.state, {devices});
+    (async () => {
+      const micInputStream = await getMicInput();
+      const micInputNode = audioCtx.createMediaStreamSource(micInputStream);
+      setMicInputNode(ps => {
+        if (ps) ps.disconnect();
+        return micInputNode;
+      });
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [devices]);
+
+  useEffect(() => {
+    if (!micInputStream) return;
+    console.log(3, audioCtx.state);
+    const micInputNode = audioCtx.createMediaStreamSource(micInputStream);
+    setMicInputNode(micInputNode);
+  }, [micInputStream]);
+
+  useEffect(() => {
+    console.log('?', audioCtx.state);
+    micInputNode?.connect(analyserNode);
+  }, [micInputNode]);
 
   const getMicInput = () => {
     return navigator.mediaDevices.getUserMedia({
       audio: {
+        deviceId: devices[0].deviceId || undefined,
         echoCancellation: true,
         autoGainControl: false,
         noiseSuppression: false,
@@ -66,19 +111,23 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
   };
 
   const start = async () => {
-    console.log('getting mic source');
-    const input = await getMicInput();
+    await audioCtx.resume();
+    if (micInputNode === null) {
+      const micInput = await getMicInput();
 
-    if (audio.state === 'suspended') {
-      await audio.resume();
+      setMicInputStream(micInput);
+    } else {
+      // micInputNode.connect(analyserNode);
     }
-    setSource(audio.createMediaStreamSource(input));
   };
 
   const stop = () => {
-    console.log('disconnecting mic');
-    if (source !== null) source.disconnect(analyser);
-    setSource(null);
+    // micInputNode?.disconnect(analyserNode);
+    audioCtx.suspend();
+  };
+
+  const setDevice = (device: MediaDeviceInfo) => {
+    setDevices(ps => [device, ...ps.filter(d => d.deviceId !== device.deviceId)]);
   };
 
   const decodeAudioData = async (audioData: ArrayBuffer) => {
@@ -86,20 +135,25 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
     return decodedData;
   };
 
+  const setOscillatorFrecuency = async (frecuency: number) => {
+    frecuency ? oscilatorOn(frecuency) : oscillatorOff();
+  };
+
   const contextValue = useMemo(
     () => ({
-      setAudio,
-      audio,
-      analyser,
+      analyserNode,
       decodeAudioData,
-      started: !!source,
+      source: started ? micInputNode : null,
       start,
       stop,
       notification,
       setNotification,
+      chosenDevice: devices[0],
+      startOscillator: (frec: number) => setOscillatorFrecuency(frec),
+      stopOscillator: () => setOscillatorFrecuency(0),
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [audio, source, notification],
+    [micInputNode, notification, devices, started],
   );
 
   return (
@@ -112,13 +166,11 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
           </button>
         </div>
         {showDevices &&
-          devices
-            .filter(d => d.kind === 'audioinput')
-            .map(d => (
-              <div key={d.deviceId}>
-                {formatMediaKind(d.kind)} - {d.label}
-              </div>
-            ))}
+          devices.map(d => (
+            <button onClick={() => setDevice(d)} key={d.deviceId}>
+              {formatMediaKind(d.kind)} - {d.label}
+            </button>
+          ))}
       </div>
       {notification && <div className='notification'>Please, get closer to the microphone</div>}
       {children}
@@ -127,6 +179,37 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
 };
 
 export default AudioProvider;
+
+const oscilatorOn = (oscFrecuency: number) => {
+  oscillatorOff();
+  oscillatorNode = audioCtx.createOscillator();
+  oscillatorNode.frequency.value = oscFrecuency;
+
+  gainNode = audioCtx.createGain();
+  gainNode.gain.value = 0.01;
+
+  const stopTime = audioCtx.currentTime + 0.01;
+  gainNode.gain.linearRampToValueAtTime(1, stopTime);
+
+  oscillatorNode.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  // changing a gain node value while live create a pop
+
+  oscillatorNode.start();
+};
+
+const oscillatorOff = () => {
+  if (!oscillatorNode) return;
+  const stopTime = audioCtx.currentTime + 0.1;
+  gainNode.gain.setValueAtTime(gainNode.gain.value, audioCtx.currentTime);
+  gainNode.gain.linearRampToValueAtTime(0.0001, stopTime);
+  try {
+    oscillatorNode.stop(stopTime);
+  } catch (err) {
+    console.log(err)
+  }
+  // when an AudioNode get stopped and no references are left it will disconnect itself and it is thus not needed to explicitly call disconnect() after stop().
+};
 
 const formatMediaKind = (media: string) => {
   const [, type, direction] = media.match(/(\w+)(input|output)/i) as Device;

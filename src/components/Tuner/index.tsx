@@ -1,10 +1,11 @@
 import {useContext} from 'react';
 import {getDetunePercent} from '../../libs/Helpers';
 import {AudioContext, AudioProps} from '../../contexts/AudioContext';
-import usePitch, {getNoteFromPitch, getOctave} from '../../hooks/usePitch';
+import usePitch from '../../hooks/usePitch';
 import './Tuner.css';
+import {getNoteFromPitch, getOctave} from '../../helpers/pitch';
 const Tuner = () => {
-  const {started, start, stop} = useContext(AudioContext) as AudioProps;
+  const {source, start, stop} = useContext(AudioContext) as AudioProps;
   const {detune, frecuency, pitch} = usePitch();
 
   return (
@@ -31,7 +32,7 @@ const Tuner = () => {
         <div>
           <span>{frecuency} Hz</span>
         </div>
-        {!started ? <button onClick={start}>Start</button> : <button onClick={stop}>Stop</button>}
+        {!source ? <button onClick={start}>Start</button> : <button onClick={stop}>Stop</button>}
       </div>
     </div>
   );

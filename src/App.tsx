@@ -8,12 +8,12 @@ import {AudioContext, AudioProps} from './contexts/AudioContext';
 const sections = {'Note Generator': <NoteGenerator />, Tuner: <Tuner />};
 
 function App() {
-  const {stop, started} = useContext(AudioContext) as AudioProps;
+  const {stop, source} = useContext(AudioContext) as AudioProps;
 
   const [selectedSection, setSection] = useState<JSX.Element>(sections['Note Generator']);
 
   useEffect(() => {
-    if (started) stop();
+    if (source) stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSection]);
 

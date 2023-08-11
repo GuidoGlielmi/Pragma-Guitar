@@ -1,7 +1,6 @@
 import {useContext, useEffect, useState, useCallback, useRef} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import Select from 'react-select';
-import usePitch from '../../hooks/usePitch';
 import {AudioContext, AudioProps} from '../../contexts/AudioContext';
 import './NoteGenerator.css';
 import Minus from '../../icons/Minus';
@@ -11,33 +10,25 @@ import {notes} from '../../constants/notes';
 import ArrowRight from '../../icons/ArrowRight';
 import useCorrectPitch from '../../hooks/useCorrectPitch';
 import ProgressRing from '../../icons/ProgressRing';
+import {getMiddleOctavePitch} from '../../helpers/pitch';
 
 const NoteGenerator = () => {
-  const {start, stop, started} = useContext(AudioContext) as AudioProps;
+  const {start, stop, source} = useContext(AudioContext) as AudioProps;
 
   const [updateFrecuency, setUpdateFrecuency] = useState<number>(10000);
 
   const handleUpdateFrecuency = (value: number) => {
-    setUpdateFrecuency(ps => (value === 0 ? value : Math.max(0, Math.min(value, 60_000)) || ps));
+    setUpdateFrecuency(ps => {
+      const newValue = value === 0 ? value : Math.max(0, Math.min(value, 60_000)) || ps;
+      console.log(newValue);
+      return newValue;
+    });
   };
 
   return (
     <div className='container'>
-      <div className='inputContainer'>
-        <label htmlFor='updateFrecuency'>Set your Interval (seconds)</label>
-        <input
-          id='updateFrecuency'
-          value={updateFrecuency / 1000 || ''}
-          onChange={e => {
-            handleUpdateFrecuency(+e.target.value * 1000);
-          }}
-        />
-      </div>
-      <button onClick={started ? stop : start}>{started ? 'Stop' : 'Start'}</button>
-      <Note
-        updateFrecuency={updateFrecuency || 1000}
-        handleUpdateFrecuency={handleUpdateFrecuency}
-      />
+      <button onClick={source ? stop : start}>{source ? 'Stop' : 'Start'}</button>
+      <Note updateFrecuency={updateFrecuency} handleUpdateFrecuency={handleUpdateFrecuency} />
     </div>
   );
 };
@@ -86,7 +77,7 @@ const Note = ({
   handleUpdateFrecuency: (value: number) => void;
   updateFrecuency: number;
 }) => {
-  const {started} = useContext(AudioContext) as AudioProps;
+  const {source, startOscillator, stopOscillator} = useContext(AudioContext) as AudioProps;
 
   const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);
   const [pitchTrigger, setPitchTrigger] = useState<object | null>(null);
@@ -121,20 +112,20 @@ const Note = ({
   }, [correct]);
 
   useEffect(() => {
-    if (!started) {
+    if (!source) {
       setPitchToPlay(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [started]);
+  }, [source]);
 
   useEffect(() => {
-    if (!started) return;
+    if (!source) return;
 
     const fromIndex = strings.findIndex(s => s === from);
     const toIndex = strings.findIndex(s => s === to);
     setPitchToPlay(strings[(~~(Math.random() * (toIndex - fromIndex)) || 1) + fromIndex].value);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pitchTrigger, started, updateFrecuency, from, to]);
+  }, [pitchTrigger, source, updateFrecuency, from, to]);
 
   const triggerPitch = () => setPitchTrigger({});
   const triggerCountdown = () => setCountdownTrigger({});
@@ -165,7 +156,7 @@ const Note = ({
         handleUpdateFrecuency={handleUpdateFrecuency}
       />
       <AnimatePresence>
-        {started && (
+        {source && (
           <motion.div
             className='mainBoard'
             initial={{opacity: 0, height: 0}}
@@ -173,13 +164,21 @@ const Note = ({
             exit={{opacity: 0.5, height: 0, marginBottom: 0}}
           >
             <div className='notesDisplay'>
-              <div className='noteToPlay'>
+              <button
+                className='noteToPlay button'
+                onMouseDown={() =>
+                  startOscillator(
+                    anyOctave ? getMiddleOctavePitch(pitchToPlay || 0) : pitchToPlay || 0,
+                  )
+                }
+                onMouseUp={() => stopOscillator()}
+              >
                 <span>Play</span>
                 <p style={{...(!anyOctave && {transform: 'translateX(-0.15em)'})}}>
                   <span className={`octave${anyOctave ? ' transparent' : ''}`}>{octaveToPlay}</span>
                   <span>{noteToPlay}</span>
                 </p>
-              </div>
+              </button>
               <ArrowRight />
               <div className='notePlayedContainer'>
                 <span>You Played</span>
@@ -376,7 +375,7 @@ const Timer = ({
   updateFrecuency: number;
   handleUpdateFrecuency: (value: number) => void;
 }) => {
-  const {started} = useContext(AudioContext) as AudioProps;
+  const {source} = useContext(AudioContext) as AudioProps;
 
   const [percentage, setPercentage] = useState(100);
 
@@ -384,7 +383,7 @@ const Timer = ({
     () => {
       clearInterval(ringInterval);
       setPercentage(100);
-      if (!started) return;
+      if (!source) return;
 
       const ringUpdateInterval = updateFrecuency / STEPS;
       executeAtInterval(msPassed => {
@@ -394,7 +393,7 @@ const Timer = ({
       }, ringUpdateInterval);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [updateFrecuency, started],
+    [updateFrecuency, source],
   );
 
   useEffect(() => {
@@ -408,10 +407,11 @@ const Timer = ({
   useEffect(() => {
     resetInterval();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetInterval, started, countdownTrigger]);
+  }, [resetInterval, source, countdownTrigger]);
 
   const initialCountdownValue = updateFrecuency / 1000;
 
+  console.log({updateFrecuency}, updateFrecuency / 1000 || '');
   return (
     <div className='timerContainer'>
       <h3>Countdown</h3>
@@ -420,9 +420,18 @@ const Timer = ({
           <Minus />
         </button>
         <div>
-          <span>
-            {Math.ceil(initialCountdownValue * (percentage / 100)) || initialCountdownValue}
-          </span>
+          <input
+            id='updateFrecuency'
+            value={
+              !updateFrecuency
+                ? ''
+                : Math.ceil(initialCountdownValue * (percentage / 100)) || initialCountdownValue
+            }
+            onChange={e => {
+              handleUpdateFrecuency(+e.target.value * 1000);
+            }}
+            onBlur={() => !updateFrecuency && handleUpdateFrecuency(1000)}
+          />
           <ProgressRing percentage={percentage} />
         </div>
         <button onClick={() => handleUpdateFrecuency(updateFrecuency + 1000)}>

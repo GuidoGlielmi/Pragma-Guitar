@@ -38,7 +38,7 @@ const useCorrectPitch = ({
   minFrecuency = 60,
   maxFrecuency = 10000,
 }: Condition): UseCorrectPitch => {
-  const {audio, analyser, started, setNotification} = useContext(AudioContext) as AudioProps;
+  const {source, analyserNode, setNotification} = useContext(AudioContext) as AudioProps;
 
   const [pitchDetector, setPitchDetector] = useState<PitchDetector<Float32Array> | null>(null);
   const [note, setNote] = useState<Note | null>(null);
@@ -52,20 +52,21 @@ const useCorrectPitch = ({
   }, []);
 
   useEffect(() => {
-    if (!started || !pitchDetector) return;
+    console.log({source});
+    if (!source || !pitchDetector) return;
 
-    const notificationIntent = debounce(() => setNotification(true), 500);
+    const notificationIntent = throttle(() => setNotification(true), 500);
     const cancelNotificationIntent = () => notificationIntent(true);
 
-    const notificationCancelIntent = debounce(() => setNotification(false), 200);
+    const notificationCancelIntent = throttle(() => setNotification(false), 200);
     const cancelNotificationCancelIntent = () => notificationCancelIntent(true);
 
     let savedPitch: number;
 
     const getPitch = () => {
-      analyser.getFloatTimeDomainData(buf);
+      analyserNode.getFloatTimeDomainData(buf);
 
-      const [frecuency, clarity] = pitchDetector.findPitch(buf, audio.sampleRate);
+      const [frecuency, clarity] = pitchDetector.findPitch(buf, source.context.sampleRate);
 
       if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
 
@@ -121,7 +122,7 @@ const useCorrectPitch = ({
       cancelNotificationCancelIntent();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target, condition, started]);
+  }, [target, condition, source]);
 
   return {
     detune,
@@ -134,7 +135,7 @@ const useCorrectPitch = ({
 
 export default useCorrectPitch;
 
-export const debounce = (fn: () => any, delay = 50): ((cancel?: boolean) => any) => {
+export const throttle = (fn: () => any, delay = 50): ((cancel?: boolean) => any) => {
   let timer: number;
 
   return (cancel = false) => {
