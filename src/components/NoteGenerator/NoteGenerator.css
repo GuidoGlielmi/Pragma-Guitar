@@ -107,8 +107,13 @@ input[type='number']::-webkit-outer-spin-button {
   font-size: 1.5em;
   text-align: center;
 }
+
+.timerContainer input:hover {
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px #0060df, 0 0 0 3px white;
+}
 .timerContainer input:focus-visible {
-  border: none;
+  border-radius: 0;
 }
 
 .mainBoard {

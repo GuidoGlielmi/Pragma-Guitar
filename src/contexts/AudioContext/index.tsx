@@ -206,7 +206,7 @@ const oscillatorOff = () => {
   try {
     oscillatorNode.stop(stopTime);
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
   // when an AudioNode get stopped and no references are left it will disconnect itself and it is thus not needed to explicitly call disconnect() after stop().
 };

@@ -10,7 +10,7 @@ import {notes} from '../../constants/notes';
 import ArrowRight from '../../icons/ArrowRight';
 import useCorrectPitch from '../../hooks/useCorrectPitch';
 import ProgressRing from '../../icons/ProgressRing';
-import {getMiddleOctavePitch} from '../../helpers/pitch';
+import {getFrecuencyFromPitch, getMiddleOctavePitch} from '../../helpers/pitch';
 
 const NoteGenerator = () => {
   const {start, stop, source} = useContext(AudioContext) as AudioProps;
@@ -89,9 +89,7 @@ const Note = ({
   const condition = useCallback(
     (pitch: number) => {
       if (exact) {
-        if (pitch === pitchToPlay) {
-          return true;
-        }
+        if (pitch === pitchToPlay) return true;
       } else if (
         pitch >= from.value &&
         pitch <= to.value &&
@@ -165,12 +163,14 @@ const Note = ({
           >
             <div className='notesDisplay'>
               <button
+                title='Press to listen'
                 className='noteToPlay button'
-                onMouseDown={() =>
-                  startOscillator(
-                    anyOctave ? getMiddleOctavePitch(pitchToPlay || 0) : pitchToPlay || 0,
-                  )
-                }
+                onMouseDown={() => {
+                  const pitch = anyOctave
+                    ? getMiddleOctavePitch(pitchToPlay || 0)
+                    : pitchToPlay || 0;
+                  startOscillator(getFrecuencyFromPitch(pitch));
+                }}
                 onMouseUp={() => stopOscillator()}
               >
                 <span>Play</span>
@@ -411,7 +411,6 @@ const Timer = ({
 
   const initialCountdownValue = updateFrecuency / 1000;
 
-  console.log({updateFrecuency}, updateFrecuency / 1000 || '');
   return (
     <div className='timerContainer'>
       <h3>Countdown</h3>

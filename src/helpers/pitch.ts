@@ -10,6 +10,11 @@ export const getMiddleOctavePitch = (pitch: number) => {
   return pitch + 12 * Math.floor(octavesDiff);
 };
 
+const middlePitch = 69;
+export const getFrecuencyFromPitch = (pitch: number) => {
+  return 440 * 2 ** ((pitch - middlePitch) / 12);
+};
+
 export const getNoteFromPitch = (pitch: number | null) => {
   if (pitch === null) return null;
   const coveredOctaves = Math.floor(pitch / 12) * 12;
