@@ -120,7 +120,13 @@ input[type='number']::-webkit-outer-spin-button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
+  position: relative;
+  height: 0;
+  opacity: 0;
+}
+.mainBoardVisible {
+  height: 160px;
+  opacity: 1;
 }
 .notesDisplay {
   display: flex;
@@ -206,13 +212,17 @@ input[type='number']::-webkit-outer-spin-button {
     transform: translateY(0px);
   }
 }
+.result {
+  position: relative;
+}
+
 .result,
 .result > * {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
 }
+
 .result {
   margin: 10px;
   width: 60px;
@@ -221,6 +231,7 @@ input[type='number']::-webkit-outer-spin-button {
 
 .result > * {
   position: absolute;
+  bottom: 50%;
 }
 .transparent {
   opacity: 0;
@@ -266,6 +277,38 @@ input[type='number']::-webkit-outer-spin-button {
   position: relative;
   width: 100%;
 }
+
 .rangeSelectorSection > * {
   width: max-content;
+}
+
+@font-face {
+  font-family: 'painter';
+  src: url('../fonts/Painter.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+.streak {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: -100%;
+  bottom: 50%;
+  color: #ff2e2e;
+  width: max-content;
+  /* font-family: dirtyboy; */
+  font-family: painter;
+  font-size: 2em;
+  border-radius: 5px;
+  filter: drop-shadow(5px -5px 1px #ff2e2e25) drop-shadow(-5px 0px 1px #ff2e2e30)
+    drop-shadow(5px 0px 1px #ff2e2e30) drop-shadow(0px -10px 1px #ff2e2e17)
+    drop-shadow(0px -15px 1px #ff2e2e17);
+}
+
+.streak span {
+  position: absolute;
+  right: -125%;
+  padding-top: 7px;
+  color: #c28b8b;
 }

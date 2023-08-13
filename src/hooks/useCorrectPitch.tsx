@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, useRef} from 'react';
 import {UsePitch} from './usePitch';
 import {pitchFromFrecuency, centsOffFromPitch} from '../libs/Helpers';
 import {PitchDetector} from 'pitchy';
@@ -26,7 +26,7 @@ type Condition = {
     }
 );
 
-type UseCorrectPitch = UsePitch & {correct: boolean};
+type UseCorrectPitch = UsePitch & {correct: boolean; currStreak: number; maxStreak: number};
 
 /**
  * @param condition Should be memoized
@@ -40,20 +40,28 @@ const useCorrectPitch = ({
 }: Condition): UseCorrectPitch => {
   const {source, analyserNode, setNotification} = useContext(AudioContext) as AudioProps;
 
-  const [pitchDetector, setPitchDetector] = useState<PitchDetector<Float32Array> | null>(null);
+  const pitchDetector = useRef(PitchDetector.forFloat32Array(buflen));
+
   const [note, setNote] = useState<Note | null>(null);
   const [frecuency, setFrecuency] = useState<number | null>(null);
   const [pitch, setPitch] = useState<number | null>(null);
   const [detune, setDetune] = useState<number | null>(null);
   const [correct, setCorrect] = useState(false);
+  const [currStreak, setCurrStreak] = useState(0);
+  const [maxStreak, setMaxStreak] = useState(0);
 
   useEffect(() => {
-    setPitchDetector(PitchDetector.forFloat32Array(buflen));
-  }, []);
+    if (correct) setCurrStreak(ps => ps + 1);
+  }, [correct]);
 
   useEffect(() => {
-    console.log({source});
+    setMaxStreak(ps => Math.max(ps, currStreak));
+  }, [currStreak]);
+
+  useEffect(() => {
     if (!source || !pitchDetector) return;
+
+    if (!correct) setCurrStreak(0);
 
     const notificationIntent = throttle(() => setNotification(true), 500);
     const cancelNotificationIntent = () => notificationIntent(true);
@@ -64,9 +72,8 @@ const useCorrectPitch = ({
     let savedPitch: number;
 
     const getPitch = () => {
-      analyserNode.getFloatTimeDomainData(buf);
-
-      const [frecuency, clarity] = pitchDetector.findPitch(buf, source.context.sampleRate);
+      analyserNode.getFloatTimeDomainData(buf); // must be done for each note
+      const [frecuency, clarity] = pitchDetector.current.findPitch(buf, source.context.sampleRate);
 
       if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
 
@@ -74,13 +81,13 @@ const useCorrectPitch = ({
       const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
       const detune = centsOffFromPitch(frecuency, pitch);
 
-      console.log({
-        frecuency,
-        pitch,
-        note,
-        clarity,
-        status: clarity >= 0.95 ? 'Clear' : clarity <= 0.85 ? 'Unclear' : 'Almost clear',
-      });
+      // console.log({
+      //   frecuency,
+      //   pitch,
+      //   note,
+      //   clarity,
+      //   status: clarity >= 0.95 ? 'Clear' : clarity <= 0.85 ? 'Unclear' : 'Almost clear',
+      // });
 
       if (clarity <= 0.95) {
         if (clarity >= 0.87) {
@@ -104,11 +111,15 @@ const useCorrectPitch = ({
     const checker = (pitch: number) => {
       const isCorrect =
         !!pitch && (condition?.(pitch) || (savedPitch === pitch && pitch === target));
-      if (!isCorrect) savedPitch = pitch;
+      if (!isCorrect) {
+        savedPitch = pitch;
+      }
       return isCorrect;
     };
 
-    const onSuccess = () => setCorrect(true);
+    const onSuccess = () => {
+      setCorrect(true);
+    };
 
     const consultPlayedNote = persistentChecker(getPitch, checker, onSuccess);
 
@@ -130,6 +141,8 @@ const useCorrectPitch = ({
     pitch,
     frecuency,
     correct,
+    currStreak,
+    maxStreak,
   };
 };
 

@@ -53,7 +53,7 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
 
   useEffect(() => {
     (async () => {
-      console.log(1, audioCtx.state);
+      // console.log(1, audioCtx.state);
       const devices = await navigator.mediaDevices.enumerateDevices();
       setDevices(devices.filter(d => d.kind === 'audioinput'));
       navigator.mediaDevices.ondevicechange = async function () {
@@ -64,17 +64,17 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
         ]);
       };
     })();
-    console.log(4, audioCtx.state);
+    // console.log(4, audioCtx.state);
     audioCtx.addEventListener('statechange', e => {
       console.log(`AudioContext: ${audioCtx.state}`);
       setStarted(audioCtx.state === 'running');
     });
-    console.log(5, audioCtx.state);
+    // console.log(5, audioCtx.state);
   }, []);
 
   useEffect(() => {
     if (!devices.length || audioCtx.state !== 'running' || !micInputStream) return;
-    console.log(2, audioCtx.state, {devices});
+    // console.log(2, audioCtx.state, {devices});
     (async () => {
       const micInputStream = await getMicInput();
       const micInputNode = audioCtx.createMediaStreamSource(micInputStream);
@@ -88,13 +88,13 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
 
   useEffect(() => {
     if (!micInputStream) return;
-    console.log(3, audioCtx.state);
+    // console.log(3, audioCtx.state);
     const micInputNode = audioCtx.createMediaStreamSource(micInputStream);
     setMicInputNode(micInputNode);
   }, [micInputStream]);
 
   useEffect(() => {
-    console.log('?', audioCtx.state);
+    // console.log('?', audioCtx.state);
     micInputNode?.connect(analyserNode);
   }, [micInputNode]);
 

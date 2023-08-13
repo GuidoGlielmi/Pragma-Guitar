@@ -13,6 +13,7 @@ import ProgressRing from '../../icons/ProgressRing';
 import {getFrecuencyFromPitch, getMiddleOctavePitch} from '../../helpers/pitch';
 import OnboardingWrapper from '../OnboardingWrapper';
 import {Step} from 'intro.js';
+import Flame from '../../icons/Flame';
 
 const steps = [
   {
@@ -94,7 +95,7 @@ const steps = [
 const NoteGenerator = () => {
   const {start, stop, source} = useContext(AudioContext) as AudioProps;
 
-  const [updateFrecuency, setUpdateFrecuency] = useState<number>(10000);
+  const [updateFrecuency, setUpdateFrecuency] = useState<number>(7000);
 
   const handleUpdateFrecuency = (value: number) => {
     setUpdateFrecuency(ps => {
@@ -185,10 +186,12 @@ const Note = ({
     [exact, pitchToPlay, from, to],
   );
 
-  const {pitch, correct} = useCorrectPitch({condition});
+  const {pitch, correct, currStreak, maxStreak} = useCorrectPitch({condition});
 
   useEffect(() => {
-    if (correct) new Audio('correct.mp3').play();
+    if (correct) {
+      new Audio('correct.mp3').play();
+    }
   }, [correct]);
 
   useEffect(() => {
@@ -238,10 +241,18 @@ const Note = ({
       <AnimatePresence>
         {source && (
           <motion.div
+            style={{overflow: 'hidden'}}
             className='mainBoard'
             initial={{opacity: 0, height: 0}}
-            animate={{opacity: 1, height: 160, marginBottom: 10}}
-            exit={{opacity: 0.5, height: 0, marginBottom: 0}}
+            animate={{
+              opacity: 1,
+              height: 160,
+              marginBottom: 10,
+              transitionEnd: {
+                overflow: 'visible',
+              },
+            }}
+            exit={{opacity: 0.5, height: 0, marginBottom: 0, overflow: 'hidden'}}
           >
             <div className='notesDisplay'>
               <button
@@ -253,7 +264,14 @@ const Note = ({
                     : pitchToPlay || 0;
                   startOscillator(getFrecuencyFromPitch(pitch));
                 }}
+                onTouchStart={() => {
+                  const pitch = anyOctave
+                    ? getMiddleOctavePitch(pitchToPlay || 0)
+                    : pitchToPlay || 0;
+                  startOscillator(getFrecuencyFromPitch(pitch));
+                }}
                 onMouseUp={() => stopOscillator()}
+                onTouchEnd={() => stopOscillator()}
               >
                 <span>Play</span>
                 <p style={{...(!anyOctave && {transform: 'translateX(-0.15em)'})}}>
@@ -270,22 +288,52 @@ const Note = ({
                 </p>
               </div>
             </div>
-            <AnimatePresence>
+            <AnimatePresence mode='wait'>
               <motion.div
                 className='result'
                 key={correct ? 'tick' : 'ellipsis'}
-                initial={{opacity: 0, y: -10}}
+                initial={{opacity: 0, y: '50%'}}
                 animate={{opacity: 1, y: 0}}
-                exit={{opacity: 0}}
+                exit={{opacity: 0, ...(correct && {y: -30})}}
                 transition={{duration: 0.1}}
               >
                 {correct ? <Tick /> : <Ellipsis />}
+                {correct && <Streak multiplier={currStreak} />}
+                {/* <Streak multiplier={currStreak} /> */}
               </motion.div>
             </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
+  );
+};
+
+const Streak = ({multiplier}: {multiplier: number}) => {
+  // if (!multiplier) return null;
+  const [currStreak, setCurrStreak] = useState(multiplier);
+
+  useEffect(() => {
+    setCurrStreak(multiplier);
+    // setTimeout(() => setCurrStreak(multiplier), 200);
+    setTimeout(() => setCurrStreak(0), 500);
+  }, [multiplier]);
+
+  return (
+    <AnimatePresence>
+      {!!currStreak && (
+        <motion.div
+          initial={{opacity: 0, y: '50%', x: '0%'}}
+          animate={{opacity: 1, y: '50%', x: '0%'}}
+          exit={{opacity: 0, y: 0, x: '0%'}}
+          transition={{duration: 0.5}}
+          className='streak'
+        >
+          <Flame />
+          <span>{multiplier}</span>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
