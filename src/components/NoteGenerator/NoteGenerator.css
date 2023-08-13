@@ -282,12 +282,6 @@ input[type='number']::-webkit-outer-spin-button {
   width: max-content;
 }
 
-@font-face {
-  font-family: 'painter';
-  src: url('../fonts/Painter.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 .streak {
   display: flex;
   justify-content: center;

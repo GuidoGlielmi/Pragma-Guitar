@@ -32,7 +32,6 @@ const Tuner = () => {
         <div>
           <span>{frecuency} Hz</span>
         </div>
-        {!source ? <button onClick={start}>Start</button> : <button onClick={stop}>Stop</button>}
       </div>
     </div>
   );

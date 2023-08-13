@@ -4,14 +4,16 @@ import Tuner from './components/Tuner';
 import NoteGenerator from './components/NoteGenerator';
 import {AnimatePresence, motion} from 'framer-motion';
 import {AudioContext, AudioProps} from './contexts/AudioContext';
+import Metronome from './components/Metronome';
 
 const sections = {
   'Note Generator': <NoteGenerator />,
+  Metronome: <Metronome />,
   Tuner: <Tuner />,
 };
 
 function App() {
-  const {stop, source} = useContext(AudioContext) as AudioProps;
+  const {start, stop, source} = useContext(AudioContext) as AudioProps;
 
   const [selectedSection, setSection] = useState<JSX.Element>(sections['Note Generator']);
 
@@ -35,6 +37,9 @@ function App() {
           );
         })}
       </div>
+      <button onClick={source ? stop : start} id='start'>
+        {source ? 'Stop' : 'Start'}
+      </button>
       <AnimatePresence mode='wait'>
         <motion.div
           key={selectedSection.type}
