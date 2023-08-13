@@ -5,10 +5,20 @@
   align-items: center;
   gap: 10px;
 }
+.container h2 {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 .container input {
-  text-align: center;
   width: 30px;
+  padding: 5px;
+  background-color: #222;
+  border-radius: 5px;
+  text-align: center;
   border: none;
+  font-size: 0.7em;
+  transform: translateY(7%);
 }
 
 .container > div:first-of-type {

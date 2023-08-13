@@ -2,6 +2,7 @@ import {useState} from 'react';
 import useMetronome from '../../hooks/useMetronome';
 import Select from 'react-select';
 import S from './Metronome.module.css';
+import useNumberInput from '../../hooks/useNumberInput';
 
 const numeratorOptions = Array(16)
   .fill(null)
@@ -11,12 +12,13 @@ const denominatorOptions = [2, 4, 8, 16].map(e => ({label: e, value: e}));
 
 const Metronome = () => {
   const [[numerator, denominator], setBar] = useState([numeratorOptions[3], denominatorOptions[1]]);
-  const [bpm, setBpm] = useState(120);
-  const position = useMetronome(bpm, numerator.value);
+  const {input, value: bpm} = useNumberInput({min: 1, max: 250, initialValue: 120});
+
+  const position = useMetronome(+bpm, numerator.value);
 
   return (
     <div className={S.container}>
-      <h2>Beat</h2>
+      <h2>Beat {input}</h2>
       <div>
         <Select
           className={S.a}
