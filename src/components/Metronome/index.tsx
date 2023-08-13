@@ -11,10 +11,12 @@ const numeratorOptions = Array(16)
 const denominatorOptions = [2, 4, 8, 16].map(e => ({label: e, value: e}));
 
 const Metronome = () => {
-  const [[numerator, denominator], setBar] = useState([numeratorOptions[3], denominatorOptions[1]]);
   const {input, value: bpm} = useNumberInput({min: 1, max: 250, initialValue: 120});
 
-  const position = useMetronome(+bpm, numerator.value);
+  const [[numerator, denominator], setBar, position] = useMetronome({
+    bpm: +bpm,
+    lastPosition: numeratorOptions[3].value,
+  });
 
   return (
     <div className={S.container}>
@@ -25,8 +27,8 @@ const Metronome = () => {
           isSearchable={false}
           styles={customStyles}
           options={numeratorOptions}
-          value={numerator}
-          onChange={e => setBar(ps => [e!, ps[1]])}
+          value={{label: numerator, value: numerator}}
+          onChange={e => setBar(ps => [e!.value, ps[1]])}
         />
         <p className={S.b}>/</p>
         <Select
@@ -34,12 +36,12 @@ const Metronome = () => {
           isSearchable={false}
           styles={customStyles}
           options={denominatorOptions}
-          value={denominator}
-          onChange={e => setBar(ps => [ps[0], e!])}
+          value={{label: denominator, value: denominator}}
+          onChange={e => setBar(ps => [ps[0], e!.value])}
         />
       </div>
       <div className={S.beatContainer}>
-        {Array(numerator.value)
+        {Array(numerator)
           .fill(null)
           .map((_e, i) => {
             return (
