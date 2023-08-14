@@ -63,10 +63,10 @@ const useCorrectPitch = ({
 
     if (!correct) setCurrStreak(0);
 
-    const notificationIntent = throttle(() => setNotification(true), 500);
+    const notificationIntent = cancelableThrottle(() => setNotification(true), 500);
     const cancelNotificationIntent = () => notificationIntent(true);
 
-    const notificationCancelIntent = throttle(() => setNotification(false), 200);
+    const notificationCancelIntent = cancelableThrottle(() => setNotification(false), 200);
     const cancelNotificationCancelIntent = () => notificationCancelIntent(true);
 
     let savedPitch: number;
@@ -148,7 +148,7 @@ const useCorrectPitch = ({
 
 export default useCorrectPitch;
 
-export const throttle = (fn: () => any, delay = 50): ((cancel?: boolean) => any) => {
+export const cancelableThrottle = (fn: () => any, delay = 50): ((cancel?: boolean) => any) => {
   let timer: number;
 
   return (cancel = false) => {

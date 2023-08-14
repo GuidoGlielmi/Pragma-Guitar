@@ -55,7 +55,10 @@ const Metronome = () => {
               <div
                 key={i}
                 className={S.beatUnit}
-                style={{background: i === position ? 'green' : 'black'}}
+                style={{
+                  boxShadow: !i && !position ? '0 0 3px white' : 'none',
+                  background: i === position ? (!i ? 'white' : 'green') : 'black',
+                }}
               />
             );
           })}

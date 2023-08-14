@@ -12,7 +12,7 @@ const defaultSubdivision = 2 ** 2;
 
 const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: MetronomeProps) => {
   const {source, playClick} = useContext(AudioContext) as AudioProps;
-  const [position, setPosition] = useState(0);
+  const [position, setPosition] = useState(-1);
   const [bar, setBar] = useState<[number, number]>([initialNumerator, initialDenominator]);
 
   useEffect(() => {
