@@ -24,6 +24,7 @@ export interface AudioProps {
   chosenDevice: MediaDeviceInfo;
   startOscillator: (frec: number) => void;
   stopOscillator: () => void;
+  playClick: (isFirstBeat: boolean) => void;
 }
 // the audio context is, among other things, a NODES factory.
 // each possible NODE represents a media processor of some kind, for example:
@@ -35,6 +36,12 @@ const analyserNode = audioCtx.createAnalyser();
 analyserNode.fftSize = 2048;
 let oscillatorNode: OscillatorNode;
 let gainNode: GainNode;
+
+async function loadAudioFile(filePath: string) {
+  const response = await fetch(filePath);
+  const buffer = await response.arrayBuffer();
+  return await audioCtx.decodeAudioData(buffer);
+}
 
 type AudioProviderProps = {children: React.ReactNode};
 
@@ -51,6 +58,9 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
   const [notification, setNotification] = useState(false);
   const [started, setStarted] = useState(false);
 
+  const [clickAudioBuffer, setClickAudioBuffer] = useState<AudioBuffer | null>(null);
+  const [firstClickAudioBuffer, setClickFirstBeatAudioBuffer] = useState<AudioBuffer | null>(null);
+
   useEffect(() => {
     (async () => {
       // console.log(1, audioCtx.state);
@@ -63,6 +73,10 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
           ...devices.filter(d => d.kind === 'audioinput' && d.deviceId !== ps[0].deviceId),
         ]);
       };
+      const firstClickAudioBuffer = await loadAudioFile('/audio/metronome_oct_up.mp3');
+      const clickAudioBuffer = await loadAudioFile('/audio/metronome.mp3');
+      setClickAudioBuffer(clickAudioBuffer);
+      setClickFirstBeatAudioBuffer(firstClickAudioBuffer);
     })();
     // console.log(4, audioCtx.state);
     audioCtx.addEventListener('statechange', e => {
@@ -145,6 +159,22 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
     }
   };
 
+  const playClick = (isFirstBeat: boolean) => {
+    if (!firstClickAudioBuffer || !clickAudioBuffer) return;
+
+    if (isFirstBeat) {
+      const firstClickSourceNode = audioCtx.createBufferSource();
+      firstClickSourceNode.buffer = firstClickAudioBuffer;
+      firstClickSourceNode.connect(audioCtx.destination);
+      firstClickSourceNode.start();
+    } else {
+      const clickSourceNode = audioCtx.createBufferSource();
+      clickSourceNode.buffer = clickAudioBuffer;
+      clickSourceNode.connect(audioCtx.destination);
+      clickSourceNode.start();
+    }
+  };
+
   const contextValue = useMemo(
     () => ({
       analyserNode,
@@ -157,9 +187,10 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
       chosenDevice: devices[0],
       startOscillator: (frec: number) => setOscillatorFrecuency(frec),
       stopOscillator: () => setOscillatorFrecuency(0),
+      playClick,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [micInputNode, notification, devices, started],
+    [micInputNode, notification, devices, started, clickAudioBuffer, firstClickAudioBuffer],
   );
 
   return (

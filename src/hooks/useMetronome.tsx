@@ -1,9 +1,9 @@
+/* eslint-disable no-empty */
 import {useState, useEffect, useContext} from 'react';
-import {AudioContext, AudioProps} from '../contexts/AudioContext';
+import {AudioContext, AudioProps, audioCtx} from '../contexts/AudioContext';
 
 interface MetronomeProps {
   bpm: number;
-  lastPosition: number;
   initialNumerator?: number;
   initialDenominator?: number;
 }
@@ -11,7 +11,7 @@ interface MetronomeProps {
 const defaultSubdivision = 2 ** 2;
 
 const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: MetronomeProps) => {
-  const {source} = useContext(AudioContext) as AudioProps;
+  const {source, playClick} = useContext(AudioContext) as AudioProps;
   const [position, setPosition] = useState(0);
   const [bar, setBar] = useState<[number, number]>([initialNumerator, initialDenominator]);
 
@@ -20,20 +20,23 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
 
     new Audio('/audio/metronome_oct_up.mp3').play();
     const [, denominator] = bar;
+    const msInterval = bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
 
-    const interval = setInterval(() => {
+    const stopFlag = {stop: false};
+    const task = () => {
       setPosition(ps => {
         const isLast = ps === bar[0] - 1;
-        console.log(123);
-        new Audio(`/audio/metronome${isLast ? '_oct_up' : ''}.mp3`).play();
+        playClick(isLast);
         return isLast ? 0 : ps + 1;
       });
-    }, bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator)));
+    };
+    iterateTask(msInterval, task, stopFlag);
 
     return () => {
       setPosition(0);
-      clearInterval(interval);
+      stopFlag.stop = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source, bpm, bar]);
 
   return [bar, setBar, position] as [
@@ -43,11 +46,28 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
   ];
 };
 
+const bpmToFrecuency = (bpm: number) => (1 / (bpm / 60)) * 1000;
+
+const iterateTask = (msInterval: number, task: () => void, stopFlag: {stop: boolean}) => {
+  let interval: number;
+  let targetTime = performance.now() + msInterval;
+
+  const startTimer = () => {
+    interval = setInterval(() => {
+      if (stopFlag.stop) return clearInterval(interval);
+      if (performance.now() >= targetTime - 20) {
+        while (performance.now() < targetTime) {}
+        requestAnimationFrame(task);
+        targetTime += msInterval;
+      }
+    });
+  };
+  startTimer();
+};
+
 // const isPowerOfTwo = (n: number) => {
 //   if (n <= 0) return false;
 //   return (n & (n - 1)) === 0;
 // };
-
-const bpmToFrecuency = (bpm: number) => (1 / (bpm / 60)) * 1000;
 
 export default useMetronome;

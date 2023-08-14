@@ -22,7 +22,7 @@
 .container input {
   width: 30px;
   padding: 5px;
-  background-color: #222;
+  background-color: #1a1a1a;
   border-radius: 5px;
   text-align: center;
   border: none;
@@ -37,7 +37,7 @@
     'a . .'
     '. b .'
     '. . c';
-  background: #222;
+  background: #1a1a1a;
   padding: 5px;
   border-radius: 10px;
   color: white;
