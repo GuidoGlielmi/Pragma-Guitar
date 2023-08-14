@@ -24,7 +24,7 @@ export interface AudioProps {
   chosenDevice: MediaDeviceInfo;
   startOscillator: (frec: number) => void;
   stopOscillator: () => void;
-  playClick: (isFirstBeat: boolean) => void;
+  playClick: (isFirstBeat: boolean) => Promise<void>;
 }
 // the audio context is, among other things, a NODES factory.
 // each possible NODE represents a media processor of some kind, for example:
@@ -40,7 +40,7 @@ let gainNode: GainNode;
 async function loadAudioFile(filePath: string) {
   const response = await fetch(filePath);
   const buffer = await response.arrayBuffer();
-  return await audioCtx.decodeAudioData(buffer);
+  return audioCtx.decodeAudioData(buffer);
 }
 
 type AudioProviderProps = {children: React.ReactNode};
@@ -73,10 +73,6 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
           ...devices.filter(d => d.kind === 'audioinput' && d.deviceId !== ps[0].deviceId),
         ]);
       };
-      const firstClickAudioBuffer = await loadAudioFile('/audio/metronome_oct_up.mp3');
-      const clickAudioBuffer = await loadAudioFile('/audio/metronome.mp3');
-      setClickAudioBuffer(clickAudioBuffer);
-      setClickFirstBeatAudioBuffer(firstClickAudioBuffer);
     })();
     // console.log(4, audioCtx.state);
     audioCtx.addEventListener('statechange', e => {
@@ -159,8 +155,14 @@ const AudioProvider: FC<PropsWithChildren<AudioProviderProps>> = ({children}) =>
     }
   };
 
-  const playClick = (isFirstBeat: boolean) => {
-    if (!firstClickAudioBuffer || !clickAudioBuffer) return;
+  const playClick = async (isFirstBeat: boolean) => {
+    if (!firstClickAudioBuffer || !clickAudioBuffer) {
+      const firstClickAudioBuffer = await loadAudioFile('/audio/metronome_oct_up.mp3');
+      const clickAudioBuffer = await loadAudioFile('/audio/metronome.mp3');
+      setClickAudioBuffer(clickAudioBuffer);
+      setClickFirstBeatAudioBuffer(firstClickAudioBuffer);
+      return;
+    }
 
     if (isFirstBeat) {
       const firstClickSourceNode = audioCtx.createBufferSource();

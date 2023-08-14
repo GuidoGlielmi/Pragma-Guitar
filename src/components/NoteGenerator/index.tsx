@@ -110,7 +110,7 @@ const Note = ({
 
   useEffect(() => {
     if (correct) {
-      new Audio('correct.mp3').play();
+      new Audio('/audio/correct.mp3').play();
     }
   }, [correct]);
 

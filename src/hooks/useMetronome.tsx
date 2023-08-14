@@ -1,6 +1,6 @@
 /* eslint-disable no-empty */
 import {useState, useEffect, useContext} from 'react';
-import {AudioContext, AudioProps, audioCtx} from '../contexts/AudioContext';
+import {AudioContext, AudioProps} from '../contexts/AudioContext';
 
 interface MetronomeProps {
   bpm: number;
@@ -18,26 +18,29 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
   useEffect(() => {
     if (!source) return;
 
-    new Audio('/audio/metronome_oct_up.mp3').play();
-    const [, denominator] = bar;
-    const msInterval = bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
-
     const stopFlag = {stop: false};
-    const task = () => {
-      setPosition(ps => {
-        const isLast = ps === bar[0] - 1;
-        playClick(isLast);
-        return isLast ? 0 : ps + 1;
-      });
-    };
-    iterateTask(msInterval, task, stopFlag);
+
+    (async () => {
+      await playClick(true);
+
+      const denominator = bar[1];
+      const msInterval = bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
+
+      const task = () => {
+        setPosition(ps => {
+          const isLast = ps === bar[0] - 1;
+          playClick(isLast);
+          return isLast ? 0 : ps + 1;
+        });
+      };
+      iterateTask(msInterval, task, stopFlag);
+    })();
 
     return () => {
       setPosition(0);
       stopFlag.stop = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source, bpm, bar]);
+  }, [source, bpm, bar, playClick]);
 
   return [bar, setBar, position] as [
     [number, number],
@@ -55,7 +58,7 @@ const iterateTask = (msInterval: number, task: () => void, stopFlag: {stop: bool
   const startTimer = () => {
     interval = setInterval(() => {
       if (stopFlag.stop) return clearInterval(interval);
-      if (performance.now() >= targetTime - 20) {
+      if (performance.now() >= targetTime - 10) {
         while (performance.now() < targetTime) {}
         requestAnimationFrame(task);
         targetTime += msInterval;
