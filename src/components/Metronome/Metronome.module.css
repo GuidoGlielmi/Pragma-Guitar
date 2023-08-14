@@ -5,10 +5,19 @@
   align-items: center;
   gap: 10px;
 }
+
 .container h2 {
   display: flex;
   align-items: center;
   gap: 15px;
+}
+.container h2 button {
+  padding: 5px 12px;
+}
+
+.container h2 button,
+.container input {
+  font-size: 0.7em;
 }
 .container input {
   width: 30px;
@@ -17,7 +26,6 @@
   border-radius: 5px;
   text-align: center;
   border: none;
-  font-size: 0.7em;
   transform: translateY(7%);
 }
 

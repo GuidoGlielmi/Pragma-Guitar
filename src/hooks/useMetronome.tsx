@@ -8,6 +8,8 @@ interface MetronomeProps {
   initialDenominator?: number;
 }
 
+const defaultSubdivision = 2 ** 2;
+
 const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: MetronomeProps) => {
   const {source} = useContext(AudioContext) as AudioProps;
   const [position, setPosition] = useState(0);
@@ -17,16 +19,16 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
     if (!source) return;
 
     new Audio('/audio/metronome_oct_up.mp3').play();
-    const [numerator, denominator] = bar;
-    // const isIrregularBeat = isPowerOfTwo(numerator);
+    const [, denominator] = bar;
 
     const interval = setInterval(() => {
       setPosition(ps => {
         const isLast = ps === bar[0] - 1;
+        console.log(123);
         new Audio(`/audio/metronome${isLast ? '_oct_up' : ''}.mp3`).play();
         return isLast ? 0 : ps + 1;
       });
-    }, bpmToFrecuency(bpm) * 2 ** (2 - Math.log2(denominator)));
+    }, bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator)));
 
     return () => {
       setPosition(0);
@@ -41,10 +43,10 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
   ];
 };
 
-const isPowerOfTwo = (n: number) => {
-  if (n <= 0) return false;
-  return (n & (n - 1)) === 0;
-};
+// const isPowerOfTwo = (n: number) => {
+//   if (n <= 0) return false;
+//   return (n & (n - 1)) === 0;
+// };
 
 const bpmToFrecuency = (bpm: number) => (1 / (bpm / 60)) * 1000;
 

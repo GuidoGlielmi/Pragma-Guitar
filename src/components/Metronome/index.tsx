@@ -1,8 +1,9 @@
-import {useState} from 'react';
+import {useEffect} from 'react';
 import useMetronome from '../../hooks/useMetronome';
-import Select from 'react-select';
+import Select, {GroupBase, StylesConfig} from 'react-select';
 import S from './Metronome.module.css';
 import useNumberInput from '../../hooks/useNumberInput';
+import useTap from '../../hooks/useTap';
 
 const numeratorOptions = Array(16)
   .fill(null)
@@ -11,16 +12,25 @@ const numeratorOptions = Array(16)
 const denominatorOptions = [2, 4, 8, 16].map(e => ({label: e, value: e}));
 
 const Metronome = () => {
-  const {input, value: bpm} = useNumberInput({min: 1, max: 250, initialValue: 120});
+  const {input, value: bpm, changeHandler} = useNumberInput({min: 1, max: 250, initialValue: 120});
 
   const [[numerator, denominator], setBar, position] = useMetronome({
     bpm: +bpm,
     lastPosition: numeratorOptions[3].value,
   });
 
+  const [tapButton, tappedBpm] = useTap();
+
+  useEffect(() => {
+    if (tappedBpm) changeHandler(tappedBpm);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tappedBpm]);
+
   return (
     <div className={S.container}>
-      <h2>Beat {input}</h2>
+      <h2>
+        Beat {input} {tapButton}
+      </h2>
       <div>
         <Select
           className={S.a}
@@ -46,6 +56,7 @@ const Metronome = () => {
           .map((_e, i) => {
             return (
               <div
+                key={i}
                 className={S.beatUnit}
                 style={{background: i === position ? 'green' : 'black'}}
               />
@@ -98,6 +109,16 @@ const customStyles = {
   }),
   menu: (provided: any, _state: any) => ({
     ...provided,
-    width: 35,
+    width: 40,
   }),
-};
+} as StylesConfig<
+  {
+    label: number;
+    value: number;
+  },
+  false,
+  GroupBase<{
+    label: number;
+    value: number;
+  }>
+>;
