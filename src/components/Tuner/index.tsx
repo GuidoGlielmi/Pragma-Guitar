@@ -1,11 +1,8 @@
-import {useContext} from 'react';
 import {getDetunePercent} from '../../libs/Helpers';
-import {AudioContext, AudioProps} from '../../contexts/AudioContext';
 import usePitch from '../../hooks/usePitch';
 import './Tuner.css';
 import {getNoteFromPitch, getOctave} from '../../helpers/pitch';
 const Tuner = () => {
-  const {source, start, stop} = useContext(AudioContext) as AudioProps;
   const {detune, frecuency, pitch} = usePitch();
 
   return (

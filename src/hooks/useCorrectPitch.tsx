@@ -1,15 +1,7 @@
 import {useState, useEffect, useContext, useRef} from 'react';
-import {UsePitch} from './usePitch';
-import {pitchFromFrecuency, centsOffFromPitch} from '../libs/Helpers';
-import {PitchDetector} from 'pitchy';
-import {AudioContext, AudioProps} from '../contexts/AudioContext';
-import {notes} from '../constants/notes';
-import {persistentChecker} from '../helpers/persistentChecker';
+import {AudioContext, AudioProps, micInputStream} from '../contexts/AudioContext';
 
-let interval: number;
-
-const buflen = 2048;
-const buf = new Float32Array(buflen);
+import usePitch from './usePitch';
 
 type Condition = {
   delay?: number;
@@ -25,115 +17,53 @@ type Condition = {
       condition?: (pitch: number) => boolean;
     }
 );
-
 type UseCorrectPitch = UsePitch & {correct: boolean; currStreak: number; maxStreak: number};
 
-/**
- * @param condition Should be memoized
- */
-const useCorrectPitch = ({
-  target,
-  condition,
-  delay = 75,
-  minFrecuency = 60,
-  maxFrecuency = 10000,
-}: Condition): UseCorrectPitch => {
-  const {source, analyserNode, setNotification} = useContext(AudioContext) as AudioProps;
+const useAsd = ({target, condition}: Condition): UseCorrectPitch => {
+  const {detune, frecuency, pitch, note} = usePitch();
+  const {started, getMicInputStream} = useContext(AudioContext) as AudioProps;
 
-  const pitchDetector = useRef(PitchDetector.forFloat32Array(buflen));
-
-  const [note, setNote] = useState<Note | null>(null);
-  const [frecuency, setFrecuency] = useState<number | null>(null);
-  const [pitch, setPitch] = useState<number | null>(null);
-  const [detune, setDetune] = useState<number | null>(null);
-  const [correct, setCorrect] = useState(false);
   const [currStreak, setCurrStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(0);
+  const [correct, setCorrect] = useState(false);
+
+  const prevCorrect = useRef(correct);
 
   useEffect(() => {
-    if (correct) setCurrStreak(ps => ps + 1);
-  }, [correct]);
+    if (!micInputStream && started) {
+      getMicInputStream();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [started]);
+
+  useEffect(() => {
+    if (!prevCorrect.current) setCurrStreak(0);
+    setCorrect(false);
+  }, [target, condition]);
 
   useEffect(() => {
     setMaxStreak(ps => Math.max(ps, currStreak));
   }, [currStreak]);
 
   useEffect(() => {
-    if (!source || !pitchDetector) return;
+    if (correct) return;
+    const isCorrect = !!pitch && (condition?.(pitch) || pitch === target);
+    if (isCorrect) {
+      const timer = setTimeout(() => {
+        setCorrect(true);
+      }, 400);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [pitch, target, condition, correct]);
 
-    if (!correct) setCurrStreak(0);
-
-    const notificationIntent = cancelableThrottle(() => setNotification(true), 500);
-    const cancelNotificationIntent = () => notificationIntent(true);
-
-    const notificationCancelIntent = cancelableThrottle(() => setNotification(false), 200);
-    const cancelNotificationCancelIntent = () => notificationCancelIntent(true);
-
-    let savedPitch: number;
-
-    const getPitch = () => {
-      analyserNode.getFloatTimeDomainData(buf); // must be done for each note
-      const [frecuency, clarity] = pitchDetector.current.findPitch(buf, source.context.sampleRate);
-
-      if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
-
-      const pitch = pitchFromFrecuency(frecuency);
-      const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
-      const detune = centsOffFromPitch(frecuency, pitch);
-
-      // console.log({
-      //   frecuency,
-      //   pitch,
-      //   note,
-      //   clarity,
-      //   status: clarity >= 0.95 ? 'Clear' : clarity <= 0.85 ? 'Unclear' : 'Almost clear',
-      // });
-
-      if (clarity <= 0.95) {
-        if (clarity >= 0.87) {
-          cancelNotificationCancelIntent();
-          notificationIntent();
-        }
-        return;
-      }
-
-      cancelNotificationIntent();
-      notificationCancelIntent();
-      setNotification(false);
-      setFrecuency(~~frecuency);
-      setNote(note);
-      setDetune(detune);
-      setPitch(pitch);
-
-      return pitch;
-    };
-
-    const checker = (pitch: number) => {
-      const isCorrect =
-        !!pitch && (condition?.(pitch) || (savedPitch === pitch && pitch === target));
-      if (!isCorrect) {
-        savedPitch = pitch;
-      }
-      return isCorrect;
-    };
-
-    const onSuccess = () => {
-      setCorrect(true);
-    };
-
-    const consultPlayedNote = persistentChecker(getPitch, checker, onSuccess);
-
-    interval = setInterval(consultPlayedNote, delay);
-
-    return () => {
-      setCorrect(false);
-      setNotification(false);
-      clearInterval(interval);
-      cancelNotificationIntent();
-      cancelNotificationCancelIntent();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [target, condition, source]);
+  useEffect(() => {
+    prevCorrect.current = correct;
+    if (correct) {
+      setCurrStreak(ps => ps + 1);
+    }
+  }, [correct]);
 
   return {
     detune,
@@ -146,52 +76,4 @@ const useCorrectPitch = ({
   };
 };
 
-export default useCorrectPitch;
-
-export const cancelableThrottle = (fn: () => any, delay = 50): ((cancel?: boolean) => any) => {
-  let timer: number;
-
-  return (cancel = false) => {
-    if (cancel) return clearTimeout(timer);
-    if (timer === undefined) timer = setTimeout(fn, delay);
-  };
-};
-
-// const checkPitch = () => {
-//   analyser.getFloatTimeDomainData(buf);
-//   const [frecuency, clarity] = pitchDetector.findPitch(buf, audio.sampleRate);
-
-//   const pitch = pitchFromFrecuency(frecuency);
-//   const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
-//   const detune = centsOffFromPitch(frecuency, pitch);
-
-//   console.log({note, clarity});
-
-//   if (clarity <= 0.95) {
-//     if (clarity >= 0.85) {
-//       setNotification(true);
-//     } else setNotification(true);
-//     return;
-//   }
-
-//   setNotification(false);
-//   setFrecuency(~~frecuency);
-//   setNote(note);
-//   setDetune(detune);
-//   setPitch(pitch);
-
-//   if (savedPitch === undefined) savedPitch = pitch;
-//   else {
-//     if (condition?.(pitch) || (savedPitch === pitch && pitch === target)) {
-//       if (!remainingTries) {
-//         clearInterval(interval);
-//         return setCorrect(true);
-//       }
-//       console.log({remainingTries});
-//       remainingTries--;
-//     } else {
-//       savedPitch = pitch;
-//       remainingTries = initialTries;
-//     }
-//   }
-// };
+export default useAsd;

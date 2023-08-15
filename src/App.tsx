@@ -13,12 +13,12 @@ const sections = {
 };
 
 function App() {
-  const {start, stop, source} = useContext(AudioContext) as AudioProps;
+  const {start, stop, started} = useContext(AudioContext) as AudioProps;
 
   const [selectedSection, setSection] = useState<JSX.Element>(sections['Note Generator']);
 
   useEffect(() => {
-    if (source) stop();
+    if (started) stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSection]);
 
@@ -37,8 +37,8 @@ function App() {
           );
         })}
       </div>
-      <button onClick={source ? stop : start} id='start'>
-        {source ? 'Stop' : 'Start'}
+      <button onClick={started ? stop : start} id='start'>
+        {started ? 'Stop' : 'Start'}
       </button>
       <AnimatePresence mode='wait'>
         <motion.div

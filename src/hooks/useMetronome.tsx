@@ -1,6 +1,11 @@
 /* eslint-disable no-empty */
 import {useState, useEffect, useContext} from 'react';
-import {AudioContext, AudioProps} from '../contexts/AudioContext';
+import {
+  AudioContext,
+  AudioProps,
+  clickSourceNode,
+  firstClickSourceNode,
+} from '../contexts/AudioContext';
 
 interface MetronomeProps {
   bpm: number;
@@ -11,13 +16,13 @@ interface MetronomeProps {
 const defaultSubdivision = 2 ** 2;
 
 const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: MetronomeProps) => {
-  const {source, playClick} = useContext(AudioContext) as AudioProps;
+  const {started, playClick} = useContext(AudioContext) as AudioProps;
   const [position, setPosition] = useState(-1);
   const [bar, setBar] = useState<[number, number]>([initialNumerator, initialDenominator]);
 
   useEffect(() => {
-    if (!source) return;
-
+    if (!started) return;
+    setPosition(0);
     const stopFlag = {stop: false};
 
     (async () => {
@@ -37,10 +42,16 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
     })();
 
     return () => {
-      setPosition(0);
+      if (started) {
+        clickSourceNode?.stop();
+        firstClickSourceNode?.stop();
+        clickSourceNode?.disconnect();
+        firstClickSourceNode?.disconnect();
+      }
+      setPosition(-1);
       stopFlag.stop = true;
     };
-  }, [source, bpm, bar, playClick]);
+  }, [started, bpm, bar, playClick]);
 
   return [bar, setBar, position] as [
     [number, number],

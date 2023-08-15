@@ -44,6 +44,7 @@ const useNumberInput = ({
         onBlur={() => setValue(ps => ps || min)}
         onChange={e => changeHandler(+e.target.value)}
         onMouseDown={() => setDragging(true)}
+        onMouseUp={() => setDragging(false)}
         onMouseMove={throttle(dragHandler, 10)}
         onTouchStart={() => setDragging(true)}
         onTouchEnd={() => setDragging(false)}

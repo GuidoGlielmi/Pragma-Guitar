@@ -72,16 +72,17 @@ export default Metronome;
 const customStyles = {
   control: (defaultStyles: any) => ({
     ...defaultStyles,
-    width: 30,
-    height: 30,
-    minHeight: 30,
+    minHeight: 'unset',
     padding: 0,
     background: 'transparent',
     color: 'white',
     border: 0,
+    maxWidth: '100%',
+    maxHeight: '100%',
   }),
   singleValue: (provided: any, _state: any) => ({
     ...provided,
+    fontFamily: 'painter',
     color: 'white',
   }),
   valueContainer: (provided: any, _state: any) => ({

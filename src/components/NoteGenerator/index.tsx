@@ -8,17 +8,18 @@ import Plus from '../../icons/Plus';
 import Tick from '../../icons/Tick';
 import {notes} from '../../constants/notes';
 import ArrowRight from '../../icons/ArrowRight';
-import useCorrectPitch from '../../hooks/useCorrectPitch';
+import useCorrectPitch from '../../hooks/useCorrectPitch2';
 import ProgressRing from '../../icons/ProgressRing';
 import {getFrecuencyFromPitch, getMiddleOctavePitch} from '../../helpers/pitch';
 import OnboardingWrapper from '../OnboardingWrapper';
 import Flame from '../../icons/Flame';
 import {noteGenerator} from '../../constants/steps';
+import useAsd from '../../hooks/useCorrectPitch';
 
 const NoteGenerator = () => {
-  const {source} = useContext(AudioContext) as AudioProps;
+  const {started} = useContext(AudioContext) as AudioProps;
 
-  const [updateFrecuency, setUpdateFrecuency] = useState<number>(7000);
+  const [updateFrecuency, setUpdateFrecuency] = useState<number>(5000);
 
   const handleUpdateFrecuency = (value: number) => {
     setUpdateFrecuency(ps => {
@@ -28,7 +29,7 @@ const NoteGenerator = () => {
   };
 
   return (
-    <OnboardingWrapper steps={noteGenerator} stepsToUpdate={source ? [9, 10, 11, 12] : undefined}>
+    <OnboardingWrapper steps={noteGenerator} stepsToUpdate={started ? [9, 10, 11, 12] : undefined}>
       <div className='container'>
         <Note updateFrecuency={updateFrecuency} handleUpdateFrecuency={handleUpdateFrecuency} />
       </div>
@@ -80,7 +81,7 @@ const Note = ({
   handleUpdateFrecuency: (value: number) => void;
   updateFrecuency: number;
 }) => {
-  const {source, startOscillator, stopOscillator} = useContext(AudioContext) as AudioProps;
+  const {started, startOscillator, stopOscillator} = useContext(AudioContext) as AudioProps;
 
   const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);
   const [pitchTrigger, setPitchTrigger] = useState<object | null>(null);
@@ -106,7 +107,8 @@ const Note = ({
     [exact, pitchToPlay, from, to],
   );
 
-  const {pitch, correct, currStreak, maxStreak} = useCorrectPitch({condition});
+  // const {pitch, correct, currStreak, maxStreak} = useCorrectPitch({condition});
+  const {pitch, correct, currStreak, maxStreak} = useAsd({condition});
 
   useEffect(() => {
     if (correct) {
@@ -115,20 +117,27 @@ const Note = ({
   }, [correct]);
 
   useEffect(() => {
-    if (!source) {
+    if (!started) {
       setPitchToPlay(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [source]);
+  }, [started]);
 
   useEffect(() => {
-    if (!source) return;
+    if (!started) return;
 
     const fromIndex = strings.findIndex(s => s === from);
     const toIndex = strings.findIndex(s => s === to);
-    setPitchToPlay(strings[(~~(Math.random() * (toIndex - fromIndex)) || 1) + fromIndex].value);
+    const getRandomIndex = () => (~~(Math.random() * (toIndex - fromIndex)) || 1) + fromIndex;
+    setPitchToPlay(ps => {
+      let randomIndex: number;
+      do {
+        randomIndex = getRandomIndex();
+      } while (strings[randomIndex].value === ps);
+      return strings[randomIndex].value;
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pitchTrigger, source, updateFrecuency, from, to]);
+  }, [pitchTrigger, started, updateFrecuency, from, to]);
 
   const triggerPitch = () => setPitchTrigger({});
   const triggerCountdown = () => setCountdownTrigger({});
@@ -159,7 +168,7 @@ const Note = ({
         handleUpdateFrecuency={handleUpdateFrecuency}
       />
       <AnimatePresence>
-        {source && (
+        {started && (
           <motion.div
             style={{overflow: 'hidden'}}
             className='mainBoard'
@@ -427,7 +436,7 @@ const Timer = ({
   updateFrecuency: number;
   handleUpdateFrecuency: (value: number) => void;
 }) => {
-  const {source} = useContext(AudioContext) as AudioProps;
+  const {started} = useContext(AudioContext) as AudioProps;
 
   const [percentage, setPercentage] = useState(100);
 
@@ -435,7 +444,7 @@ const Timer = ({
     () => {
       clearInterval(ringInterval);
       setPercentage(100);
-      if (!source) return;
+      if (!started) return;
 
       const ringUpdateInterval = updateFrecuency / STEPS;
       executeAtInterval(msPassed => {
@@ -445,7 +454,7 @@ const Timer = ({
       }, ringUpdateInterval);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [updateFrecuency, source],
+    [updateFrecuency, started],
   );
 
   useEffect(() => {
@@ -459,7 +468,7 @@ const Timer = ({
   useEffect(() => {
     resetInterval();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resetInterval, source, countdownTrigger]);
+  }, [resetInterval, started, countdownTrigger]);
 
   const initialCountdownValue = updateFrecuency / 1000;
 
