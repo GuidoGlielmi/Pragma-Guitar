@@ -24,7 +24,7 @@ const useCorrectPitch2 = ({target, condition}: Condition): UseCorrectPitch => {
   const {started, getMicInputStream} = useContext(AudioContext) as AudioProps;
 
   const [currStreak, setCurrStreak] = useState(0);
-  const [maxStreak, setMaxStreak] = useState(0);
+  const [maxStreak, setMaxStreak] = useState(+localStorage.getItem('maxStreak')! || 0);
   const [correct, setCorrect] = useState(false);
 
   const prevCorrect = useRef(correct);
@@ -44,6 +44,10 @@ const useCorrectPitch2 = ({target, condition}: Condition): UseCorrectPitch => {
   useEffect(() => {
     setMaxStreak(ps => Math.max(ps, currStreak));
   }, [currStreak]);
+
+  useEffect(() => {
+    localStorage.setItem('maxStreak', maxStreak.toString());
+  }, [maxStreak]);
 
   useEffect(() => {
     if (correct) return;
