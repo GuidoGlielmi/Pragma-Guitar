@@ -8,13 +8,12 @@ import Plus from '../../icons/Plus';
 import Tick from '../../icons/Tick';
 import {notes} from '../../constants/notes';
 import ArrowRight from '../../icons/ArrowRight';
-import useCorrectPitch from '../../hooks/useCorrectPitch2';
 import ProgressRing from '../../icons/ProgressRing';
 import {getFrecuencyFromPitch, getMiddleOctavePitch} from '../../helpers/pitch';
 import OnboardingWrapper from '../OnboardingWrapper';
 import Flame from '../../icons/Flame';
 import {noteGenerator} from '../../constants/steps';
-import useAsd from '../../hooks/useCorrectPitch';
+import useCorrectPitch2 from '../../hooks/useCorrectPitch';
 
 const NoteGenerator = () => {
   const {started} = useContext(AudioContext) as AudioProps;
@@ -108,7 +107,7 @@ const Note = ({
   );
 
   // const {pitch, correct, currStreak, maxStreak} = useCorrectPitch({condition});
-  const {pitch, correct, currStreak, maxStreak} = useAsd({condition});
+  const {pitch, correct, currStreak, maxStreak} = useCorrectPitch2({condition});
 
   useEffect(() => {
     if (correct) {

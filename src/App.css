@@ -7,13 +7,15 @@ main {
   flex-direction: column;
   gap: 5vh;
   min-width: max-content;
+  height: 100%;
+  background: #2b2a33;
 }
 
 main > *:last-child {
   max-width: 100vw;
   min-width: 300px;
   width: max-content;
-  margin: auto;
+  margin: 0 auto;
 }
 .navBar {
   display: flex;
@@ -43,5 +45,13 @@ main > *:last-child {
 main > button {
   width: 50%;
   max-width: 200px;
-  margin: auto;
+  margin: 0 auto;
+}
+
+@media (min-width: 786px) {
+  main {
+    width: 55vw;
+    margin: auto;
+    background: #2b2a33;
+  }
 }
