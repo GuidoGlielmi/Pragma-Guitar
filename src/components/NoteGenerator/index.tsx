@@ -13,24 +13,15 @@ import {getFrecuencyFromPitch, getMiddleOctavePitch} from '../../helpers/pitch';
 import OnboardingWrapper from '../OnboardingWrapper';
 import Flame from '../../icons/Flame';
 import {noteGenerator} from '../../constants/steps';
-import useCorrectPitch2 from '../../hooks/useCorrectPitch';
+import useCorrectPitch from '../../hooks/useCorrectPitch';
 
 const NoteGenerator = () => {
   const {started} = useContext(AudioContext) as AudioProps;
 
-  const [updateFrecuency, setUpdateFrecuency] = useState<number>(5000);
-
-  const handleUpdateFrecuency = (value: number) => {
-    setUpdateFrecuency(ps => {
-      const newValue = value === 0 ? value : Math.max(0, Math.min(value, 60_000)) || ps;
-      return newValue;
-    });
-  };
-
   return (
     <OnboardingWrapper steps={noteGenerator} stepsToUpdate={started ? [9, 10, 11, 12] : undefined}>
       <div className='container'>
-        <Note updateFrecuency={updateFrecuency} handleUpdateFrecuency={handleUpdateFrecuency} />
+        <Note />
       </div>
     </OnboardingWrapper>
   );
@@ -73,13 +64,7 @@ const getPitchAndOctave = (pitch: number | null) => {
 
 const initialPitchRange = [strings[0], strings.at(-1)!] as [gtrString, gtrString];
 
-const Note = ({
-  handleUpdateFrecuency,
-  updateFrecuency,
-}: {
-  handleUpdateFrecuency: (value: number) => void;
-  updateFrecuency: number;
-}) => {
+const Note = () => {
   const {started, startOscillator, stopOscillator} = useContext(AudioContext) as AudioProps;
 
   const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);
@@ -88,6 +73,15 @@ const Note = ({
   const [exact, setExact] = useState(false);
   const [pitchRange, setPitchRange] = useState<[gtrString, gtrString]>(initialPitchRange);
   const [from, to] = pitchRange;
+
+  const [updateFrecuency, setUpdateFrecuency] = useState<number>(5000);
+
+  const handleUpdateFrecuency = (value: number) => {
+    setUpdateFrecuency(ps => {
+      const newValue = value === 0 ? value : Math.max(0, Math.min(value, 60_000)) || ps;
+      return newValue;
+    });
+  };
 
   const condition = useCallback(
     (pitch: number) => {
@@ -106,8 +100,7 @@ const Note = ({
     [exact, pitchToPlay, from, to],
   );
 
-  // const {pitch, correct, currStreak, maxStreak} = useCorrectPitch({condition});
-  const {pitch, correct, currStreak, maxStreak} = useCorrectPitch2({condition});
+  const {pitch, correct, currStreak, maxStreak} = useCorrectPitch({condition});
 
   useEffect(() => {
     if (correct) {
@@ -116,10 +109,7 @@ const Note = ({
   }, [correct]);
 
   useEffect(() => {
-    if (!started) {
-      setPitchToPlay(null);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!started) setPitchToPlay(null);
   }, [started]);
 
   useEffect(() => {
@@ -152,88 +142,95 @@ const Note = ({
   const anyOctave = from === strings[0] && to === strings.at(-1) && !exact;
 
   return (
-    <div className='noteContainer'>
-      <RangeSelector
-        from={from}
-        to={to}
-        exact={exact}
-        setExact={setExact}
-        setPitchRange={setPitchRange}
-      />
-      <Timer
-        triggerPitch={triggerPitch}
-        countdownTrigger={countdownTrigger}
-        updateFrecuency={updateFrecuency}
-        handleUpdateFrecuency={handleUpdateFrecuency}
-      />
-      <AnimatePresence>
-        {started && (
-          <motion.div
-            style={{overflow: 'hidden'}}
-            className='mainBoard'
-            initial={{opacity: 0, height: 0}}
-            animate={{
-              opacity: 1,
-              height: 160,
-              marginBottom: 10,
-              transitionEnd: {
-                overflow: 'visible',
-              },
-            }}
-            exit={{opacity: 0.5, height: 0, marginBottom: 0, overflow: 'hidden'}}
-          >
-            <div className='notesDisplay'>
-              <button
-                title='Press to listen'
-                className='noteToPlay button'
-                onMouseDown={() => {
-                  const pitch = anyOctave
-                    ? getMiddleOctavePitch(pitchToPlay || 0)
-                    : pitchToPlay || 0;
-                  startOscillator(getFrecuencyFromPitch(pitch));
-                }}
-                onTouchStart={() => {
-                  const pitch = anyOctave
-                    ? getMiddleOctavePitch(pitchToPlay || 0)
-                    : pitchToPlay || 0;
-                  startOscillator(getFrecuencyFromPitch(pitch));
-                }}
-                onMouseUp={() => stopOscillator()}
-                onTouchEnd={() => stopOscillator()}
-              >
-                <span>Play</span>
-                <p style={{...(!anyOctave && {transform: 'translateX(-0.15em)'})}}>
-                  <span className={`octave${anyOctave ? ' transparent' : ''}`}>{octaveToPlay}</span>
-                  <span>{noteToPlay}</span>
-                </p>
-              </button>
-              <ArrowRight />
-              <div className='notePlayedContainer'>
-                <span>You Played</span>
-                <p>
-                  <span className={`octave${anyOctave ? ' transparent' : ''}`}>{octavePlayed}</span>
-                  {notePlayed}
-                </p>
+    <>
+      <div className='noteContainer'>
+        <RangeSelector
+          from={from}
+          to={to}
+          exact={exact}
+          setExact={setExact}
+          setPitchRange={setPitchRange}
+        />
+        <Timer
+          triggerPitch={triggerPitch}
+          countdownTrigger={countdownTrigger}
+          updateFrecuency={updateFrecuency}
+          handleUpdateFrecuency={handleUpdateFrecuency}
+        />
+        <AnimatePresence>
+          {started && (
+            <motion.div
+              style={{overflow: 'hidden'}}
+              className='mainBoard'
+              initial={{opacity: 0, height: 0}}
+              animate={{
+                opacity: 1,
+                height: 160,
+                marginBottom: 10,
+                transitionEnd: {
+                  overflow: 'visible',
+                },
+              }}
+              exit={{opacity: 0.5, height: 0, marginBottom: 0, overflow: 'hidden'}}
+            >
+              <div className='notesDisplay'>
+                <button
+                  title='Press to listen'
+                  className='noteToPlay button'
+                  onMouseDown={() => {
+                    const pitch = anyOctave
+                      ? getMiddleOctavePitch(pitchToPlay || 0)
+                      : pitchToPlay || 0;
+                    startOscillator(getFrecuencyFromPitch(pitch));
+                  }}
+                  onTouchStart={() => {
+                    const pitch = anyOctave
+                      ? getMiddleOctavePitch(pitchToPlay || 0)
+                      : pitchToPlay || 0;
+                    startOscillator(getFrecuencyFromPitch(pitch));
+                  }}
+                  onMouseUp={() => stopOscillator()}
+                  onTouchEnd={() => stopOscillator()}
+                >
+                  <span>Play</span>
+                  <p style={{...(!anyOctave && {transform: 'translateX(-0.15em)'})}}>
+                    <span className={`octave${anyOctave ? ' transparent' : ''}`}>
+                      {octaveToPlay}
+                    </span>
+                    <span>{noteToPlay}</span>
+                  </p>
+                </button>
+                <ArrowRight />
+                <div className='notePlayedContainer'>
+                  <span>You Played</span>
+                  <p>
+                    <span className={`octave${anyOctave ? ' transparent' : ''}`}>
+                      {octavePlayed}
+                    </span>
+                    {notePlayed}
+                  </p>
+                </div>
               </div>
-            </div>
-            <AnimatePresence mode='wait'>
-              <motion.div
-                className='result'
-                key={correct ? 'tick' : 'ellipsis'}
-                initial={{opacity: 0, y: '50%'}}
-                animate={{opacity: 1, y: 0}}
-                exit={{opacity: 0, ...(correct && {y: -30})}}
-                transition={{duration: 0.1}}
-              >
-                {correct ? <Tick /> : <Ellipsis />}
-                {correct && <Streak multiplier={currStreak} />}
-                {/* <Streak multiplier={currStreak} /> */}
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+              <AnimatePresence mode='wait'>
+                <motion.div
+                  className='result'
+                  key={correct ? 'tick' : 'ellipsis'}
+                  initial={{opacity: 0, y: '50%'}}
+                  animate={{opacity: 1, y: 0}}
+                  exit={{opacity: 0, ...(correct && {y: -30})}}
+                  transition={{duration: 0.1}}
+                >
+                  {correct ? <Tick /> : <Ellipsis />}
+                  {correct && <Streak multiplier={currStreak} />}
+                  {/* <Streak multiplier={currStreak} /> */}
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      {!!maxStreak && <div>Best streak: {maxStreak}</div>}
+    </>
   );
 };
 

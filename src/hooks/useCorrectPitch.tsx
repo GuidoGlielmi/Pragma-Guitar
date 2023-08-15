@@ -19,7 +19,7 @@ type Condition = {
 );
 type UseCorrectPitch = UsePitch & {correct: boolean; currStreak: number; maxStreak: number};
 
-const useCorrectPitch2 = ({target, condition}: Condition): UseCorrectPitch => {
+const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
   const {detune, frecuency, pitch, note} = usePitch();
   const {started, getMicInputStream} = useContext(AudioContext) as AudioProps;
 
@@ -80,4 +80,4 @@ const useCorrectPitch2 = ({target, condition}: Condition): UseCorrectPitch => {
   };
 };
 
-export default useCorrectPitch2;
+export default useCorrectPitch;
