@@ -12,6 +12,7 @@ import useCorrectPitch from '../../hooks/useCorrectPitch';
 import RangeSelector from './NoteRange';
 import Notes from './Notes';
 import {rangeLimiter} from '../../helpers/valueRange';
+import {pitchRange as pitchRangeLimits} from '../../constants/notes';
 
 const NoteGenerator = () => {
   const {started} = useContext(AudioContext) as AudioProps;
@@ -94,11 +95,19 @@ const Note = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [from, to]);
 
+  console.log([pitchRange[0].value, pitchRange[1].value]);
+
   const changePitchRange: PitchRangeSetter = e => {
-    setPitchRange(ps => [
-      e[0] === undefined ? ps[0] : strings[rangeLimiter(e[0], 0, 127)],
-      e[1] === undefined ? ps[1] : strings[rangeLimiter(e[1], 0, 127)],
-    ]);
+    setPitchRange(ps => {
+      let value: PitchRange;
+      if (e instanceof Function) {
+        value = e([ps[0].value, ps[1].value]);
+      } else value = e;
+      return [
+        value[0] === undefined ? ps[0] : strings[rangeLimiter(value[0], ...pitchRangeLimits)],
+        value[1] === undefined ? ps[1] : strings[rangeLimiter(value[1], ...pitchRangeLimits)],
+      ];
+    });
   };
 
   const anyOctave = from === strings[0] && to === strings.at(-1);

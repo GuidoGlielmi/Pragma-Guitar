@@ -15,6 +15,8 @@ export const notes = {
 
 export type Tuning = {label: string; value: number[]};
 
+export const pitchRange = [0, 108] as [number, number];
+
 export const tunings = [
   // Standard Tuning
   {label: 'Standard Tuning', value: [40, 45, 50, 55, 59, 64]},

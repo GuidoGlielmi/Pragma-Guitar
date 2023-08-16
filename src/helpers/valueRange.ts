@@ -6,6 +6,6 @@ export const setterRangeLimiter = (value: number, {min = -Infinity, max = Infini
   };
 };
 
-export const rangeLimiter = (value: number, min: number, max: number) => {
-  return Math.min(max, Math.max(min, value));
+export const rangeLimiter = (value: number, ...limits: [number, number]) => {
+  return Math.min(limits[1], Math.max(limits[0], value));
 };

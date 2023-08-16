@@ -17,7 +17,7 @@ const CustomNoteRange = ({from, to, setPitchRange}: CustomNoteRangeProps) => {
           styles={customStyles}
           options={strings}
           value={from}
-          onChange={e => setPitchRange([strings.indexOf(e!), undefined])}
+          onChange={e => setPitchRange([e!.value, undefined])} // value is index
         />
       </div>
       <div>
@@ -28,7 +28,7 @@ const CustomNoteRange = ({from, to, setPitchRange}: CustomNoteRangeProps) => {
           styles={customStyles}
           options={strings}
           value={to}
-          onChange={e => setPitchRange([strings.indexOf(e!), undefined])}
+          onChange={e => setPitchRange([undefined, e!.value])} // value is index
         />
       </div>
     </div>

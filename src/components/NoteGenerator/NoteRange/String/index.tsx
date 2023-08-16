@@ -1,8 +1,8 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import Select from 'react-select';
 import {pitchToNote} from '../../../../helpers/pitch';
 import ChevronDown from '../../../../icons/ChevronDown';
-import {Tuning, strings, tunings} from '../../../../constants/notes';
+import {Tuning, pitchRange, tunings} from '../../../../constants/notes';
 import {customStylesMaxContent} from '../../../../constants/selectStyles';
 import S from './String.module.css';
 import {rangeLimiter, setterRangeLimiter} from '../../../../helpers/valueRange';
@@ -12,19 +12,15 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
   const [fretsAmount, setFretsAmount] = useState(24);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const changePitchRange = (openStringPitch: number) => {
-    const index = strings.findIndex(s => s.value === openStringPitch)!;
-    setPitchRange([index, index + fretsAmount || strings.length - 1]);
-  };
-
   const changeFretsAmount = (n: number) => setFretsAmount(setterRangeLimiter(n, {min: 0, max: 24}));
 
   const changeTuning = (n: number, i?: number) => {
     setTuning(ps => {
-      let newValues = [...ps.value];
-      if (i === undefined) newValues = newValues.map(v => rangeLimiter(v + n, 0, 127));
-      else newValues[i] = rangeLimiter(newValues[i] + n, 0, 127);
-      return {...ps, value: newValues};
+      let newTuningValues = [...ps.value];
+      if (i === undefined) {
+        newTuningValues = newTuningValues.map(v => rangeLimiter(v + n, ...pitchRange));
+      } else newTuningValues[i] = rangeLimiter(newTuningValues[i] + n, ...pitchRange);
+      return {...ps, value: newTuningValues};
     });
   };
 
@@ -33,15 +29,11 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
   };
 
   useEffect(() => {
-    setPitchRange([undefined, fretsAmount - 1]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fretsAmount]);
-
-  useEffect(() => {
     if (selectedIndex === null) return;
-    changePitchRange(tuning.value[selectedIndex]);
+    const from = tuning.value[selectedIndex];
+    setPitchRange([from, from + fretsAmount]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tuning, selectedIndex]);
+  }, [tuning, selectedIndex, fretsAmount]);
 
   return (
     <div className={S.stringSection}>
@@ -137,9 +129,10 @@ const StringDisplay = ({
   index,
   height,
 }: StringDisplayProps) => {
+  const originalTuningNote = useRef(pitch);
+
   const selected = selectedIndex === index;
-  const exactTuningNode =
-    tunings.find(t => t.label === tuning.label)!.value[index] === tuning.value[index];
+
   return (
     <div className={S.stringContainer}>
       <div>
@@ -168,7 +161,7 @@ const StringDisplay = ({
             className='button'
             style={{
               transform: 'rotateZ(180deg)',
-              background: exactTuningNode ? '#2b2a33' : '#642b2b99',
+              background: pitch > originalTuningNote.current ? '#642b2b99' : '#2b2a33',
             }}
             onClick={() => changeTuning(1, index)}
           >
@@ -178,7 +171,7 @@ const StringDisplay = ({
             title='Decrease semitone'
             style={{
               transform: 'translateY(2px)',
-              background: exactTuningNode ? '#2b2a33' : '#642b2b99',
+              background: pitch < originalTuningNote.current ? '#642b2b99' : '#2b2a33',
             }}
             className='button'
             onClick={() => changeTuning(-1, index)}

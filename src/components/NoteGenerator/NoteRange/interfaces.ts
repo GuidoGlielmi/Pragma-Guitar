@@ -1,10 +1,7 @@
-type PitchRangeSetter = (range: [i1: number | undefined, i2: number | undefined]) => void;
+type PitchRange = [from: number | undefined, to: number | undefined];
+
+type PitchRangeSetter = (range: PitchRange | ((range: PitchRange) => PitchRange)) => void;
+
 interface NoteRangeProps {
   setPitchRange: PitchRangeSetter;
 }
-
-// interface NoteRangeProps {
-//   setPitchRange: (
-//     range: [i1: number, i2: number] | ((range: [gtrString, gtrString]) => void),
-//   ) => void;
-// }
