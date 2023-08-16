@@ -1,0 +1,45 @@
+.rangeSelectorContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0 !important;
+  width: 100%;
+  padding-bottom: 10px;
+  /* color: white; */
+  background: #1a1a1a;
+  border-radius: 10px 10px 0 0;
+  overflow: visible;
+  position: relative;
+}
+.rangeSelectorContainer h3 {
+  margin-top: 7px;
+  color: white;
+  font-size: 1.3em;
+}
+.rangeSelectorContainer label {
+  color: white;
+}
+
+.rangeSelectorContainer > div:first-of-type button {
+  border-radius: 0;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  position: relative;
+}
+.rangeSelectorContainer > :last-child {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 5px auto 0;
+}
+.rangeSelectorContainer input {
+  margin: 0;
+}
+
+.rangeSelectorSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}

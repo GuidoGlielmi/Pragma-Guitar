@@ -1,8 +1,8 @@
-const ChevronDown = () => {
+const ChevronDown = ({color = '#222'}) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
-      fill='#222'
+      fill={color}
       version='1.1'
       width='10px'
       height='10px'

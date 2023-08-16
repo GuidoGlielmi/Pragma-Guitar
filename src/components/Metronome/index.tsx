@@ -1,9 +1,10 @@
 import {useEffect} from 'react';
 import useMetronome from '../../hooks/useMetronome';
-import Select, {GroupBase, StylesConfig} from 'react-select';
+import Select from 'react-select';
 import S from './Metronome.module.css';
 import useNumberInput from '../../hooks/useNumberInput';
 import useTap from '../../hooks/useTap';
+import {metronomeStyles} from '../../constants/selectStyles';
 
 const numeratorOptions = Array(16)
   .fill(null)
@@ -32,7 +33,7 @@ const Metronome = () => {
         <Select
           className={S.a}
           isSearchable={false}
-          styles={customStyles}
+          styles={metronomeStyles}
           options={numeratorOptions}
           value={{label: numerator, value: numerator}}
           onChange={e => setBar(ps => [e!.value, ps[1]])}
@@ -41,7 +42,7 @@ const Metronome = () => {
         <Select
           className={S.c}
           isSearchable={false}
-          styles={customStyles}
+          styles={metronomeStyles}
           options={denominatorOptions}
           value={{label: denominator, value: denominator}}
           onChange={e => setBar(ps => [ps[0], e!.value])}
@@ -68,58 +69,3 @@ const Metronome = () => {
 };
 
 export default Metronome;
-
-const customStyles = {
-  control: (defaultStyles: any) => ({
-    ...defaultStyles,
-    minHeight: 'unset',
-    padding: 0,
-    background: 'transparent',
-    color: 'white',
-    border: 0,
-    maxWidth: '100%',
-    maxHeight: '100%',
-  }),
-  singleValue: (provided: any, _state: any) => ({
-    ...provided,
-    fontFamily: 'painter',
-    color: 'white',
-  }),
-  valueContainer: (provided: any, _state: any) => ({
-    ...provided,
-    color: 'white',
-    padding: 0,
-    width: '100%',
-    display: 'block',
-    flex: 'unset',
-  }),
-  dropdownIndicator: (provided: any, _state: any) => ({
-    ...provided,
-    padding: 0,
-  }),
-  indicatorsContainer: (provided: any, _state: any) => ({
-    ...provided,
-    width: '100%',
-    opacity: 0,
-    // padding: 5,
-  }),
-  option: (provided: any, _state: any) => ({
-    ...provided,
-    color: '#333',
-    padding: 2,
-  }),
-  menu: (provided: any, _state: any) => ({
-    ...provided,
-    width: 40,
-  }),
-} as StylesConfig<
-  {
-    label: number;
-    value: number;
-  },
-  false,
-  GroupBase<{
-    label: number;
-    value: number;
-  }>
->;

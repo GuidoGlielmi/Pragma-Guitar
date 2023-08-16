@@ -1,4 +1,4 @@
-import {notes} from '../constants/notes';
+import {notes, strings} from '../constants/notes';
 
 const c5Pitch = 72;
 const firstHalfOctavesAmount = c5Pitch / 12;
@@ -15,7 +15,7 @@ export const getFrecuencyFromPitch = (pitch: number) => {
   return 440 * 2 ** ((pitch - middlePitch) / 12);
 };
 
-export const getNoteFromPitch = (pitch: number | null) => {
+export const pitchToNote = (pitch: number | null) => {
   if (pitch === null) return null;
   const coveredOctaves = Math.floor(pitch / 12) * 12;
   return Object.values(notes)[pitch - coveredOctaves];
@@ -23,4 +23,9 @@ export const getNoteFromPitch = (pitch: number | null) => {
 
 export const getOctave = (pitch: number | null) => {
   return pitch ? Math.floor(pitch / 12) - 1 : null;
+};
+
+export const getPitchAndOctave = (pitch: number | null) => {
+  if (strings[pitch!] === undefined) return ['', ''];
+  return strings[pitch!].label.split(/(\d)/);
 };
