@@ -2,6 +2,7 @@ import {getDetunePercent} from '../../libs/Helpers';
 import usePitch from '../../hooks/usePitch';
 import './Tuner.css';
 import {pitchToNote, getOctave} from '../../helpers/pitch';
+import NoteWithOctave from '../common/NoteWithOctave';
 const Tuner = () => {
   const {detune, frecuency, pitch} = usePitch();
 
@@ -31,15 +32,6 @@ const Tuner = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-const NoteWithOctave = ({pitch}: {pitch: number | null}) => {
-  return (
-    <p>
-      <span>{pitchToNote(pitch)}</span>
-      <span>{getOctave(pitch)}</span>
-    </p>
   );
 };
 

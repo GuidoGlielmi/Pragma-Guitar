@@ -16,9 +16,9 @@ export const getFrecuencyFromPitch = (pitch: number) => {
 };
 
 export const pitchToNote = (pitch: number | null) => {
-  if (pitch === null) return null;
+  if (pitch === null) return [null, null];
   const coveredOctaves = Math.floor(pitch / 12) * 12;
-  return Object.values(notes)[pitch - coveredOctaves];
+  return [Object.values(notes)[pitch - coveredOctaves], getOctave(pitch)] as [string, number];
 };
 
 export const getOctave = (pitch: number | null) => {

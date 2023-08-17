@@ -1,16 +1,18 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect} from 'react';
 import Select from 'react-select';
-import {pitchToNote} from '../../../../helpers/pitch';
 import ChevronDown from '../../../../icons/ChevronDown';
-import {Tuning, pitchRange, tunings} from '../../../../constants/notes';
+import {pitchRange, strings, tunings} from '../../../../constants/notes';
 import {customStylesMaxContent} from '../../../../constants/selectStyles';
 import S from './String.module.css';
 import {rangeLimiter, setterRangeLimiter} from '../../../../helpers/valueRange';
+import Reset from '../../../../icons/Reset';
+import NoteWithOctave from '../../../common/NoteWithOctave';
 
 const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
+  const [tuningIndex, setTuningIndex] = useState(0);
   const [tuning, setTuning] = useState(tunings[0]);
   const [fretsAmount, setFretsAmount] = useState(24);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedStringIndex, setSelectedStringIndex] = useState<number | null>(null);
 
   const changeFretsAmount = (n: number) => setFretsAmount(setterRangeLimiter(n, {min: 0, max: 24}));
 
@@ -28,12 +30,21 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
     setTuning(ps => ({...ps, value: ps.value.filter((_v, i) => i !== index)}));
   };
 
+  const addString = (higher: boolean) => {
+    setTuning(ps => {
+      if (higher) return {...ps, value: [...ps.value, ps.value.at(-1)!]};
+      return {...ps, value: [ps.value[0], ...ps.value]};
+    });
+  };
+
   useEffect(() => {
-    if (selectedIndex === null) return;
-    const from = tuning.value[selectedIndex];
+    if (selectedStringIndex === null) {
+      return setPitchRange([0, strings.length - 1]);
+    }
+    const from = tuning.value[selectedStringIndex];
     setPitchRange([from, from + fretsAmount]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tuning, selectedIndex, fretsAmount]);
+  }, [tuning, selectedStringIndex, fretsAmount]);
 
   return (
     <div className={S.stringSection}>
@@ -41,8 +52,11 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
         isSearchable={false}
         styles={customStylesMaxContent}
         options={tunings}
-        value={tuning}
-        onChange={e => setTuning(e!)}
+        value={tunings[tuningIndex]}
+        onChange={e => {
+          setTuningIndex(tunings.indexOf(e!));
+          setTuning(e!);
+        }}
       />
       <div className={S.fretsContainer}>
         <h4>Frets</h4>
@@ -50,12 +64,16 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
         <p>{fretsAmount}</p>
         <button onClick={() => changeFretsAmount(1)}>+</button>
       </div>
+      <button title='Add Upper string' onClick={() => addString(true)}>
+        Add Upper String
+      </button>
       <div
         style={{
           display: 'flex',
           gap: 10,
-          maxHeight: 200,
+          height: 200,
           overflow: 'scroll',
+          position: 'relative',
           padding: 10,
           borderBottom: '2px solid #999',
           borderTop: '2px solid #999',
@@ -68,51 +86,68 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: 10,
+              gap: 4,
               marginBottom: 10,
             }}
           >
-            {tuning.value.map((_v, i, arr) => {
-              const mirroredIndex = arr.length - 1 - i;
-              return (
-                <StringDisplay
-                  tuning={tuning}
-                  pitch={arr[mirroredIndex]}
-                  key={i}
-                  selectedIndex={selectedIndex}
-                  setSelectedIndex={setSelectedIndex}
-                  changeTuning={changeTuning}
-                  removeString={removeString}
-                  height={i + 1}
-                  index={mirroredIndex}
-                />
-              );
-            })}
+            {tuning.value
+              .reduce<number[]>((p, c) => [c, ...p], [])
+              .map((v, i, arr) => {
+                const mirroredIndex = arr.length - 1 - i;
+                return (
+                  <StringDisplay
+                    pitch={v}
+                    key={i}
+                    selectedIndex={selectedStringIndex}
+                    setSelectedIndex={setSelectedStringIndex}
+                    changeTuning={changeTuning}
+                    removeString={removeString}
+                    height={i + 1}
+                    index={mirroredIndex}
+                  />
+                );
+              })}
           </div>
         </div>
         <div className={S.allStringsButtonsContainer}>
-          <button title='Increase all strings' onClick={() => changeTuning(1)}>
-            +
+          <button
+            className={S.resetButton}
+            onClick={() => {
+              setTuning(tunings[tuningIndex]);
+            }}
+            style={{padding: 0}}
+            title='Reset tuning'
+          >
+            <Reset />
           </button>
-          <button title='Decrease all strings' onClick={() => changeTuning(-1)}>
-            -
-          </button>
+          <div>
+            <button
+              title='Increase all strings'
+              onClick={() => changeTuning(1)}
+              style={{transform: 'rotateZ(180deg)'}}
+            >
+              <ChevronDown color='white' />
+            </button>
+            <button
+              title='Decrease all strings'
+              onClick={() => changeTuning(-1)}
+              style={{transform: 'translateY(2px)'}}
+            >
+              <ChevronDown color='white' />
+            </button>
+          </div>
         </div>
       </div>
-      <button
-        title='Add string'
-        onClick={() => setTuning(ps => ({...ps, value: [...ps.value, ps.value.at(-1)!]}))}
-      >
-        Add String
+      <button title='Add Lower string' onClick={() => addString(false)}>
+        Add Lower String
       </button>
     </div>
   );
 };
 
 interface StringDisplayProps {
-  tuning: Tuning;
-  pitch: number;
   height: number;
+  pitch: number;
   selectedIndex: number | null;
   setSelectedIndex: React.Dispatch<React.SetStateAction<number | null>>;
   changeTuning: (n: number, index?: number) => void;
@@ -120,17 +155,14 @@ interface StringDisplayProps {
   index: number;
 }
 const StringDisplay = ({
-  tuning,
+  height,
   pitch,
   removeString,
   changeTuning,
   selectedIndex,
   setSelectedIndex,
   index,
-  height,
 }: StringDisplayProps) => {
-  const originalTuningNote = useRef(pitch);
-
   const selected = selectedIndex === index;
 
   return (
@@ -144,7 +176,8 @@ const StringDisplay = ({
             setSelectedIndex(ps => (ps === index ? null : index));
           }}
         />
-        <p>{pitchToNote(pitch)}</p>
+        <NoteWithOctave pitch={pitch} />
+        {/* <p>{pitchToNote(pitch)?.join('')}</p> */}
       </div>
       <div
         style={{
@@ -159,20 +192,14 @@ const StringDisplay = ({
           <button
             title='Increase semitone'
             className='button'
-            style={{
-              transform: 'rotateZ(180deg)',
-              background: pitch > originalTuningNote.current ? '#642b2b99' : '#2b2a33',
-            }}
+            style={{transform: 'rotateZ(180deg)'}}
             onClick={() => changeTuning(1, index)}
           >
             <ChevronDown color='white' />
           </button>
           <button
             title='Decrease semitone'
-            style={{
-              transform: 'translateY(2px)',
-              background: pitch < originalTuningNote.current ? '#642b2b99' : '#2b2a33',
-            }}
+            style={{transform: 'translateY(2px)'}}
             className='button'
             onClick={() => changeTuning(-1, index)}
           >

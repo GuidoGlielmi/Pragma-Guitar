@@ -25,17 +25,6 @@
   border-bottom-right-radius: 5px;
 }
 
-.tunerContainer p {
-  position: relative;
-  text-shadow: 2px 2px 1px #111;
-}
-
-.tunerContainer p span:last-of-type {
-  position: absolute;
-  transform: translate(20%, -25%);
-  font-size: 0.65em;
-}
-
 .detuneBar p {
   position: absolute;
   bottom: 0;
