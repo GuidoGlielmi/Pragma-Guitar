@@ -24,7 +24,7 @@ const Notes = ({correct, pitch, pitchToPlay, anyOctave, currStreak}: NotesProps)
       animate={{
         opacity: 1,
         height: 160,
-        marginBottom: 10,
+        marginBottom: 6,
         transitionEnd: {
           overflow: 'visible',
         },

@@ -1,12 +1,18 @@
 import Select from 'react-select';
 import {customStyles} from '../../../../constants/selectStyles';
 import {strings} from '../../../../constants/notes';
+import {useEffect} from 'react';
 
 interface CustomNoteRangeProps extends NoteRangeProps {
   from: gtrString;
   to: gtrString;
 }
 const CustomNoteRange = ({from, to, setPitchRange}: CustomNoteRangeProps) => {
+  useEffect(() => {
+    setPitchRange([0, strings.length - 1]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  console.log({from, to});
   return (
     <div id='customNoteRange' style={{display: 'flex', gap: 10, justifyContent: 'center'}}>
       <div>

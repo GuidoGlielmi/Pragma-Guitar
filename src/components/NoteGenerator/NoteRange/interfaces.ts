@@ -1,4 +1,4 @@
-type PitchRange = [from: number | undefined, to: number | undefined];
+type PitchRange = [from: number | undefined | null, to: number | undefined | null];
 
 type PitchRangeSetter = (range: PitchRange | ((range: PitchRange) => PitchRange)) => void;
 

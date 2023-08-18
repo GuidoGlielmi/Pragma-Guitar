@@ -34,7 +34,7 @@ const Note = () => {
   const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);
   const [pitchTrigger, setPitchTrigger] = useState<object | null>(null);
   const [countdownTrigger, setCountdownTrigger] = useState<object | null>(null);
-  const [pitchRange, setPitchRange] = useState<[gtrString, gtrString]>(initialPitchRange);
+  const [pitchRange, setPitchRange] = useState<[gtrString | null, gtrString | null]>([null, null]);
   const [from, to] = pitchRange;
 
   const [updateFrecuency, setUpdateFrecuency] = useState<number>(5000);
@@ -73,8 +73,8 @@ const Note = () => {
   useEffect(() => {
     if (!started) return;
 
-    const fromIndex = strings.indexOf(from);
-    const toIndex = strings.indexOf(to);
+    const fromIndex = strings.indexOf(from || strings[0]);
+    const toIndex = strings.indexOf(to || strings.at(-1)!);
     const getRandomIndex = () => (~~(Math.random() * (toIndex - fromIndex)) || 1) + fromIndex;
     setPitchToPlay(ps => {
       let randomIndex: number;
@@ -95,22 +95,25 @@ const Note = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [from, to]);
 
-  console.log([pitchRange[0].value, pitchRange[1].value]);
+  // console.log([pitchRange[0]?.value, pitchRange[1]?.value]);
 
   const changePitchRange: PitchRangeSetter = e => {
     setPitchRange(ps => {
+      console.log(e);
       let value: PitchRange;
       if (e instanceof Function) {
-        value = e([ps[0].value, ps[1].value]);
+        value = e([ps[0]?.value || 0, ps[1]?.value || strings.length - 1]);
+      } else if (e[0] === null || e[1] === null) {
+        return [null, null];
       } else value = e;
       return [
-        value[0] === undefined ? ps[0] : strings[rangeLimiter(value[0], ...pitchRangeLimits)],
-        value[1] === undefined ? ps[1] : strings[rangeLimiter(value[1], ...pitchRangeLimits)],
+        value[0] === undefined ? ps[0] : strings[rangeLimiter(value[0]!, ...pitchRangeLimits)],
+        value[1] === undefined ? ps[1] : strings[rangeLimiter(value[1]!, ...pitchRangeLimits)],
       ];
     });
   };
 
-  const anyOctave = from === strings[0] && to === strings.at(-1);
+  const anyOctave = from === null && to === null;
 
   return (
     <>
