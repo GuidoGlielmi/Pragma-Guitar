@@ -14,7 +14,13 @@ export const notes = {
 };
 
 export type Tuning = {label: string; value: number[]};
+export type TuningStateValue = {original: number | null; value: number; id: number};
+export type TuningState = {label: string; value: TuningStateValue[]};
 
+export const convertTuningToState = (t: Tuning): TuningState => ({
+  ...t,
+  value: t.value.map(v => ({original: v, value: v, id: Math.random()})),
+});
 export const pitchRange = [0, 108] as [number, number];
 
 export const tunings = [

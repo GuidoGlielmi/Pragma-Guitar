@@ -110,7 +110,7 @@
 
 .allStringsButtonsContainer button:hover,
 .stringContainer > div:last-child > div button:hover {
-  background-color: #666 !important;
+  filter: brightness(1.25);
 }
 
 .string {
