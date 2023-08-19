@@ -43,7 +43,7 @@ const RangeSelector = ({
       style={{overflow: overflowHidden ? 'hidden' : 'visible'}}
     >
       <h3>Play Note</h3>
-      <div style={{marginBottom: 10}}>
+      <div className='rangeOptions'>
         {optionsEntries.map(([title], i) => (
           <button
             id={title.replaceAll(/ /g, '')}
