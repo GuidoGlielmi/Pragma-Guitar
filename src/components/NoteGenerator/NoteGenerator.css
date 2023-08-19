@@ -13,9 +13,6 @@
 }
 .noteContainer {
   align-items: center;
-  /* overflow: hidden; */
-  border-radius: 10px;
-  border: 2px solid #888;
   color: #e2e2e2;
 }
 

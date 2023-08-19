@@ -117,7 +117,7 @@ const Note = () => {
 
   return (
     <>
-      <div className='noteContainer'>
+      <div className='noteContainer sectionBorder'>
         <RangeSelector from={from} to={to} setPitchRange={changePitchRange} />
         <Timer
           triggerPitch={triggerPitch}

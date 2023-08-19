@@ -25,11 +25,15 @@ const Metronome = () => {
   }, [tappedBpm]);
 
   return (
-    <div className={S.container}>
-      <h2>
-        Beat {input} {tapButton}
-      </h2>
+    <div className={`${S.container} sectionBorder`}>
       <div>
+        <h2>
+          <span>Beat</span>
+          {input}
+          {tapButton}
+        </h2>
+      </div>
+      <div className={S.metric}>
         <Select
           className={S.a}
           isSearchable={false}
