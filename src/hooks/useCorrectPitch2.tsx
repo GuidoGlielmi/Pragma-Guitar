@@ -1,5 +1,5 @@
 import {useState, useEffect, useContext, useRef} from 'react';
-import {pitchFromFrecuency, centsOffFromPitch} from '../libs/Helpers';
+import {pitchFromFrequency, centsOffFromPitch} from '../libs/Helpers';
 import {PitchDetector} from 'pitchy';
 import {AudioContext, AudioProps, audioCtx, micInputStream} from '../contexts/AudioContext';
 import {notes} from '../constants/notes';
@@ -89,7 +89,7 @@ const useCorrectPitch = ({
 
       if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
 
-      const pitch = pitchFromFrecuency(frecuency);
+      const pitch = pitchFromFrequency(frecuency);
       const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
       const detune = centsOffFromPitch(frecuency, pitch);
 
@@ -164,7 +164,7 @@ export default useCorrectPitch;
 //   analyser.getFloatTimeDomainData(buf);
 //   const [frecuency, clarity] = pitchDetector.findPitch(buf, audio.sampleRate);
 
-//   const pitch = pitchFromFrecuency(frecuency);
+//   const pitch = pitchFromFrequency(frecuency);
 //   const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
 //   const detune = centsOffFromPitch(frecuency, pitch);
 

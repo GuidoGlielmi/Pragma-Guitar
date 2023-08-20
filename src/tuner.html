@@ -1,0 +1,158 @@
+<html>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background: #eee;
+    }
+    .output {
+      height: 300px;
+      overflow: hidden;
+      position: relative;
+      padding: 0 50px;
+      width: 500px;
+      background-image: linear-gradient(to bottom, #333, #111);
+      perspective: 1000px;
+      perspective-origin: center 48.2%;
+      transform-style: preserve-3d;
+    }
+
+    #example-element {
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      padding: 50px 0;
+      width: 100%;
+      height: 100%;
+      color: white;
+      transition: all 0.3s ease-in;
+      rotate: x 39deg;
+    }
+    .face {
+      display: flex;
+      align-items: flex-end;
+      bottom: 0;
+      height: 100%;
+      font-size: 2em;
+      border-bottom-style: solid;
+      border-bottom-width: 3px;
+      border-right: 2px dashed white;
+    }
+
+    .face:last-child {
+      border-right: 0;
+    }
+
+    .bottom {
+      background-size: 22.5px 500px;
+    }
+    .one {
+      border-bottom-color: #5dff5d;
+    }
+    .two {
+      border-bottom-color: #e1ff5d;
+    }
+    .three {
+      border-bottom-color: #605dff;
+    }
+    .four {
+      border-bottom-color: #ec5dff;
+    }
+    .middle {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      height: 5%;
+      background-color: white;
+      transform: translateY(calc(-51px + 50%));
+    }
+    span {
+      user-select: none;
+      transform: translate(-50%, 110%);
+      text-shadow: 1px 1px 1px black;
+      backdrop-filter: blur(1px);
+    }
+  </style>
+
+  <body>
+    <section id="output" class="output large">
+      <div id="example-element">
+        <div class="face bottom one" style="width: 33%; left: 0%"></div>
+        <div class="face bottom two" style="width: 33%; left: 33%">
+          <span>A</span>
+        </div>
+        <div class="face bottom three" style="width: 33%; left: 66%">
+          <span>A#</span>
+        </div>
+        <div class="face bottom four" style="width: 0%; left: 100%">
+          <span>B#</span>
+        </div>
+        <div class="middle"></div>
+      </div>
+    </section>
+  </body>
+  <script>
+    let els = [
+      document.querySelector('.one'),
+      document.querySelector('.two'),
+      document.querySelector('.three'),
+      document.querySelector('.four'),
+    ];
+
+    const rotate = arr => [...arr.slice(1), arr[0]];
+    const frame = document.getElementById('example-element');
+    const third = 100 / 3;
+    const move = e => {
+      const mouseX = e.clientX - frame.getBoundingClientRect().left;
+      const relationX = mouseX / frame.clientWidth;
+
+      els[0].style.width = `${third * relationX}%`;
+
+      els.slice(1).forEach((e, i) => {
+        const offsetLeft = third * i;
+        e.style.left = `${offsetLeft + third * relationX}%`;
+        if (i === els.length - 2) {
+          e.style.width = `${third * (1 - relationX)}%`;
+        }
+      });
+    };
+    const cb = throttle(move);
+    frame.addEventListener('mousedown', () => {
+      frame.addEventListener('mousemove', cb);
+    });
+    frame.addEventListener('mouseup', () => {
+      frame.removeEventListener('mousemove', cb);
+    });
+    frame.addEventListener('mouseleave', () => {
+      frame.removeEventListener('mousemove', cb);
+    });
+    function throttle(fn, delay = 50) {
+      let timer;
+      return (...args) => {
+        if (timer !== undefined) return;
+        timer = setTimeout(() => {
+          fn(...args);
+          timer = undefined;
+        }, delay);
+      };
+    }
+  </script>
+</html>
+<!--       if (nextFirstWidth <= 0) {
+        els = rotate(els);
+        els[0].style.width = '33%';
+        els[0].style.left = '0%';
+        els[0].className = 'face bottom one';
+        els[1].style.width = '33%';
+        els[1].style.left = '33%';
+        els[1].className = 'face bottom two';
+        els[2].style.width = '33%';
+        els[2].style.left = '66%';
+        els[2].className = 'face bottom three';
+        els[3].style.width = '0%';
+        els[3].style.left = '100%';
+        els[3].className = 'face bottom four';
+        return;
+      } -->

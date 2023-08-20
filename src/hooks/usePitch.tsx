@@ -1,7 +1,7 @@
 import {useState, useEffect, useContext, useRef} from 'react';
 import {PitchDetector} from 'pitchy';
 import {AudioContext, AudioProps, audioCtx, micInputStream} from '../contexts/AudioContext';
-import {pitchFromFrecuency, centsOffFromPitch} from '../libs/Helpers';
+import {pitchFromFrequency, centsOffFromPitch} from '../libs/Helpers';
 import {notes} from '../constants/notes';
 
 const buflen = 2048;
@@ -13,6 +13,7 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
   const pitchDetector = useRef(PitchDetector.forFloat32Array(buflen));
   const [note, setNote] = useState<Note | null>(null);
   const [frecuency, setFrecuency] = useState<number | null>(null);
+  const prevFrec = useRef<number | null>(null);
   const [pitch, setPitch] = useState<number | null>(null);
   const [detune, setDetune] = useState<number | null>(null);
 
@@ -28,10 +29,12 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
         if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
         if (clarity < 0.9) return;
 
-        const pitch = pitchFromFrecuency(frecuency);
+        const pitch = pitchFromFrequency(frecuency);
         const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
         const detune = centsOffFromPitch(frecuency, pitch);
-        setFrecuency(~~frecuency);
+        const f = (frecuency + (prevFrec.current || 0)) / 2;
+        setFrecuency(f);
+        prevFrec.current = f;
         setNote(note);
         setDetune(detune);
         setPitch(pitch);
