@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: flex-end;
   position: relative;
+  max-width: 95%;
   width: 400px;
   height: 300px;
   margin: 0 30px;
@@ -51,22 +52,8 @@
   font-size: 1.75em;
   background-size: 100% 5%;
   background-image: linear-gradient(to bottom, #82c9c311 1px, transparent 1px);
-  /* border-bottom: 10px solid #646cff55; */
   border-right: 2px dashed #64ffe59d;
 }
-
-/* .container > div > div:not(:last-child) { */
-/* } */
-/* 
-.container > div > div:nth-child(3) > :first-child {
-  left: 0;
-  translate: -50% 110%;
-}
-
-.container > div > div:nth-child(3) > :last-child {
-  right: 0;
-  translate: 50% 110%;
-} */
 
 .container p {
   position: absolute;
@@ -91,4 +78,11 @@
   background: #ffffff88;
   translate: -26% -130%;
   border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    margin: auto;
+    padding: 5px 15px;
+  }
 }

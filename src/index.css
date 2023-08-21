@@ -17,6 +17,9 @@
   border: 2px solid #888;
   border-radius: 10px;
 }
+* {
+  box-sizing: border-box;
+}
 
 a {
   font-weight: 500;
