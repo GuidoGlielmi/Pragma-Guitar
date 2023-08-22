@@ -19,7 +19,7 @@ main > *:last-child {
 }
 .navBar {
   display: flex;
-  margin: 5vh auto 0;
+  margin: 10vh auto 0;
   width: max(300px, 40vw);
   max-width: 95vw;
 }

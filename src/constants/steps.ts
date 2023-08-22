@@ -22,6 +22,21 @@ export const noteGenerator = [
     // intro: 'test 2',
   },
   {
+    title: 'Free Mode',
+    element: '#FreeMode',
+    intro: 'This is the mode with less restrictions',
+  },
+  {
+    title: 'Any Octave',
+    element: '#any',
+    intro: 'Enabling this option you can play the note regardless of its octave',
+  },
+  {
+    title: 'Exact Note',
+    element: '#exact',
+    intro: 'With this, you have to play the exact note AND octave',
+  },
+  {
     title: 'Notes of a String',
     element: '#OnString',
     intro:
@@ -31,11 +46,6 @@ export const noteGenerator = [
     title: 'Custom Interval',
     element: '#OnNoteRange',
     intro: 'Or you can select any custom interval you desire',
-  },
-  {
-    title: 'Exact Note',
-    element: '#exactOctave',
-    intro: 'Enabling this option forces you to play the exact note and octave',
   },
   {
     title: 'Countdown',
@@ -54,7 +64,7 @@ export const noteGenerator = [
     intro: 'Add them one by one...',
   },
   {
-    title: 'Exact Octave',
+    title: 'Enter any value',
     element: '#updateFrecuency',
     intro: 'Or enter any value in this box',
   },
@@ -62,6 +72,7 @@ export const noteGenerator = [
     title: "Up and at 'em!",
     element: '#start',
     intro: 'Now let\'s do a little demonstration by pressing the "Start" button...',
+    click: true,
   },
   {
     title: 'Your Note to Play',
@@ -75,4 +86,4 @@ export const noteGenerator = [
     intro:
       'And this box shows you what you are playing. \n Come on! whistle a little to see how it goes...',
   },
-] as Step[];
+] as StepWithAction[];

@@ -1,11 +1,10 @@
 import {PropsWithChildren, useState, useRef, useEffect} from 'react';
 import QuestionMark from '../../icons/QuestionMark';
 import {Steps} from 'intro.js-react';
-import {Step} from 'intro.js';
 import S from './OnboardingWrapper.module.css';
 
 type OnboardingWrapperProps = {
-  steps: Step[];
+  steps: StepWithAction[];
   stepsToUpdate?: number[];
 };
 
@@ -33,6 +32,11 @@ const OnboardingWrapper = ({
         options={{
           tooltipClass: S.tooltip,
           highlightClass: S.highlight,
+        }}
+        onChange={(i, el) => {
+          if (steps[i].click) {
+            (el as HTMLElement).click();
+          }
         }}
         ref={steps => setStepsInstance(steps)}
         enabled={enabled}

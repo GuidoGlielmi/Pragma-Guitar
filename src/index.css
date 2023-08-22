@@ -84,7 +84,6 @@ button:focus-visible {
   padding-bottom: 5px !important;
   max-height: 40vh;
   overflow-y: scroll;
-  /* background-color: #646cff; */
 }
 .button:hover {
   border-color: inherit;
@@ -109,13 +108,10 @@ p {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color-scheme: light dark;
   }
-  a:hover {
-    color: #747bff;
-  }
+  input,
   button {
-    background-color: #f9f9f9;
+    color: white;
   }
 }

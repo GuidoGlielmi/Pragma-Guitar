@@ -1,7 +1,8 @@
 import {notes} from '../constants/notes';
+import {Step} from 'intro.js';
 
-export {};
 declare global {
+  export type StepWithAction = Step & {click?: boolean};
   export type UsePitch = {
     note: Note | null;
     frecuency: number | null;

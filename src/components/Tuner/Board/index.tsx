@@ -1,5 +1,5 @@
 import S from './Board.module.css';
-import {centsOffFromClosestPitch} from '../../../libs/Helpers';
+import {centsOffFromClosestPitch, pitchFromFrequency} from '../../../libs/Helpers';
 import NoteWithOctave from '../../common/NoteWithOctave';
 
 type BoardProps = {
@@ -10,10 +10,10 @@ type BoardProps = {
 
 const third = 33;
 
-const Board = ({frecuency, pitch}: BoardProps) => {
+const Board = ({frecuency}: BoardProps) => {
   const detune = centsOffFromClosestPitch(frecuency || 0) / 100;
+  const pitch = frecuency ? pitchFromFrequency(frecuency) : null;
   const lowerBandPercentage = frecuency === null ? third / 2 : (1 - detune) * third - third / 2;
-
   return (
     <section className={S.container}>
       <div>
