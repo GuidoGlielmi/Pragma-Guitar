@@ -1,6 +1,7 @@
 import S from './Board.module.css';
 import {centsOffFromClosestPitch, pitchFromFrequency} from '../../../libs/Helpers';
 import NoteWithOctave from '../../common/NoteWithOctave';
+import {motion, AnimatePresence} from 'framer-motion';
 
 type BoardProps = {
   pitch: number | null;
@@ -17,21 +18,34 @@ const Board = ({frecuency}: BoardProps) => {
   return (
     <section className={S.container}>
       <div>
-        <div style={{left: `${lowerBandPercentage}%`}} className={S.lowPitchContainer}>
-          {pitch && <NoteWithOctave pitch={pitch - 1} />}
-        </div>
+        <AnimatePresence>
+          <motion.div
+            key={pitch}
+            exit={{opacity: 0}}
+            transition={{duration: 0.075}}
+            style={{left: `${lowerBandPercentage}%`}}
+            className={S.lowPitchContainer}
+          >
+            {pitch && <NoteWithOctave pitch={pitch - 1} />}
+          </motion.div>
+        </AnimatePresence>
         <div
           style={{left: `${third + lowerBandPercentage}%`}}
           className={S.middleAndHighPitchContainer}
         >
           {pitch && <NoteWithOctave pitch={pitch} />}
         </div>
-        <div
-          style={{left: `${third * 2 + lowerBandPercentage}%`}}
-          className={S.middleAndHighPitchContainer}
-        >
-          {pitch && <NoteWithOctave pitch={pitch + 1} />}
-        </div>
+        <AnimatePresence>
+          <motion.div
+            key={pitch}
+            exit={{opacity: 0}}
+            transition={{duration: 0.075}}
+            style={{left: `${third * 2 + lowerBandPercentage}%`}}
+            className={S.middleAndHighPitchContainer}
+          >
+            {pitch && <NoteWithOctave pitch={pitch + 1} />}
+          </motion.div>
+        </AnimatePresence>
         <span className={S.xAxis} />
         <span className={S.value} />
       </div>
