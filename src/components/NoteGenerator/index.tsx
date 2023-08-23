@@ -48,10 +48,12 @@ const Note = () => {
 
   const condition = useCallback(
     (pitch: number) => {
-      if (from !== strings[0] || to !== strings.at(-1)) {
+      if ((from !== null && from !== strings[0]) || (to !== null && to !== strings.at(-1))) {
         if (pitch === pitchToPlay) return true;
-      } else if (pitchToPlay && !(Math.abs(pitch - pitchToPlay) % 12)) {
-        return true;
+      } else {
+        if (pitchToPlay && !(Math.abs(pitch - pitchToPlay) % 12)) {
+          return true;
+        }
       }
       return false;
     },
