@@ -15,10 +15,6 @@ export const notes = {
   B: 'B',
 };
 
-export type Tuning = {label: string; pitches: number[]};
-export type TuningStateValue = {original: number | null; value: number; id: number};
-export type TuningState = {label: string; pitches: TuningStateValue[]};
-
 export const convertTuningToState = (t: Tuning): TuningState => ({
   ...t,
   pitches: t.pitches.map(v => ({original: v, value: v, id: Math.random()})),
@@ -54,7 +50,7 @@ export const tunings = [
 ] as Tuning[];
 
 const notesArray = Object.values(notes);
-const C1_NUMBER = 24;
+const A4_NUMBER = 69;
 const OCTAVES_COVERED = 8;
 
 export const strings: gtrString[] = [];

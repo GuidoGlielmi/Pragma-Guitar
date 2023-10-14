@@ -4,11 +4,16 @@ import StringNoteRange from './String';
 import CustomNoteRange from './Custom';
 import './NoteRange.css';
 import Free from './Free';
+import NoteGeneratorTuningProvider from '../../../contexts/NoteGeneratorTuningContext';
 
 const options = {
   ['Free Mode']: <Free />,
   ['On Note Range']: <CustomNoteRange />,
-  ['On String']: <StringNoteRange />,
+  ['On String']: (
+    <NoteGeneratorTuningProvider>
+      <StringNoteRange />
+    </NoteGeneratorTuningProvider>
+  ),
 };
 
 const optionsEntries = Object.entries(options) as [keyof typeof options, JSX.Element][];

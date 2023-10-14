@@ -59,15 +59,18 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
 
   const changePitchRange: PitchRangeSetter = e => {
     setPitchRange(ps => {
-      let value: PitchRange;
+      let newRange: PitchRange;
       if (e instanceof Function) {
-        value = e([ps[0]?.value || 0, ps[1]?.value || strings.length - 1]);
-      } else if (e[0] === null || e[1] === null) {
-        return [null, null];
-      } else value = e;
+        newRange = e([ps[0]?.value || 0, ps[1]?.value || strings.length - 1]);
+      } else if (e[0] === null || e[1] === null) return [null, null];
+      else newRange = e;
       return [
-        value[0] === undefined ? ps[0] : strings[rangeLimiter(value[0]!, ...pitchRangeLimits)],
-        value[1] === undefined ? ps[1] : strings[rangeLimiter(value[1]!, ...pitchRangeLimits)],
+        newRange[0] === undefined
+          ? ps[0]
+          : strings[rangeLimiter(newRange[0]!, ...pitchRangeLimits)],
+        newRange[1] === undefined
+          ? ps[1]
+          : strings[rangeLimiter(newRange[1]!, ...pitchRangeLimits)],
       ];
     });
   };

@@ -24,4 +24,7 @@ declare global {
     note: Note | null;
     detune: number | null;
   };
+  export type Tuning = {label: string; pitches: number[]};
+  export type TuningStateValue = {original: number | null; value: number; id: number};
+  export type TuningState = {label: string; pitches: TuningStateValue[]};
 }

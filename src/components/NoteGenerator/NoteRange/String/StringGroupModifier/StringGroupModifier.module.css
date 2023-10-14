@@ -1,0 +1,24 @@
+.allStringsButtonsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-self: center;
+  justify-content: center;
+  position: sticky;
+  top: 0%;
+  height: 100%;
+  font-size: 2em;
+}
+.resetButton {
+  position: absolute;
+  top: 0;
+  align-self: flex-start;
+}
+.resetButton,
+.allStringsButtonsContainer button {
+  background: #2b2a33;
+}
+
+.allStringsButtonsContainer button:hover {
+  filter: brightness(1.25);
+}

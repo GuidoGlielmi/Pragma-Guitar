@@ -8,26 +8,6 @@
   margin: auto;
 }
 
-.allStringsButtonsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  align-self: center;
-  justify-content: center;
-  position: sticky;
-  top: 0%;
-  height: 100%;
-  font-size: 2em;
-}
-.resetButton {
-  position: absolute;
-  top: 0;
-  align-self: flex-start;
-}
-.resetButton,
-.allStringsButtonsContainer button {
-  background: #2b2a33;
-}
 .stringSection > * button {
   display: flex;
   justify-content: center;
@@ -38,6 +18,7 @@
   border-radius: 50%;
   font-family: painter;
 }
+
 .stringSection > * button:hover {
   background-color: #333;
 }
@@ -63,73 +44,9 @@
   font-size: 1.5em;
 }
 
-.stringContainer {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.stringContainer > div:nth-of-type(1) {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  width: 40px;
-}
-.stringContainer > div:nth-of-type(2) {
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
-  filter: drop-shadow(3px 2px 1px #111);
-}
-
-.stringContainer > div:nth-of-type(2) > :first-child {
-  margin-right: -5px;
-  z-index: 10;
-}
-
-.stringContainer > div:last-child {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.stringContainer > div:last-child > div {
-  display: flex;
-  gap: 2px;
-}
-
-.stringContainer > div:last-child > div button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 23px;
-  height: 23px;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-}
-
 .allStringsButtonsContainer button:hover,
 .stringContainer > div:last-child > div button:hover {
   filter: brightness(1.25);
-}
-
-.string {
-  width: 100%;
-  border-radius: 3px;
-  background: linear-gradient(
-    to bottom right,
-    #646cff 0%,
-    #646cff 30%,
-    #8085e4 50%,
-    #646cff 70%,
-    #646cff 100%
-  );
-}
-.stringBall {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: #888;
 }
 
 .stringSection > div > button:hover,
