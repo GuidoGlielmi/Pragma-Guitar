@@ -9,13 +9,11 @@ import './Notes.css';
 
 interface NotesProps {
   pitch: number | null;
-  pitchToPlay: number | null;
   correct: boolean;
-  anyOctave: boolean;
   currStreak: number;
 }
 
-const Notes = ({correct, pitch, pitchToPlay, anyOctave, currStreak}: NotesProps) => {
+const Notes = ({correct, pitch, currStreak}: NotesProps) => {
   return (
     <motion.div
       style={{overflow: 'hidden'}}
@@ -32,9 +30,9 @@ const Notes = ({correct, pitch, pitchToPlay, anyOctave, currStreak}: NotesProps)
       exit={{opacity: 0.5, height: 0, marginBottom: 0, overflow: 'hidden'}}
     >
       <div className='notesDisplay'>
-        <NoteToPlay pitchToPlay={pitchToPlay} anyOctave={anyOctave} />
+        <NoteToPlay />
         <ArrowRight />
-        <NotePlayed pitch={pitch} anyOctave={anyOctave} />
+        <NotePlayed pitch={pitch} />
       </div>
       <AnimatePresence mode='wait'>
         <motion.div

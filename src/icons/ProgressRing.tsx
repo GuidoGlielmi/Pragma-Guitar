@@ -10,7 +10,8 @@ const ProgressRing = ({percentage}: ProgressRingProps) => {
   const viewBoxSize = radius * 2 + strokeWidth * 2;
   const center = viewBoxSize / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - circumference * (percentage / 100);
+  const offset =
+    circumference - circumference * ((Number.isNaN(percentage) ? 100 : percentage) / 100);
 
   return (
     <svg width='70' height='70' viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'>

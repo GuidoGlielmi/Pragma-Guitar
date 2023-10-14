@@ -1,12 +1,19 @@
+import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 import {getPitchAndOctave} from '../../../../helpers/pitch';
+import {useContext} from 'react';
 import './NotePlayed.css';
 
 interface NotePlayedProps {
-  anyOctave: boolean;
   pitch: number | null;
 }
 
-const NotePlayed = ({anyOctave, pitch}: NotePlayedProps) => {
+const NotePlayed = ({pitch}: NotePlayedProps) => {
+  const {
+    pitchRange: [from, to],
+  } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+
+  const anyOctave = from === null && to === null;
+
   const [notePlayed, octavePlayed] = getPitchAndOctave(pitch);
   return (
     <div className='notePlayedContainer'>

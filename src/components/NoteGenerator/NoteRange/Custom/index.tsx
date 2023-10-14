@@ -1,18 +1,22 @@
+import {useEffect, useContext} from 'react';
 import Select from 'react-select';
 import {customStyles} from '../../../../constants/reactSelectStyles';
 import {strings} from '../../../../constants/notes';
-import {useEffect} from 'react';
+import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 
-interface CustomNoteRangeProps extends NoteRangeProps {
-  from: gtrString;
-  to: gtrString;
-}
-const CustomNoteRange = ({from, to, setPitchRange}: CustomNoteRangeProps) => {
+const CustomNoteRange = () => {
+  const {
+    changePitchRange,
+    pitchRange: [from, to],
+  } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+
   useEffect(() => {
-    setPitchRange([0, strings.length - 1]);
+    changePitchRange([0, strings.length - 1]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log({from, to});
+
+  // console.log({from, to});
+
   return (
     <div id='customNoteRange' style={{display: 'flex', gap: 10, justifyContent: 'center'}}>
       <div>
@@ -23,7 +27,7 @@ const CustomNoteRange = ({from, to, setPitchRange}: CustomNoteRangeProps) => {
           styles={customStyles}
           options={strings}
           value={from}
-          onChange={e => setPitchRange([e!.value, undefined])} // value is index
+          onChange={e => changePitchRange([e!.value, undefined])} // value is index
         />
       </div>
       <div>
@@ -34,7 +38,7 @@ const CustomNoteRange = ({from, to, setPitchRange}: CustomNoteRangeProps) => {
           styles={customStyles}
           options={strings}
           value={to}
-          onChange={e => setPitchRange([undefined, e!.value])} // value is index
+          onChange={e => changePitchRange([undefined, e!.value])} // value is index
         />
       </div>
     </div>

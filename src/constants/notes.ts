@@ -23,7 +23,7 @@ export const convertTuningToState = (t: Tuning): TuningState => ({
   ...t,
   value: t.value.map(v => ({original: v, value: v, id: Math.random()})),
 });
-export const pitchRange = [0, 108] as [number, number];
+export const pitchRangeLimits = [0, 108] as [number, number];
 
 export const tunings = [
   // Standard Tuning

@@ -1,11 +1,11 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef, useContext} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import Select from 'react-select';
 import ChevronDown from '../../../../icons/ChevronDown';
 import {
   TuningStateValue,
   convertTuningToState,
-  pitchRange,
+  pitchRangeLimits,
   strings,
   tunings,
 } from '../../../../constants/notes';
@@ -14,8 +14,11 @@ import S from './String.module.css';
 import {rangeLimiter, setterRangeLimiter} from '../../../../helpers/valueRange';
 import Reset from '../../../../icons/Reset';
 import NoteWithOctave from '../../../common/NoteWithOctave';
+import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 
-const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
+const StringNoteRange = () => {
+  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+
   const [tuningIndex, setTuningIndex] = useState(0);
   const [tuning, setTuning] = useState(convertTuningToState(tunings[0]));
   const [fretsAmount, setFretsAmount] = useState(24);
@@ -31,12 +34,12 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
       if (i === undefined) {
         newTuningValues = newTuningValues.map(v => ({
           ...v,
-          value: rangeLimiter(v.value + n, ...pitchRange),
+          value: rangeLimiter(v.value + n, ...pitchRangeLimits),
         }));
       } else
         newTuningValues[i] = {
           ...newTuningValues[i],
-          value: rangeLimiter(newTuningValues[i].value + n, ...pitchRange),
+          value: rangeLimiter(newTuningValues[i].value + n, ...pitchRangeLimits),
         };
       return {...ps, value: newTuningValues};
     });
@@ -66,10 +69,10 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
       lastIdAdded.current = 0;
     }
     if (selectedStringIndex === null) {
-      return setPitchRange([0, strings.length - 1]);
+      return changePitchRange([0, strings.length - 1]);
     }
     const from = tuning.value[selectedStringIndex].value;
-    setPitchRange([from, from + fretsAmount]);
+    changePitchRange([from, from + fretsAmount]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tuning, selectedStringIndex, fretsAmount]);
 
@@ -100,6 +103,7 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
           gap: 10,
           height: 200,
           overflow: 'scroll',
+          overflowX: 'hidden',
           position: 'relative',
           padding: 10,
           borderBottom: '2px solid #999',
@@ -118,8 +122,9 @@ const StringNoteRange = ({setPitchRange}: NoteRangeProps) => {
             }}
           >
             <AnimatePresence initial={false}>
-              {tuning.value
-                .reduce<TuningStateValue[]>((p, c) => [c, ...p], [])
+              {[...tuning.value]
+                // .reduce<TuningStateValue[]>((p, c) => [c, ...p], [])
+                .reverse()
                 .map((v, i, arr) => {
                   const mirroredIndex = arr.length - 1 - i;
                   return (

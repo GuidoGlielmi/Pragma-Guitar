@@ -18,4 +18,10 @@ declare global {
   export type MediaType = 'audio' | 'video';
   export type MediaDirection = 'input' | 'output';
   export type Device = [string, MediaType, MediaDirection];
+  export type NoteInfo = {
+    frecuency: number | null;
+    pitch: number | null;
+    note: Note | null;
+    detune: number | null;
+  };
 }

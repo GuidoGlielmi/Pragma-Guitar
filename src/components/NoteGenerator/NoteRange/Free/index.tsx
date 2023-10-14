@@ -1,18 +1,21 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {strings} from '../../../../constants/notes';
+import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 
-const Free = ({setPitchRange}: NoteRangeProps) => {
+const Free = () => {
+  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+
   const [anyNote, setAnyNote] = useState(true);
 
   useEffect(() => {
     return () => {
-      setPitchRange([0, strings.length - 1]);
+      changePitchRange([0, strings.length - 1]);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    setPitchRange(anyNote ? [null, null] : [0, strings.length - 1]);
+    changePitchRange(anyNote ? [null, null] : [0, strings.length - 1]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [anyNote]);
 

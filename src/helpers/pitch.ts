@@ -1,4 +1,7 @@
+import {PitchDetector} from 'pitchy';
 import {notes, strings} from '../constants/notes';
+import {audioEcosystem} from '../contexts/AudioContext';
+import {centsOffFromPitch, pitchFromFrequency} from '../libs/Helpers';
 
 const c5Pitch = 72;
 const firstHalfOctavesAmount = c5Pitch / 12;
@@ -28,4 +31,34 @@ export const getOctave = (pitch: number | null) => {
 export const getPitchAndOctave = (pitch: number | null) => {
   if (strings[pitch!] === undefined) return ['', ''];
   return strings[pitch!].label.split(/(\d)/);
+};
+
+export const getPitch = (
+  minFrecuency = 60,
+  maxFrecuency = 10000,
+  pitchDetector: PitchDetector<Float32Array>,
+  buf: Float32Array,
+) => {
+  audioEcosystem.analyserNode.getFloatTimeDomainData(buf);
+  const [frecuency, clarity] = pitchDetector.findPitch(buf, audioEcosystem.sampleRate);
+  if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
+  if (clarity < 0.9) return;
+  return frecuency;
+};
+
+export const getFrecuencyDamper = (strength = 3) => {
+  let prevF: number;
+  return (newFrec: number) => {
+    prevF = (newFrec * strength - newFrec + (prevF ?? newFrec)) / Math.abs(strength);
+    return Math.abs(prevF);
+  };
+};
+
+export const getMusicalInfoFromFrecuency = (f: number) => {
+  const pitch = pitchFromFrequency(f);
+  return {
+    pitch,
+    note: Object.values(notes)[pitch % 12] as keyof typeof notes,
+    detune: centsOffFromPitch(f, pitch),
+  };
 };

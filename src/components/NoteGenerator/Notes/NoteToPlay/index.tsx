@@ -6,16 +6,19 @@ import {
 } from '../../../../helpers/pitch';
 import {useContext} from 'react';
 import './NoteToPlay.css';
+import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 
-interface NoteToPlayProps {
-  anyOctave: boolean;
-  pitchToPlay: number | null;
-}
-
-const NoteToPlay = ({anyOctave, pitchToPlay}: NoteToPlayProps) => {
+const NoteToPlay = () => {
   const {startOscillator, stopOscillator} = useContext(AudioContext) as AudioProps;
 
+  const {
+    pitchToPlay,
+    pitchRange: [from, to],
+  } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+
   const [noteToPlay, octaveToPlay] = getPitchAndOctave(pitchToPlay);
+
+  const anyOctave = from === null && to === null;
 
   return (
     <button

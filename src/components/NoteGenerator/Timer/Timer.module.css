@@ -1,0 +1,54 @@
+.timerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin: 10px 0;
+}
+
+.countdownContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+.countdownContainer > div {
+  display: flex;
+}
+
+.timerContainer button {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  background-color: #cccccc;
+  color: #222;
+  border-radius: 59%;
+}
+
+.timerContainer button:active {
+  box-shadow: inset 0 0 3px #888;
+}
+
+.timerContainer input {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  width: 1.4em;
+  height: 1.4em;
+  transform: translateX(-50%) translateY(50%);
+  background: transparent;
+  border: none;
+  font-weight: 600;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.timerContainer input:hover {
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px #0060df, 0 0 0 3px white;
+}
+.timerContainer input:focus-visible {
+  border-radius: 0;
+}

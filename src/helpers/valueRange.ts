@@ -7,5 +7,6 @@ export const setterRangeLimiter = (value: number, {min = -Infinity, max = Infini
 };
 
 export const rangeLimiter = (value: number, ...limits: [number, number]) => {
+  // const finalValue = Number.isNaN(parseInt(value))
   return Math.min(limits[1], Math.max(limits[0], value));
 };
