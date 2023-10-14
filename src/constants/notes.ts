@@ -58,7 +58,7 @@ const C1_NUMBER = 24;
 const OCTAVES_COVERED = 8;
 
 export const strings: gtrString[] = [];
-for (let octave = 0; octave <= OCTAVES_COVERED; octave++) {
+for (let octave = -1; octave <= OCTAVES_COVERED; octave++) {
   for (let noteIndex = 0; noteIndex < notesArray.length; noteIndex++) {
     const label = `${notesArray[noteIndex]}${octave}` as NoteWithOctave;
     strings.push({value: octave * 12 + noteIndex, label});

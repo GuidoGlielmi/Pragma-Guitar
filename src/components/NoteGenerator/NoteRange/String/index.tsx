@@ -15,6 +15,7 @@ import {rangeLimiter, setterRangeLimiter} from '../../../../helpers/valueRange';
 import Reset from '../../../../icons/Reset';
 import NoteWithOctave from '../../../common/NoteWithOctave';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
+import {pitchToNote} from '../../../../helpers/pitch';
 
 const StringNoteRange = () => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
@@ -63,9 +64,6 @@ const StringNoteRange = () => {
   };
 
   useEffect(() => {
-    // if (selectedStringIndex === null) {
-    //   return changePitchRange([0, strings.length - 1]);
-    // }
     if (lastIdAdded.current) {
       const lastElementAdded = document.getElementById(lastIdAdded.current.toString());
       lastElementAdded!.scrollIntoView({behavior: 'smooth'});

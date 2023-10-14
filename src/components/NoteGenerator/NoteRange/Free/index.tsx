@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext} from 'react';
+import {useEffect, useContext} from 'react';
 import {strings} from '../../../../constants/notes';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 
@@ -55,7 +55,7 @@ const Free = () => {
           type='checkbox'
           id='exact'
           checked={!anyNote}
-          onChange={e => {
+          onChange={() => {
             changePitchRange([0, strings.length - 1]);
           }}
         />
