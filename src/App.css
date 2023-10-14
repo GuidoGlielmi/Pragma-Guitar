@@ -17,30 +17,6 @@ main > *:last-child {
   width: max-content;
   margin: 0 auto 5vh;
 }
-.navBar {
-  display: flex;
-  margin: 10vh auto 0;
-  width: max(300px, 40vw);
-  max-width: 95vw;
-}
-.navBar > * {
-  flex-grow: 1;
-  padding: 7px 10px;
-}
-
-.navBar button:not(:first-child, :last-child) {
-  border-radius: 0;
-}
-
-.navBar button:first-child {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.navBar button:last-child {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-}
 
 main > button {
   width: 50%;

@@ -1,5 +1,3 @@
-import {Step} from 'intro.js';
-
 export const noteGenerator = [
   {
     title: 'NOTE GENERATOR',

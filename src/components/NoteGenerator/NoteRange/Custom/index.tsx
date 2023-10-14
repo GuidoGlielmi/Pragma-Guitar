@@ -1,5 +1,5 @@
 import Select from 'react-select';
-import {customStyles} from '../../../../constants/selectStyles';
+import {customStyles} from '../../../../constants/reactSelectStyles';
 import {strings} from '../../../../constants/notes';
 import {useEffect} from 'react';
 

@@ -1,15 +1,18 @@
 import usePitch from '../../hooks/usePitch';
 import './Tuner.css';
 import Board from './Board';
-const Tuner = () => {
+
+export const Component = () => {
   const {detune, frecuency, pitch} = usePitch();
 
   return (
     <div className='tunerContainer'>
       <Board frecuency={frecuency} pitch={pitch} detune={detune} />
-      <span>{frecuency ? ~~frecuency : frecuency} Hz</span>
+      <span>{frecuency ? ~~frecuency : null} Hz</span>
     </div>
   );
 };
 
-export default Tuner;
+export function ErrorBoundary() {
+  return <div />;
+}

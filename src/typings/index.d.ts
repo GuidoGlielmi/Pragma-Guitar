@@ -9,9 +9,11 @@ declare global {
     pitch: number | null;
     detune: number | null;
   };
+
   export type Note = keyof typeof notes;
-  export type Octave = '1' | '2' | '3' | '4' | '5' | '6';
+  export type Octave = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
   export type NoteWithOctave = `${Note}${Octave}`;
+
   export type gtrString = {value: number; label: NoteWithOctave};
   export type MediaType = 'audio' | 'video';
   export type MediaDirection = 'input' | 'output';

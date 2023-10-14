@@ -1,5 +1,5 @@
 import {useState, useEffect, useContext, useRef} from 'react';
-import {AudioContext, AudioProps, micInputStream} from '../contexts/AudioContext';
+import {AudioContext, AudioProps} from '../contexts/AudioContext';
 
 import usePitch from './usePitch';
 
@@ -21,20 +21,11 @@ type UseCorrectPitch = UsePitch & {correct: boolean; currStreak: number; maxStre
 
 const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
   const {detune, frecuency, pitch, note} = usePitch();
-  const {started, getMicInputStream} = useContext(AudioContext) as AudioProps;
-
   const [currStreak, setCurrStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(+localStorage.getItem('maxStreak')! || 0);
   const [correct, setCorrect] = useState(false);
 
   const prevCorrect = useRef(correct);
-
-  useEffect(() => {
-    if (!micInputStream && started) {
-      getMicInputStream();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [started]);
 
   useEffect(() => {
     if (!prevCorrect.current) setCurrStreak(0);

@@ -53,8 +53,4 @@ const Board = ({frecuency}: BoardProps) => {
   );
 };
 
-// function haveDifferentSigns(a: number, b: number) {
-//   return (a < 0 && b >= 0) || (a >= 0 && b < 0);
-// }
-
 export default Board;

@@ -1,0 +1,29 @@
+.navBar {
+  display: flex;
+  margin: 10vh auto 0;
+  width: max(300px, 40vw);
+  max-width: 95vw;
+}
+.navBar > a {
+  display: flex;
+  flex-grow: 1;
+}
+
+.navBar button {
+  flex-grow: 1;
+  padding: 7px 10px;
+}
+
+.navBar a:not(:first-child, :last-child) button {
+  border-radius: 0;
+}
+
+.navBar a:first-child button {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.navBar a:last-child button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}

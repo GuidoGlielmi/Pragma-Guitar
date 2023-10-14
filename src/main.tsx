@@ -1,19 +1,35 @@
-import React from 'react';
+import {lazy, Suspense} from 'react';
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Navigate,
+  Route,
+  RouterProvider,
+} from 'react-router-dom';
 import ReactDOM from 'react-dom/client';
+import {Analytics} from '@vercel/analytics/react';
 import App from './App.tsx';
 import './index.css';
-import AudioProvider from './contexts/AudioContext/index.tsx';
 import {ErrorBoundary} from './ErrorBoundary/index.tsx';
 import 'intro.js/introjs.css';
-import {Analytics} from '@vercel/analytics/react';
+import AudioProvider from './contexts/AudioContext';
+import {routes} from './constants/routes.tsx';
 
+const sections = createRoutesFromElements(
+  <Route element={<App />}>
+    {routes.map(r => (
+      <Route key={r.path} path={r.path} lazy={r.element} />
+    ))}
+    <Route path='*' element={<Navigate to='/note-generator' replace />} />
+  </Route>,
+);
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <AudioProvider>
-        <App />
-      </AudioProvider>
-      <Analytics />
-    </ErrorBoundary>
-  </React.StrictMode>,
+  // <React.StrictMode>
+  <ErrorBoundary>
+    <AudioProvider>
+      <RouterProvider router={createBrowserRouter(sections)} />
+    </AudioProvider>
+    <Analytics />
+  </ErrorBoundary>,
+  // </React.StrictMode>,
 );

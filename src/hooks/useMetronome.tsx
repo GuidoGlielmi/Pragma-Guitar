@@ -1,11 +1,6 @@
 /* eslint-disable no-empty */
 import {useState, useEffect, useContext} from 'react';
-import {
-  AudioContext,
-  AudioProps,
-  clickSourceNode,
-  firstClickSourceNode,
-} from '../contexts/AudioContext';
+import {AudioContext, AudioProps, audioEcosystem} from '../contexts/AudioContext';
 
 interface MetronomeProps {
   bpm: number;
@@ -13,45 +8,42 @@ interface MetronomeProps {
   initialDenominator?: number;
 }
 
+let firstClickAudioBuffer: AudioBuffer;
+let clickAudioBuffer: AudioBuffer;
+
 const defaultSubdivision = 2 ** 2;
 
+(async () => {
+  firstClickAudioBuffer = await audioEcosystem.loadAudioFile('/audio/metronome_oct_up.mp3');
+  clickAudioBuffer = await audioEcosystem.loadAudioFile('/audio/metronome.mp3');
+})();
+
 const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: MetronomeProps) => {
-  const {started, playClick} = useContext(AudioContext) as AudioProps;
+  const {started} = useContext(AudioContext) as AudioProps;
+
   const [position, setPosition] = useState(-1);
   const [bar, setBar] = useState<[number, number]>([initialNumerator, initialDenominator]);
 
   useEffect(() => {
     if (!started) return;
-    setPosition(0);
-    const stopFlag = {stop: false};
 
-    (async () => {
-      await playClick(true);
+    const denominator = bar[1];
+    const msInterval = bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
 
-      const denominator = bar[1];
-      const msInterval = bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
-
-      const task = () => {
-        setPosition(ps => {
-          const isLast = ps === bar[0] - 1;
-          playClick(isLast);
-          return isLast ? 0 : ps + 1;
-        });
-      };
-      iterateTask(msInterval, task, stopFlag);
-    })();
+    const task = () => {
+      setPosition(ps => {
+        const isLast = ps === bar[0] - 1 || ps === -1;
+        audioEcosystem.playBuffer(isLast ? firstClickAudioBuffer : clickAudioBuffer);
+        return isLast ? 0 : ps + 1;
+      });
+    };
+    const stopTask = pollTask(msInterval, task);
 
     return () => {
-      if (started) {
-        clickSourceNode?.stop();
-        firstClickSourceNode?.stop();
-        clickSourceNode?.disconnect();
-        firstClickSourceNode?.disconnect();
-      }
+      stopTask?.();
       setPosition(-1);
-      stopFlag.stop = true;
     };
-  }, [started, bpm, bar, playClick]);
+  }, [started, bpm, bar]);
 
   return [bar, setBar, position] as [
     [number, number],
@@ -62,26 +54,26 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
 
 const bpmToFrecuency = (bpm: number) => (1 / (bpm / 60)) * 1000;
 
-const iterateTask = (msInterval: number, task: () => void, stopFlag: {stop: boolean}) => {
-  let interval: number;
-  let targetTime = performance.now() + msInterval;
+export default useMetronome;
 
-  const startTimer = () => {
-    interval = setInterval(() => {
-      if (stopFlag.stop) return clearInterval(interval);
-      if (performance.now() >= targetTime - 10) {
-        while (performance.now() < targetTime) {}
-        requestAnimationFrame(task);
-        targetTime += msInterval;
-      }
-    });
+function pollTask(msInterval: number, task: () => void) {
+  let interval: number;
+  task();
+  let targetTime = performance.now() + msInterval;
+  const poll = () => {
+    if (performance.now() >= targetTime - 15) {
+      clearInterval(interval);
+      while (performance.now() < targetTime - 2);
+      task();
+      targetTime += msInterval;
+      interval = setInterval(poll);
+    }
   };
-  startTimer();
-};
+  interval = setInterval(poll);
+  return () => clearInterval(interval);
+}
 
 // const isPowerOfTwo = (n: number) => {
 //   if (n <= 0) return false;
 //   return (n & (n - 1)) === 0;
 // };
-
-export default useMetronome;

@@ -1,58 +1,55 @@
-import {useState, useEffect, useContext} from 'react';
-import './App.css';
-import Tuner from './components/Tuner';
-import NoteGenerator from './components/NoteGenerator';
+import {useEffect, useContext, Suspense} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
+import {Outlet, useLocation} from 'react-router-dom';
 import {AudioContext, AudioProps} from './contexts/AudioContext';
-import Metronome from './components/Metronome';
-
-const sections = {
-  'Note Generator': <NoteGenerator />,
-  Metronome: <Metronome />,
-  Tuner: <Tuner />,
-};
+import NavBar from './components/Navbar';
+import DeviceList from './components/DeviceList';
+import './App.css';
 
 function App() {
-  const {start, stop, started} = useContext(AudioContext) as AudioProps;
-
-  const [selectedSection, setSection] = useState<JSX.Element>(sections['Note Generator']);
+  const location = useLocation();
+  const {stop, started} = useContext(AudioContext) as AudioProps;
 
   useEffect(() => {
     if (started) stop();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedSection]);
+  }, [location]);
 
   return (
     <main>
-      <div className='navBar'>
-        {Object.entries(sections).map(([title, section], i) => {
-          return (
-            <button
-              className={`${section === selectedSection ? 'selected' : ''}`}
-              key={i}
-              onClick={() => setSection(section)}
-            >
-              {title}
-            </button>
-          );
-        })}
-      </div>
-      <button onClick={started ? stop : start} id='start'>
-        {started ? 'Stop' : 'Start'}
-      </button>
-      <AnimatePresence mode='wait'>
+      <DeviceList />
+      <NavBar />
+      <StartButton />
+      <Sections />
+    </main>
+  );
+}
+
+const Sections = () => {
+  return (
+    <AnimatePresence mode='wait'>
+      <Suspense fallback={<div>CARGANDO</div>}>
         <motion.div
-          key={selectedSection.type}
+          key={location.pathname}
           initial={{opacity: 0}}
           animate={{opacity: 1}}
           exit={{opacity: 0}}
           transition={{duration: 0.1}}
         >
-          {selectedSection}
+          <Outlet />
         </motion.div>
-      </AnimatePresence>
-    </main>
+      </Suspense>
+    </AnimatePresence>
   );
-}
+};
+
+const StartButton = () => {
+  const {start, stop, started} = useContext(AudioContext) as AudioProps;
+  return (
+    <button onClick={started ? stop : start} id='start'>
+      {started ? 'Stop' : 'Start'}
+    </button>
+  );
+};
 
 export default App;

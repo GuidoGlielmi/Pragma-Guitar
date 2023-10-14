@@ -1,16 +1,18 @@
 import {useState, useEffect, useContext, useRef} from 'react';
 import {PitchDetector} from 'pitchy';
-import {AudioContext, AudioProps, audioCtx, micInputStream} from '../contexts/AudioContext';
 import {pitchFromFrequency, centsOffFromPitch} from '../libs/Helpers';
 import {notes} from '../constants/notes';
+import {AudioContext, AudioProps, audioEcosystem} from '../contexts/AudioContext';
 
 const buflen = 2048;
 
-let updateInterval: number;
-const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {}): UsePitch => {
-  const {started, analyserNode, getMicInputStream} = useContext(AudioContext) as AudioProps;
+const pitchDetector = PitchDetector.forFloat32Array(buflen);
 
-  const pitchDetector = useRef(PitchDetector.forFloat32Array(buflen));
+const buf = new Float32Array(buflen);
+
+const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {}): UsePitch => {
+  const {started, getMicInputStream} = useContext(AudioContext) as AudioProps;
+
   const [note, setNote] = useState<Note | null>(null);
   const [frecuency, setFrecuency] = useState<number | null>(null);
   const prevFrec = useRef<number | null>(null);
@@ -19,28 +21,25 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
 
   useEffect(() => {
     if (!started) return;
-    const buf = new Float32Array(buflen);
+
+    let updateInterval: number;
     (async () => {
-      if (!micInputStream) await getMicInputStream();
-      const updatePitch = () => {
-        analyserNode.getFloatTimeDomainData(buf);
-        const [frecuency, clarity] = pitchDetector.current.findPitch(buf, audioCtx.sampleRate);
-
-        if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
-        if (clarity < 0.9) return;
-
-        const pitch = pitchFromFrequency(frecuency);
-        const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
-        const detune = centsOffFromPitch(frecuency, pitch);
-        const f = (frecuency + (prevFrec.current || 0)) / 2;
-        setFrecuency(f);
-        prevFrec.current = f;
-        setNote(note);
-        setDetune(detune);
-        setPitch(pitch);
-        // console.log({pitch, note, detune, frecuency});
-      };
-      console.log('usePitch started!');
+      await getMicInputStream();
+      async function updatePitch() {
+        const audioData = getPitch(minFrecuency, maxFrecuency);
+        if (audioData) {
+          console.log(audioData);
+          const {pitch, note, detune, frecuency} = audioData;
+          const f = (frecuency + (prevFrec.current || 0)) / 2;
+          setFrecuency(f);
+          prevFrec.current = f;
+          setNote(note);
+          setDetune(detune);
+          setPitch(pitch);
+        }
+        // console.log('usePitch started!');
+      }
+      updatePitch();
       updateInterval = setInterval(updatePitch, interval);
     })();
     return () => {
@@ -58,3 +57,15 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
 };
 
 export default usePitch;
+
+const getPitch = (minFrecuency = 60, maxFrecuency = 10000) => {
+  audioEcosystem.analyserNode.getFloatTimeDomainData(buf);
+  const [frecuency, clarity] = pitchDetector.findPitch(buf, audioEcosystem.sampleRate);
+  if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
+  if (clarity < 0.9) return;
+
+  const pitch = pitchFromFrequency(frecuency);
+  const note = Object.values(notes)[pitch % 12] as keyof typeof notes;
+  const detune = centsOffFromPitch(frecuency, pitch);
+  return {pitch, note, detune, frecuency};
+};

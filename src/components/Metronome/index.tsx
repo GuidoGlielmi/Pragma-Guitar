@@ -4,7 +4,8 @@ import Select from 'react-select';
 import S from './Metronome.module.css';
 import useNumberInput from '../../hooks/useNumberInput';
 import useTap from '../../hooks/useTap';
-import {metronomeStyles} from '../../constants/selectStyles';
+import {metronomeStyles} from '../../constants/reactSelectStyles';
+import {maxBPS, minBPS} from '../../constants/notes';
 
 const numeratorOptions = Array(16)
   .fill(null)
@@ -12,8 +13,12 @@ const numeratorOptions = Array(16)
 
 const denominatorOptions = [2, 4, 8, 16].map(e => ({label: e, value: e}));
 
-const Metronome = () => {
-  const {input, value: bpm, changeHandler} = useNumberInput({min: 1, max: 250, initialValue: 120});
+export const Component = () => {
+  const {
+    input,
+    value: bpm,
+    changeHandler,
+  } = useNumberInput({min: minBPS, max: maxBPS, initialValue: 120});
 
   const [[numerator, denominator], setBar, position] = useMetronome({bpm: +bpm});
 
@@ -72,4 +77,4 @@ const Metronome = () => {
   );
 };
 
-export default Metronome;
+export default Component;

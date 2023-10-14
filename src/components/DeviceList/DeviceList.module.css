@@ -12,19 +12,26 @@
   color: #222;
   border-radius: 5px;
   line-height: 1em;
+  z-index: 123123;
 }
+
 .devicesContainer > div {
+  width: 100%;
+}
+.devicesContainer > div,
+.titleContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 5px;
+  gap: 2px;
+  position: relative;
 }
 
 .devicesContainer span {
   transform: translateY(-2px);
 }
 
-.devicesContainer > div > button {
+.devicesContainer > div button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -36,26 +43,32 @@
   background: transparent;
   border: none;
 }
-.devicesContainer > div > button:hover {
+.devicesContainer button:hover {
   background: #afafaf;
 }
-.devicesContainer > div > button svg {
-  width: 10px;
-  height: 10px;
+
+.titleContainer button svg {
+  width: 9px;
+  height: 9px;
 }
-.notification {
-  position: fixed;
-  padding: 10px;
-  margin: 10px;
-  top: 0;
-  left: 0;
-  background-color: rgb(150, 76, 76);
-  border-radius: 5px;
+
+.devicesContainer > div > button {
+  margin-right: 2px;
+}
+
+.devicesContainer > div > button svg {
+  width: 13px;
+  height: 13px;
+}
+
+.floatRight {
+  position: absolute;
+  right: 0;
 }
 
 .devicesContainer > button {
   max-width: 200px;
-  background-color: #909090;
+  background-color: #999;
   color: black;
   font-size: 0.8em;
 }

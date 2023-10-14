@@ -1,6 +1,6 @@
 import {useContext, useEffect, useState, useCallback, useRef} from 'react';
 import {AnimatePresence} from 'framer-motion';
-import {AudioContext, AudioProps} from '../../contexts/AudioContext';
+import {AudioContext, AudioProps, audioEcosystem} from '../../contexts/AudioContext';
 import './NoteGenerator.css';
 import Minus from '../../icons/Minus';
 import Plus from '../../icons/Plus';
@@ -13,8 +13,9 @@ import RangeSelector from './NoteRange';
 import Notes from './Notes';
 import {rangeLimiter} from '../../helpers/valueRange';
 import {pitchRange as pitchRangeLimits} from '../../constants/notes';
+import useInitialBufferLoad from '../../hooks/useInitialBufferLoad';
 
-const NoteGenerator = () => {
+export const Component = () => {
   const {started} = useContext(AudioContext) as AudioProps;
 
   return (
@@ -38,6 +39,20 @@ const Note = () => {
   const [from, to] = pitchRange;
 
   const [updateFrecuency, setUpdateFrecuency] = useState<number>(5000);
+
+  const correctNoteAudio = useInitialBufferLoad('/audio/correct.mp3');
+
+  const generatePitch = () => {
+    const fromIndex = strings.indexOf(from || strings[0]);
+    const toIndex = strings.indexOf(to || strings.at(-1)!);
+    const getRandomIndex = () => (~~(Math.random() * (toIndex - fromIndex)) || 1) + fromIndex;
+    setPitchToPlay(ps => {
+      let randomIndex: number;
+      do randomIndex = getRandomIndex();
+      while (strings[randomIndex].value === ps);
+      return strings[randomIndex].value;
+    });
+  };
 
   const handleUpdateFrecuency = (value: number) => {
     setUpdateFrecuency(ps => {
@@ -63,9 +78,8 @@ const Note = () => {
   const {pitch, correct, currStreak, maxStreak} = useCorrectPitch({condition});
 
   useEffect(() => {
-    if (correct) {
-      new Audio('/audio/correct.mp3').play();
-    }
+    if (correct && correctNoteAudio.current) audioEcosystem.playBuffer(correctNoteAudio.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [correct]);
 
   useEffect(() => {
@@ -75,16 +89,7 @@ const Note = () => {
   useEffect(() => {
     if (!started) return;
 
-    const fromIndex = strings.indexOf(from || strings[0]);
-    const toIndex = strings.indexOf(to || strings.at(-1)!);
-    const getRandomIndex = () => (~~(Math.random() * (toIndex - fromIndex)) || 1) + fromIndex;
-    setPitchToPlay(ps => {
-      let randomIndex: number;
-      do {
-        randomIndex = getRandomIndex();
-      } while (strings[randomIndex].value === ps);
-      return strings[randomIndex].value;
-    });
+    generatePitch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pitchTrigger, started, updateFrecuency, from, to]);
 
@@ -220,8 +225,6 @@ const Timer = ({
   );
 };
 
-export default NoteGenerator;
-
 const executeAtInterval = (fn: (msPassed: number) => void, delay = 50) => {
   previousMs = new Date().getTime();
   ringInterval = setInterval(() => {
@@ -231,3 +234,7 @@ const executeAtInterval = (fn: (msPassed: number) => void, delay = 50) => {
     fn(msPassed);
   }, delay);
 };
+
+export function ErrorBoundary() {
+  return <div />;
+}

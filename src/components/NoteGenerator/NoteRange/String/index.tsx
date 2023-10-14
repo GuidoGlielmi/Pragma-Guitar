@@ -9,7 +9,7 @@ import {
   strings,
   tunings,
 } from '../../../../constants/notes';
-import {customStylesMaxContent} from '../../../../constants/selectStyles';
+import {customStylesMaxContent} from '../../../../constants/reactSelectStyles';
 import S from './String.module.css';
 import {rangeLimiter, setterRangeLimiter} from '../../../../helpers/valueRange';
 import Reset from '../../../../icons/Reset';

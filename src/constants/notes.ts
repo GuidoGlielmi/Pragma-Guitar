@@ -1,3 +1,5 @@
+export const minBPS = 10;
+export const maxBPS = 300;
 export const notes = {
   C: 'C',
   'C#': 'C#',
