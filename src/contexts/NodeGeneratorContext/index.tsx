@@ -42,6 +42,7 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
   const [from, to] = pitchRange;
 
   const generateRandomIndex = useMemo(() => {
+    console.log({from: pitchRange[0]?.label, to: pitchRange[1]?.label});
     const fromIndex = strings.indexOf(from || strings[0]);
     const toIndex = strings.indexOf(to || strings.at(-1)!);
     return getRandomIndexGenerator(fromIndex, toIndex);

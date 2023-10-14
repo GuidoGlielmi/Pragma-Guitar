@@ -1,7 +1,6 @@
 import {useContext, useEffect, useCallback} from 'react';
 import {AnimatePresence} from 'framer-motion';
 import {AudioContext, AudioProps, audioEcosystem} from '../../contexts/AudioContext';
-import './NoteGenerator.css';
 import {strings} from '../../constants/notes';
 import OnboardingWrapper from '../OnboardingWrapper';
 import {noteGenerator} from '../../constants/steps';
@@ -14,6 +13,7 @@ import NoteGeneratorProvider, {
   NoteGeneratorProps,
 } from '../../contexts/NodeGeneratorContext';
 import Timer from './Timer';
+import './NoteGenerator.css';
 
 export const Component = () => {
   const {started} = useContext(AudioContext) as AudioProps;
@@ -69,7 +69,7 @@ const Note = () => {
           {started && <Notes pitch={pitch} correct={correct} currStreak={currStreak} />}
         </AnimatePresence>
       </div>
-      {!!maxStreak && <div>Best streak: {maxStreak}</div>}
+      {!!maxStreak && <div className='painterFont'>Best streak: {maxStreak}</div>}
     </>
   );
 };

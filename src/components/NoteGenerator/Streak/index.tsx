@@ -4,16 +4,19 @@ import Flame from '../../../icons/Flame';
 import './Streak.css';
 
 const Streak = ({multiplier}: {multiplier: number}) => {
-  const [currStreak, setCurrStreak] = useState(multiplier);
+  const [showed, setShowed] = useState(false);
 
   useEffect(() => {
-    setCurrStreak(multiplier);
-    setTimeout(() => setCurrStreak(0), 500);
+    setShowed(!!multiplier);
+    const timeoutId = setTimeout(() => setShowed(false), 500);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [multiplier]);
 
   return (
-    <AnimatePresence>
-      {!!currStreak && (
+    <AnimatePresence mode='wait'>
+      {showed && (
         <motion.div
           initial={{opacity: 0, y: '50%', x: '0%'}}
           animate={{opacity: 1, y: '50%', x: '0%'}}

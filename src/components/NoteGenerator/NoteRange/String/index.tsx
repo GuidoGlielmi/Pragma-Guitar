@@ -30,7 +30,7 @@ const StringNoteRange = () => {
 
   const changeTuning = (n: number, i?: number) => {
     setTuning(ps => {
-      let newTuningValues = [...ps.value];
+      let newTuningValues = [...ps.pitches];
       if (i === undefined) {
         newTuningValues = newTuningValues.map(v => ({
           ...v,
@@ -41,12 +41,12 @@ const StringNoteRange = () => {
           ...newTuningValues[i],
           value: rangeLimiter(newTuningValues[i].value + n, ...pitchRangeLimits),
         };
-      return {...ps, value: newTuningValues};
+      return {...ps, pitches: newTuningValues};
     });
   };
 
   const removeString = (index: number) => {
-    setTuning(ps => ({...ps, value: ps.value.filter((_v, i) => i !== index)}));
+    setTuning(ps => ({...ps, pitches: ps.pitches.filter((_v, i) => i !== index)}));
   };
 
   const addString = (higher: boolean) => {
@@ -54,25 +54,26 @@ const StringNoteRange = () => {
     lastIdAdded.current = id;
     setTuning(ps => {
       if (higher) {
-        const lastString = ps.value.at(-1)!;
-        return {...ps, value: [...ps.value, {...lastString, original: null, id}]};
+        const lastString = ps.pitches.at(-1)!;
+        return {...ps, pitches: [...ps.pitches, {...lastString, original: null, id}]};
       }
-      const firstString = ps.value[0];
-      return {...ps, value: [{...firstString, original: null, id}, ...ps.value]};
+      const firstString = ps.pitches[0];
+      return {...ps, pitches: [{...firstString, original: null, id}, ...ps.pitches]};
     });
   };
 
   useEffect(() => {
+    // if (selectedStringIndex === null) {
+    //   return changePitchRange([0, strings.length - 1]);
+    // }
     if (lastIdAdded.current) {
       const lastElementAdded = document.getElementById(lastIdAdded.current.toString());
       lastElementAdded!.scrollIntoView({behavior: 'smooth'});
       lastIdAdded.current = 0;
     }
-    if (selectedStringIndex === null) {
-      return changePitchRange([0, strings.length - 1]);
-    }
-    const from = tuning.value[selectedStringIndex].value;
-    changePitchRange([from, from + fretsAmount]);
+    const from = tuning.pitches[selectedStringIndex ?? 0].value;
+    const at = (selectedStringIndex === null ? tuning.pitches.at(-1)!.value : from) + fretsAmount;
+    changePitchRange([from, at]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tuning, selectedStringIndex, fretsAmount]);
 
@@ -122,7 +123,7 @@ const StringNoteRange = () => {
             }}
           >
             <AnimatePresence initial={false}>
-              {[...tuning.value]
+              {[...tuning.pitches]
                 // .reduce<TuningStateValue[]>((p, c) => [c, ...p], [])
                 .reverse()
                 .map((v, i, arr) => {

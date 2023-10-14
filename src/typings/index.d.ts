@@ -11,7 +11,7 @@ declare global {
   };
 
   export type Note = keyof typeof notes;
-  export type Octave = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
+  export type Octave = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
   export type NoteWithOctave = `${Note}${Octave}`;
 
   export type gtrString = {value: number; label: NoteWithOctave};

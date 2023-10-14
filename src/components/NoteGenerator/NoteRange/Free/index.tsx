@@ -3,21 +3,14 @@ import {strings} from '../../../../constants/notes';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 
 const Free = () => {
-  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-
-  const [anyNote, setAnyNote] = useState(true);
+  const {pitchRange, changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   useEffect(() => {
-    return () => {
-      changePitchRange([0, strings.length - 1]);
-    };
+    changePitchRange([null, null]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    changePitchRange(anyNote ? [null, null] : [0, strings.length - 1]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [anyNote]);
+  const anyNote = pitchRange[0] === null && pitchRange[1] === null;
 
   return (
     <div
@@ -43,8 +36,8 @@ const Free = () => {
           type='checkbox'
           id='any'
           checked={anyNote}
-          onChange={e => {
-            setAnyNote(e.target.checked);
+          onChange={() => {
+            changePitchRange([null, null]);
           }}
         />
         <label htmlFor='any'>Any Octave</label>
@@ -63,7 +56,7 @@ const Free = () => {
           id='exact'
           checked={!anyNote}
           onChange={e => {
-            setAnyNote(!e.target.checked);
+            changePitchRange([0, strings.length - 1]);
           }}
         />
         <label htmlFor='exact'>Exact Octave</label>

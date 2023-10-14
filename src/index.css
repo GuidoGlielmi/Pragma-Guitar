@@ -98,7 +98,9 @@ h6,
 p {
   margin: 0;
 }
-
+.painterFont {
+  font-family: painter;
+}
 @font-face {
   font-family: 'painter';
   src: url('../fonts/Painter.ttf') format('truetype');
