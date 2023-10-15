@@ -28,10 +28,13 @@ export interface NoteGeneratorTuningProps {
   getSavedTunings: () => Tuning[];
   tunings: Tuning[];
   stringModifiedChecker: (i: number) => boolean | null;
+  deleteTuning: (label: string) => void;
 }
 type NoteGeneratorTuningProviderProps = {children: React.ReactNode};
 
 export const NoteGeneratorTuningContext = createContext<NoteGeneratorTuningProps | null>(null);
+
+const PERSISTED_TUNING_VARIABLE_NAME = 'customTunings';
 
 const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProviderProps>> = ({
   children,
@@ -39,7 +42,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   const [tunings, setTunings] = useState<Tuning[]>([
-    ...JSON.parse(localStorage.getItem('customTunings') || '[]'),
+    ...JSON.parse(localStorage.getItem(PERSISTED_TUNING_VARIABLE_NAME) || '[]'),
     ...defaultTunings,
   ]);
   const [tuning, setTuning] = useState<Tuning>(tunings[0]);
@@ -87,11 +90,29 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   };
 
   const persistTuning = (tuning: Tuning) => {
-    const savedTunings = JSON.parse(localStorage.getItem('customTunings') || '[]');
-    localStorage.setItem('customTunings', JSON.stringify([...savedTunings, tuning]));
+    const savedTunings = JSON.parse(localStorage.getItem(PERSISTED_TUNING_VARIABLE_NAME) || '[]');
+    localStorage.setItem(PERSISTED_TUNING_VARIABLE_NAME, JSON.stringify([...savedTunings, tuning]));
   };
 
-  const getSavedTunings = () => JSON.parse(localStorage.getItem('customTunings') || '[]');
+  const getSavedTunings = (): Tuning[] =>
+    JSON.parse(localStorage.getItem(PERSISTED_TUNING_VARIABLE_NAME) || '[]');
+
+  const deleteTuning = (label: string) => {
+    if (tunings.length === 1) return;
+
+    const originalTuning = tunings.find(t => t.label === label);
+    if (originalTuning) setTuning(tunings.find(t => t !== originalTuning)!);
+    setTunings(ps => ps.filter(t => t !== originalTuning));
+
+    const savedTunings = getSavedTunings();
+    const originalSavedTuning = savedTunings.find(t => t.label === label);
+    if (originalSavedTuning) {
+      localStorage.setItem(
+        PERSISTED_TUNING_VARIABLE_NAME,
+        JSON.stringify(savedTunings.filter(t => t !== originalSavedTuning)),
+      );
+    }
+  };
 
   const stringModifiedChecker = (i: number) => {
     const originalTuning = tunings.find(t => t.label === tuning.label);
@@ -127,6 +148,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       getSavedTunings,
       tunings,
       stringModifiedChecker,
+      deleteTuning,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tuning, fretsAmount, selectedStringIndex, tunings],

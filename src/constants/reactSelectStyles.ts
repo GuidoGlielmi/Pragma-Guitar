@@ -22,7 +22,7 @@ export const customStylesMaxContent = {
   ...customStyles,
   container: (provided: any, _state: any) => ({
     ...provided,
-    width: 'max-content',
+    width: '150px',
     margin: 'auto',
   }),
 };

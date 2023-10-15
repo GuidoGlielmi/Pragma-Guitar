@@ -10,6 +10,7 @@ import TuningBoard from './TuningBoard';
 import {AnimatePresence, motion} from 'framer-motion';
 import TickButton from '../../../../icons/TickButton';
 import Cancel from '../../../../icons/Cancel';
+import {TuningOptionWithButton} from '../../../common/SelectWithButton';
 
 const StringNoteRange = () => {
   const {tuning, tunings, setTuning, addString} = useContext(
@@ -19,12 +20,13 @@ const StringNoteRange = () => {
   return (
     <div className={S.stringSection}>
       <Select
+        components={{Option: TuningOptionWithButton}}
         isSearchable={false}
         styles={customStylesMaxContent}
         options={tunings}
         value={tuning}
         onChange={e => {
-          setTuning(tunings.indexOf(e!));
+          setTuning(tunings.indexOf(e as Tuning));
         }}
       />
       <FretModifier />
