@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
@@ -7,8 +7,23 @@ import {AnimatePresence, motion} from 'framer-motion';
 import StringDisplay from '../StringDisplay';
 import StringGroupModifier from '../StringGroupModifier';
 import S from './TuningBoard.module.css';
+import {
+  NoteGeneratorContext,
+  NoteGeneratorProps,
+} from '../../../../../contexts/NodeGeneratorContext';
 const TuningBoard = () => {
-  const {tuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
+  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+  const {tuning, fretsAmount} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
+
+  const [selectedStringIndex, setSelectedStringIndex] = useState<number>();
+
+  useEffect(() => {
+    changePitchRange([
+      tuning.pitches[selectedStringIndex!],
+      tuning.pitches[selectedStringIndex!] + fretsAmount,
+    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStringIndex]);
 
   return (
     <div
@@ -53,7 +68,14 @@ const TuningBoard = () => {
                   exit={{opacity: 0, x: '100%'}}
                   transition={{duration: 0.5, ease: [0, 1, 1, 1]}}
                 >
-                  <StringDisplay pitch={v} key={i} height={i + 1} index={mirroredIndex} />
+                  <StringDisplay
+                    pitch={v}
+                    key={i}
+                    height={i + 1}
+                    index={mirroredIndex}
+                    selected={selectedStringIndex === mirroredIndex}
+                    select={(i: number) => setSelectedStringIndex(i)}
+                  />
                 </motion.div>
               );
             })}

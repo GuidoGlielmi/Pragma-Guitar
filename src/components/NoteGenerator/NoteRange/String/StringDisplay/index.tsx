@@ -6,35 +6,34 @@ import {
 import ChevronDown from '../../../../../icons/ChevronDown';
 import NoteWithOctave from '../../../../common/NoteWithOctave';
 import S from './StringDisplay.module.css';
+import {
+  NoteGeneratorContext,
+  NoteGeneratorProps,
+} from '../../../../../contexts/NodeGeneratorContext';
 
 interface StringDisplayProps {
   height: number;
   pitch: number;
   index: number;
+  selected: boolean;
+  select: (i: number) => void;
 }
 
-const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
-  const {
-    stringModifiedChecker,
-    selectedStringIndex,
-    setSelectedStringIndex,
-    modifyTuning,
-    removeString,
-  } = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
+const StringDisplay = ({height, pitch, index, selected, select}: StringDisplayProps) => {
+  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+  const {stringModifiedChecker, modifyTuning, removeString} = useContext(
+    NoteGeneratorTuningContext,
+  ) as NoteGeneratorTuningProps;
 
-  const selected = selectedStringIndex === index;
+  const modifyTuningHandler = (n: number) => {
+    modifyTuning(n, index);
+    if (selected) changePitchRange(ps => [undefined, ps[1]! + n]);
+  };
 
   return (
     <div className={S.stringContainer}>
       <div>
-        <input
-          type='checkbox'
-          name='string'
-          checked={selected}
-          onChange={() => {
-            setSelectedStringIndex(ps => (ps === index ? null : index));
-          }}
-        />
+        <input type='radio' name='string' checked={selected} onChange={() => select(index)} />
         <NoteWithOctave pitch={pitch} />
       </div>
       <div
@@ -54,7 +53,7 @@ const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
               transform: 'rotateZ(180deg)',
               ...(stringModifiedChecker(index) === true && {background: '#ff5151ad'}),
             }}
-            onClick={() => modifyTuning(1, index)}
+            onClick={() => modifyTuningHandler(1)}
           >
             <ChevronDown color='white' />
           </button>
@@ -65,7 +64,7 @@ const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
               ...(stringModifiedChecker(index) === false && {background: '#ff5151ad'}),
             }}
             className='button'
-            onClick={() => modifyTuning(-1, index)}
+            onClick={() => modifyTuningHandler(-1)}
           >
             <ChevronDown color='white' />
           </button>

@@ -19,8 +19,6 @@ export interface NoteGeneratorTuningProps {
   setTuning: (i: number) => void;
   fretsAmount: number;
   changeFretsAmount: (n: number) => void;
-  selectedStringIndex: number | null;
-  setSelectedStringIndex: Dispatch<SetStateAction<number | null>>;
   modifyTuning: (n: number, i?: number) => void;
   removeString: (index: number) => void;
   addString: (higher: boolean) => void;
@@ -47,11 +45,13 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   ]);
   const [tuning, setTuning] = useState<Tuning>(tunings[0]);
   const [fretsAmount, setFretsAmount] = useState(24);
-  const [selectedStringIndex, setSelectedStringIndex] = useState<number | null>(null);
 
-  const lastIdAdded = useRef(0);
+  // const lastIdAdded = useRef(0);
 
-  const changeFretsAmount = (n: number) => setFretsAmount(setterRangeLimiter(n, {min: 0, max: 24}));
+  const changeFretsAmount = (n: number) => {
+    changePitchRange(ps => [undefined, ps[1]! + n]);
+    setFretsAmount(setterRangeLimiter(n, {min: 0, max: 24}));
+  };
 
   const setTuningHandler = (i: number) => setTuning(tunings[i]);
 
@@ -70,8 +70,8 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   };
 
   const addString = (higher: boolean) => {
-    const id = Math.random();
-    lastIdAdded.current = id;
+    // const id = Math.random();
+    // lastIdAdded.current = id;
     setTuning(ps => {
       if (higher) {
         const lastString = ps.pitches.at(-1)!;
@@ -126,25 +126,25 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       : tuning.pitches[i] > originalTuning?.pitches[i]!;
   };
 
-  useEffect(() => {
-    if (lastIdAdded.current) {
-      const lastElementAdded = document.getElementById(lastIdAdded.current.toString());
-      lastElementAdded!.scrollIntoView({behavior: 'smooth'});
-      lastIdAdded.current = 0;
-    }
-    const from = tuning.pitches[selectedStringIndex ?? 0];
-    const at = (selectedStringIndex === null ? tuning.pitches.at(-1)! : from) + fretsAmount;
-    changePitchRange([from, at]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tuning, selectedStringIndex, fretsAmount]);
-  console.log({tuning});
+  // useEffect(() => {
+  //   if (lastIdAdded.current) {
+  //     const lastElementAdded = document.getElementById(lastIdAdded.current.toString());
+  //     lastElementAdded!.scrollIntoView({behavior: 'smooth'});
+  //     lastIdAdded.current = 0;
+  //   }
+  //   const from = tuning.pitches[selectedStringIndex ?? 0];
+  //   const at = (selectedStringIndex === null ? tuning.pitches.at(-1)! : from) + fretsAmount;
+  //   changePitchRange([from, at]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [tuning, selectedStringIndex, fretsAmount]);
+
   const contextValue = useMemo(
     () => ({
       tuning,
       setTuning: setTuningHandler,
       fretsAmount,
-      selectedStringIndex,
-      setSelectedStringIndex,
+      // selectedStringIndex,
+      // setSelectedStringIndex,
       changeFretsAmount,
       modifyTuning,
       removeString,
@@ -156,7 +156,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       deleteTuning,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tuning, fretsAmount, selectedStringIndex, tunings],
+    [tuning, fretsAmount, tunings],
   );
   return (
     <NoteGeneratorTuningContext.Provider value={contextValue}>
