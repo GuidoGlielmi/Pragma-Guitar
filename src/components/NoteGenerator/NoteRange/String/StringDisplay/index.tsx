@@ -18,7 +18,7 @@ const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
     stringModifiedChecker,
     selectedStringIndex,
     setSelectedStringIndex,
-    changeTuning,
+    modifyTuning,
     removeString,
   } = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
@@ -54,7 +54,7 @@ const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
               transform: 'rotateZ(180deg)',
               ...(stringModifiedChecker(index) === true && {background: '#ff5151ad'}),
             }}
-            onClick={() => changeTuning(1, index)}
+            onClick={() => modifyTuning(1, index)}
           >
             <ChevronDown color='white' />
           </button>
@@ -65,7 +65,7 @@ const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
               ...(stringModifiedChecker(index) === false && {background: '#ff5151ad'}),
             }}
             className='button'
-            onClick={() => changeTuning(-1, index)}
+            onClick={() => modifyTuning(-1, index)}
           >
             <ChevronDown color='white' />
           </button>

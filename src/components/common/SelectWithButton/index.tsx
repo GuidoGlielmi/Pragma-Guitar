@@ -1,5 +1,5 @@
 import {useContext} from 'react';
-import {MenuListProps, OptionProps, components} from 'react-select';
+import {OptionProps, components} from 'react-select';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
@@ -12,7 +12,13 @@ export const TuningOptionWithButton = (props: OptionProps<Tuning>) => {
     <components.Option {...props}>
       <div className='flexCentered'>
         {props.children}
-        <button className='painterButton' onClick={() => deleteTuning(props.data.label)}>
+        <button
+          className='painterButton'
+          onClick={e => {
+            e.stopPropagation();
+            deleteTuning(props.data.label);
+          }}
+        >
           X
         </button>
       </div>

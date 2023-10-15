@@ -21,7 +21,7 @@ export interface NoteGeneratorTuningProps {
   changeFretsAmount: (n: number) => void;
   selectedStringIndex: number | null;
   setSelectedStringIndex: Dispatch<SetStateAction<number | null>>;
-  changeTuning: (n: number, i?: number) => void;
+  modifyTuning: (n: number, i?: number) => void;
   removeString: (index: number) => void;
   addString: (higher: boolean) => void;
   saveTuning: (name: string) => void;
@@ -34,7 +34,7 @@ type NoteGeneratorTuningProviderProps = {children: React.ReactNode};
 
 export const NoteGeneratorTuningContext = createContext<NoteGeneratorTuningProps | null>(null);
 
-const PERSISTED_TUNING_VARIABLE_NAME = 'customTunings';
+const PERSISTED_TUNINGS_VARIABLE_NAME = 'customTunings';
 
 const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProviderProps>> = ({
   children,
@@ -42,7 +42,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   const [tunings, setTunings] = useState<Tuning[]>([
-    ...JSON.parse(localStorage.getItem(PERSISTED_TUNING_VARIABLE_NAME) || '[]'),
+    ...JSON.parse(localStorage.getItem(PERSISTED_TUNINGS_VARIABLE_NAME) || '[]'),
     ...defaultTunings,
   ]);
   const [tuning, setTuning] = useState<Tuning>(tunings[0]);
@@ -55,12 +55,12 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
 
   const setTuningHandler = (i: number) => setTuning(tunings[i]);
 
-  const changeTuning = (n: number, i?: number) => {
+  const modifyTuning = (halfStepsAmount: number, i?: number) => {
     setTuning(ps => {
       let newPitches = [...ps.pitches];
       if (i === undefined) {
-        newPitches = newPitches.map(v => rangeLimiter(v + n, ...pitchRangeLimits));
-      } else newPitches[i] = rangeLimiter(newPitches[i] + n, ...pitchRangeLimits);
+        newPitches = newPitches.map(v => rangeLimiter(v + halfStepsAmount, ...pitchRangeLimits));
+      } else newPitches[i] = rangeLimiter(newPitches[i] + halfStepsAmount, ...pitchRangeLimits);
       return {...ps, pitches: newPitches};
     });
   };
@@ -90,25 +90,30 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   };
 
   const persistTuning = (tuning: Tuning) => {
-    const savedTunings = JSON.parse(localStorage.getItem(PERSISTED_TUNING_VARIABLE_NAME) || '[]');
-    localStorage.setItem(PERSISTED_TUNING_VARIABLE_NAME, JSON.stringify([...savedTunings, tuning]));
+    const savedTunings = JSON.parse(localStorage.getItem(PERSISTED_TUNINGS_VARIABLE_NAME) || '[]');
+    localStorage.setItem(
+      PERSISTED_TUNINGS_VARIABLE_NAME,
+      JSON.stringify([...savedTunings, tuning]),
+    );
   };
 
   const getSavedTunings = (): Tuning[] =>
-    JSON.parse(localStorage.getItem(PERSISTED_TUNING_VARIABLE_NAME) || '[]');
+    JSON.parse(localStorage.getItem(PERSISTED_TUNINGS_VARIABLE_NAME) || '[]');
 
   const deleteTuning = (label: string) => {
     if (tunings.length === 1) return;
 
     const originalTuning = tunings.find(t => t.label === label);
-    if (originalTuning) setTuning(tunings.find(t => t !== originalTuning)!);
-    setTunings(ps => ps.filter(t => t !== originalTuning));
+    if (originalTuning) {
+      setTuning(tunings.find(t => t !== originalTuning)!);
+      setTunings(ps => ps.filter(t => t !== originalTuning));
+    }
 
     const savedTunings = getSavedTunings();
     const originalSavedTuning = savedTunings.find(t => t.label === label);
     if (originalSavedTuning) {
       localStorage.setItem(
-        PERSISTED_TUNING_VARIABLE_NAME,
+        PERSISTED_TUNINGS_VARIABLE_NAME,
         JSON.stringify(savedTunings.filter(t => t !== originalSavedTuning)),
       );
     }
@@ -132,7 +137,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     changePitchRange([from, at]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tuning, selectedStringIndex, fretsAmount]);
-
+  console.log({tuning});
   const contextValue = useMemo(
     () => ({
       tuning,
@@ -141,7 +146,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       selectedStringIndex,
       setSelectedStringIndex,
       changeFretsAmount,
-      changeTuning,
+      modifyTuning,
       removeString,
       addString,
       saveTuning,

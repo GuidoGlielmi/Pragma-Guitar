@@ -9,7 +9,7 @@ import {
 import S from './StringGroupModifier.module.css';
 
 const StringGroupModifier = () => {
-  const {tuning, setTuning, changeTuning} = useContext(
+  const {tuning, setTuning, modifyTuning} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
@@ -28,14 +28,14 @@ const StringGroupModifier = () => {
       <div>
         <button
           title='Increase all strings'
-          onClick={() => changeTuning(1)}
+          onClick={() => modifyTuning(1)}
           style={{transform: 'rotateZ(180deg)'}}
         >
           <ChevronDown color='white' />
         </button>
         <button
           title='Decrease all strings'
-          onClick={() => changeTuning(-1)}
+          onClick={() => modifyTuning(-1)}
           style={{transform: 'translateY(2px)'}}
         >
           <ChevronDown color='white' />

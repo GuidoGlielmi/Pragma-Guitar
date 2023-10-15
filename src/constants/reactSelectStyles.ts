@@ -25,6 +25,11 @@ export const customStylesMaxContent = {
     width: '150px',
     margin: 'auto',
   }),
+  option: (provided: any) => ({
+    ...provided,
+    color: '#464646',
+    background: '#f7f7f7',
+  }),
 };
 
 export const metronomeStyles = {
