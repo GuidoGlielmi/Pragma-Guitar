@@ -9,14 +9,18 @@ import S from './StringDisplay.module.css';
 
 interface StringDisplayProps {
   height: number;
-  pitch: TuningStateValue;
+  pitch: number;
   index: number;
 }
 
 const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
-  const {selectedStringIndex, setSelectedStringIndex, changeTuning, removeString} = useContext(
-    NoteGeneratorTuningContext,
-  ) as NoteGeneratorTuningProps;
+  const {
+    stringModifiedChecker,
+    selectedStringIndex,
+    setSelectedStringIndex,
+    changeTuning,
+    removeString,
+  } = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   const selected = selectedStringIndex === index;
 
@@ -31,7 +35,7 @@ const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
             setSelectedStringIndex(ps => (ps === index ? null : index));
           }}
         />
-        <NoteWithOctave pitch={pitch.value} />
+        <NoteWithOctave pitch={pitch} />
       </div>
       <div
         style={{
@@ -48,7 +52,7 @@ const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
             className='button'
             style={{
               transform: 'rotateZ(180deg)',
-              ...(!!pitch.original && pitch.original < pitch.value && {background: '#ff5151ad'}),
+              ...(stringModifiedChecker(index) === true && {background: '#ff5151ad'}),
             }}
             onClick={() => changeTuning(1, index)}
           >
@@ -58,7 +62,7 @@ const StringDisplay = ({height, pitch, index}: StringDisplayProps) => {
             title='Decrease semitone'
             style={{
               transform: 'translateY(2px)',
-              ...(!!pitch.original && pitch.original > pitch.value && {background: '#ff5151ad'}),
+              ...(stringModifiedChecker(index) === false && {background: '#ff5151ad'}),
             }}
             className='button'
             onClick={() => changeTuning(-1, index)}

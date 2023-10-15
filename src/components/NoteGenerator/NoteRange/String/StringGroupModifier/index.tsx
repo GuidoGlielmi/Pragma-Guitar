@@ -1,5 +1,5 @@
 import {useContext} from 'react';
-import {convertTuningToState, tunings} from '../../../../../constants/notes';
+import {tunings} from '../../../../../constants/notes';
 import ChevronDown from '../../../../../icons/ChevronDown';
 import Reset from '../../../../../icons/Reset';
 import {
@@ -9,7 +9,7 @@ import {
 import S from './StringGroupModifier.module.css';
 
 const StringGroupModifier = () => {
-  const {setTuning, tuningIndex, changeTuning} = useContext(
+  const {tuning, setTuning, changeTuning} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
@@ -18,7 +18,7 @@ const StringGroupModifier = () => {
       <button
         className={S.resetButton}
         onClick={() => {
-          setTuning(convertTuningToState(tunings[tuningIndex]));
+          setTuning(tunings.indexOf(tuning));
         }}
         style={{padding: 0}}
         title='Reset tuning'

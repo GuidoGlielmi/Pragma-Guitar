@@ -41,10 +41,10 @@ const TuningBoard = () => {
               const mirroredIndex = arr.length - 1 - i;
               return (
                 <motion.div
-                  id={v.id.toString()}
-                  key={v.id}
+                  id={`${i}`}
+                  key={i}
                   style={{scrollMarginTop: 50}}
-                  layoutId={v.id.toString()}
+                  layoutId={`${i}`}
                   initial={{opacity: 0, background: '#ffffff55'}}
                   animate={{
                     opacity: [0, 0, 0, 1],
@@ -53,7 +53,7 @@ const TuningBoard = () => {
                   exit={{opacity: 0, x: '100%'}}
                   transition={{duration: 0.5, ease: [0, 1, 1, 1]}}
                 >
-                  <StringDisplay pitch={v} key={v.id} height={i + 1} index={mirroredIndex} />
+                  <StringDisplay pitch={v} key={i} height={i + 1} index={mirroredIndex} />
                 </motion.div>
               );
             })}

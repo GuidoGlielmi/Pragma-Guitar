@@ -8,8 +8,8 @@ import NoteGeneratorTuningProvider from '../../../contexts/NoteGeneratorTuningCo
 
 const options = {
   ['Free Mode']: <Free />,
-  ['On Note Range']: <CustomNoteRange />,
-  ['On String']: (
+  ['In Note Range']: <CustomNoteRange />,
+  ['In String']: (
     <NoteGeneratorTuningProvider>
       <StringNoteRange />
     </NoteGeneratorTuningProvider>
@@ -92,7 +92,7 @@ const RangeSelection: FC<RangeSelectionProps> = ({
   return (
     <div
       style={{
-        height: hasSelection ? (optionsEntries[selectedIndex][0] === 'On String' ? 450 : 60) : 0,
+        height: hasSelection ? (optionsEntries[selectedIndex][0] === 'In String' ? 430 : 60) : 0,
         transition: 'height 0.2s ease',
         overflow: overflowHidden ? 'hidden' : 'visible',
       }}

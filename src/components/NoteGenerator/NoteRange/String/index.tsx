@@ -1,6 +1,5 @@
-import {useState, useRef, useContext} from 'react';
+import {useState, useContext} from 'react';
 import Select from 'react-select';
-import {convertTuningToState} from '../../../../constants/notes';
 import {customStylesMaxContent} from '../../../../constants/reactSelectStyles';
 import S from './String.module.css';
 import {
@@ -13,7 +12,7 @@ import TickButton from '../../../../icons/TickButton';
 import Cancel from '../../../../icons/Cancel';
 
 const StringNoteRange = () => {
-  const {tunings, tuningIndex, setTuningIndex, setTuning, addString} = useContext(
+  const {tuning, tunings, setTuning, addString} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
@@ -23,10 +22,9 @@ const StringNoteRange = () => {
         isSearchable={false}
         styles={customStylesMaxContent}
         options={tunings}
-        value={tunings[tuningIndex]}
+        value={tuning}
         onChange={e => {
-          setTuningIndex(tunings.indexOf(e!));
-          setTuning(convertTuningToState(e!));
+          setTuning(tunings.indexOf(e!));
         }}
       />
       <FretModifier />
@@ -35,7 +33,7 @@ const StringNoteRange = () => {
       </button>
       <TuningBoard />
       <button title='Add Lower string' onClick={() => addString(false)}>
-        Add Lower
+        Add Lower String
       </button>
       <TuningSaver />
     </div>
@@ -60,8 +58,7 @@ const TuningSaver = () => {
   const {saveTuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   const [showTuningToSave, setShowTuningToSave] = useState(false);
-
-  const tuningToSaveNameRef = useRef<HTMLInputElement>(null);
+  const [tuningToSaveName, setTuningToSaveName] = useState('');
 
   return (
     <AnimatePresence mode='wait'>
@@ -80,10 +77,15 @@ const TuningSaver = () => {
           </button>
         ) : (
           <>
-            <input ref={tuningToSaveNameRef} />
+            <input
+              value={tuningToSaveName}
+              onChange={e => setTuningToSaveName(e.target.value)}
+              placeholder='Name'
+            />
             <button
+              disabled={!tuningToSaveName}
               onClick={() => {
-                saveTuning(tuningToSaveNameRef.current?.value!);
+                saveTuning(tuningToSaveName);
                 setShowTuningToSave(false);
               }}
             >
