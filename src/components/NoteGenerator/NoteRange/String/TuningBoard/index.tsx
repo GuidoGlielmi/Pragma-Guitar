@@ -6,12 +6,13 @@ import {
 import {AnimatePresence, motion} from 'framer-motion';
 import StringDisplay from '../StringDisplay';
 import StringGroupModifier from '../StringGroupModifier';
-
+import S from './TuningBoard.module.css';
 const TuningBoard = () => {
   const {tuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   return (
     <div
+      className={S.tuningBoard}
       style={{
         display: 'flex',
         gap: 10,

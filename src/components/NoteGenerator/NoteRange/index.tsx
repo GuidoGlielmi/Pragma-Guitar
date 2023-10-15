@@ -92,7 +92,7 @@ const RangeSelection: FC<RangeSelectionProps> = ({
   return (
     <div
       style={{
-        height: hasSelection ? (optionsEntries[selectedIndex][0] === 'On String' ? 400 : 60) : 0,
+        height: hasSelection ? (optionsEntries[selectedIndex][0] === 'On String' ? 450 : 60) : 0,
         transition: 'height 0.2s ease',
         overflow: overflowHidden ? 'hidden' : 'visible',
       }}

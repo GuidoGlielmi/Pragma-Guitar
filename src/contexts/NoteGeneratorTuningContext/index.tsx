@@ -11,7 +11,11 @@ import {
   useContext,
 } from 'react';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../NodeGeneratorContext';
-import {convertTuningToState, pitchRangeLimits, tunings} from '../../constants/notes';
+import {
+  convertTuningToState,
+  pitchRangeLimits,
+  tunings as defaultTunings,
+} from '../../constants/notes';
 import {rangeLimiter, setterRangeLimiter} from '../../helpers/valueRange';
 
 export interface NoteGeneratorTuningProps {
@@ -26,6 +30,9 @@ export interface NoteGeneratorTuningProps {
   changeTuning: (n: number, i?: number) => void;
   removeString: (index: number) => void;
   addString: (higher: boolean) => void;
+  saveTuning: (name: string) => void;
+  getSavedTunings: () => Tuning[];
+  tunings: Tuning[];
 }
 type NoteGeneratorTuningProviderProps = {children: React.ReactNode};
 
@@ -37,7 +44,11 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   const [tuningIndex, setTuningIndex] = useState(0);
-  const [tuning, setTuning] = useState(convertTuningToState(tunings[0]));
+  const [tuning, setTuning] = useState(convertTuningToState(defaultTunings[0]));
+  const [tunings, setTunings] = useState([
+    ...JSON.parse(localStorage.getItem('customTunings') || '[]'),
+    ...defaultTunings,
+  ]);
   const [fretsAmount, setFretsAmount] = useState(24);
   const [selectedStringIndex, setSelectedStringIndex] = useState<number | null>(null);
 
@@ -79,6 +90,22 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     });
   };
 
+  const saveTuning = (name: string) => {
+    const newTuning = {label: name, pitches: tuning.pitches.map(p => p.value)};
+    setTunings(ps => [newTuning, ...ps]);
+    persistTuning(newTuning);
+  };
+
+  const persistTuning = (tuning: Tuning) => {
+    const savedTunings = JSON.parse(localStorage.getItem('customTunings') || '[]');
+    localStorage.setItem(
+      'customTunings',
+      JSON.stringify([...savedTunings, {label: name, pitches: tuning.pitches}]),
+    );
+  };
+
+  const getSavedTunings = () => JSON.parse(localStorage.getItem('customTunings') || '[]');
+
   useEffect(() => {
     if (lastIdAdded.current) {
       const lastElementAdded = document.getElementById(lastIdAdded.current.toString());
@@ -104,8 +131,12 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       changeTuning,
       removeString,
       addString,
+      saveTuning,
+      getSavedTunings,
+      tunings,
     }),
-    [tuningIndex, tuning, fretsAmount, selectedStringIndex],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tuningIndex, tuning, fretsAmount, selectedStringIndex, tunings],
   );
   return (
     <NoteGeneratorTuningContext.Provider value={contextValue}>
