@@ -26,8 +26,10 @@ type NoteGeneratorTuningProviderProps = {children: React.ReactNode};
 
 export const NoteGeneratorTuningContext = createContext<NoteGeneratorTuningProps | null>(null);
 
+const E2_PITCH = 40;
 const PERSISTED_TUNINGS_VARIABLE_NAME = 'customTunings';
-
+const PERSISTED_FRET_AMOUNT_VARIABLE_NAME = 'fretsAmount';
+const DEFAULT_FRETS_AMOUNT = 24;
 const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProviderProps>> = ({
   children,
 }) => {
@@ -38,7 +40,9 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     ...defaultTunings,
   ]);
   const [tuning, setTuning] = useState<TuningState>(convertTuningToState(tunings[0]));
-  const [fretsAmount, setFretsAmount] = useState(24);
+  const [fretsAmount, setFretsAmount] = useState(
+    JSON.parse(localStorage.getItem(PERSISTED_TUNINGS_VARIABLE_NAME)!) || DEFAULT_FRETS_AMOUNT,
+  );
 
   const changeFretsAmount = (n: number) => {
     changePitchRange(ps => [undefined, ps[1]! + n]);
@@ -76,9 +80,11 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
 
   const addString = (higher: boolean) => {
     setTuning(ps => {
-      const newPitches = [...ps.pitches];
-      newPitches.splice(higher ? Infinity : 0, 0, createString(ps.pitches.at(-1)!.pitch));
-      return {...ps, pitches: newPitches};
+      const newPitch = createString(ps.pitches.at(-1)!.pitch ?? E2_PITCH);
+      return {
+        ...ps,
+        pitches: [...(higher ? [] : [newPitch]), ...ps.pitches, ...(higher ? [newPitch] : [])],
+      };
     });
   };
 
@@ -91,6 +97,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     const newTuning = {label: name, pitches: tuning.pitches.map(p => p.pitch)};
     setTunings(ps => [newTuning, ...ps]);
     persistTuning(newTuning);
+    persistFretsAmount();
     return true;
   };
 
@@ -101,12 +108,14 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     );
   };
 
+  const persistFretsAmount = () => {
+    localStorage.setItem(PERSISTED_FRET_AMOUNT_VARIABLE_NAME, `${fretsAmount}`);
+  };
+
   const getSavedTunings = (): Tuning[] =>
     JSON.parse(localStorage.getItem(PERSISTED_TUNINGS_VARIABLE_NAME) || '[]');
 
   const deleteTuning = (label: string) => {
-    if (tunings.length === 1) return;
-
     const originalTuning = getOriginalTuning();
     setTuning(convertTuningToState(tunings.find(t => t !== originalTuning)!));
     setTunings(ps => ps.filter(t => t !== originalTuning));

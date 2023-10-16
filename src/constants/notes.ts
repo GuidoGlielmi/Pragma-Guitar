@@ -56,7 +56,7 @@ export const tunings = [
 ] as Tuning[];
 
 const notesArray = Object.values(notes);
-const A4_NUMBER = 69;
+const A4_PITCH = 69;
 const OCTAVES_COVERED = 8;
 const LOWER_OCTAVE_INDEX = -1;
 
