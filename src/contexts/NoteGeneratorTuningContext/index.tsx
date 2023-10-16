@@ -54,7 +54,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     if (i === undefined) {
       newPitches = newPitches.map(p => ({
         ...p,
-        value: rangeLimiter(p.pitch + halfStepsAmount, ...pitchRangeLimits),
+        pitch: rangeLimiter(p.pitch + halfStepsAmount, ...pitchRangeLimits),
       }));
     } else
       newPitches[i].pitch = rangeLimiter(

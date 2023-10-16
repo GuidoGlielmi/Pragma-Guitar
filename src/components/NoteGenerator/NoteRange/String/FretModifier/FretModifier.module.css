@@ -1,0 +1,28 @@
+.fretsContainer {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.fretsContainer > :first-child {
+  margin-right: 8px;
+}
+
+.fretsContainer button {
+  font-size: 1.5em;
+}
+
+.fretsContainer button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 3px 0 0 0;
+  border-radius: 50%;
+  font-family: painter;
+}
+
+.fretsContainer button:hover {
+  background-color: #333;
+}
