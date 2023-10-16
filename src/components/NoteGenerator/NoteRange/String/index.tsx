@@ -1,4 +1,4 @@
-import {useState, useContext} from 'react';
+import {useState, useContext, useRef} from 'react';
 import Select from 'react-select';
 import {customStylesMaxContent} from '../../../../constants/reactSelectStyles';
 import S from './String.module.css';
@@ -11,11 +11,34 @@ import {AnimatePresence, motion} from 'framer-motion';
 import TickButton from '../../../../icons/TickButton';
 import Cancel from '../../../../icons/Cancel';
 import {TuningOptionWithButton} from '../../../common/SelectWithButton';
+import {convertStateToTuning} from '../../../../constants/notes';
+
+enum AddStringMessages {
+  Upper = 'Add Upper string',
+  Lower = 'Add Lower string',
+}
 
 const StringNoteRange = () => {
   const {tuning, tunings, setTuning, addString} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
+
+  const boardRef = useRef<HTMLDivElement>(null);
+
+  const addStringHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (e.currentTarget.title === AddStringMessages.Upper) {
+      addString(true);
+      setTimeout(() => boardRef.current?.scrollTo({top: 0, behavior: 'smooth'}));
+    } else if (e.currentTarget.title === AddStringMessages.Lower) {
+      addString(false);
+      setTimeout(() =>
+        boardRef.current?.scrollTo({
+          top: boardRef.current?.scrollHeight,
+          behavior: 'smooth',
+        }),
+      );
+    }
+  };
 
   return (
     <div className={S.stringSection}>
@@ -24,17 +47,17 @@ const StringNoteRange = () => {
         isSearchable={false}
         styles={customStylesMaxContent}
         options={tunings}
-        value={tuning}
+        value={convertStateToTuning(tuning)}
         onChange={e => {
           setTuning(tunings.indexOf(e as Tuning));
         }}
       />
       <FretModifier />
-      <button title='Add Upper string' onClick={() => addString(true)}>
+      <button title={AddStringMessages.Upper} onClick={addStringHandler}>
         Add Upper String
       </button>
-      <TuningBoard />
-      <button title='Add Lower string' onClick={() => addString(false)}>
+      <TuningBoard ref={boardRef} />
+      <button title={AddStringMessages.Lower} onClick={addStringHandler}>
         Add Lower String
       </button>
       <TuningSaver />
@@ -61,6 +84,7 @@ const TuningSaver = () => {
 
   const [showTuningToSave, setShowTuningToSave] = useState(false);
   const [tuningToSaveName, setTuningToSaveName] = useState('');
+  const [nameUnavailable, setNameUnavailable] = useState(false);
 
   return (
     <AnimatePresence mode='wait'>
@@ -85,9 +109,11 @@ const TuningSaver = () => {
               placeholder='Name'
             />
             <button
+              style={nameUnavailable ? {borderColor: 'red'} : {}}
               disabled={!tuningToSaveName}
               onClick={() => {
-                saveTuning(tuningToSaveName);
+                const saved = saveTuning(tuningToSaveName);
+                setNameUnavailable(!saved);
                 setShowTuningToSave(false);
               }}
             >

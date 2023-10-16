@@ -17,12 +17,12 @@ export const notes = {
 
 export const convertTuningToState = (t: Tuning): TuningState => ({
   ...t,
-  pitches: t.pitches.map(v => ({original: v, value: v, id: Math.random()})),
+  pitches: t.pitches.map(v => ({original: v, pitch: v, id: Math.random()})),
 });
 
 export const convertStateToTuning = (t: TuningState): Tuning => ({
   ...t,
-  pitches: t.pitches.map(p => p.value),
+  pitches: t.pitches.map(p => p.pitch),
 });
 
 export const pitchRangeLimits = [0, 108] as [number, number];
@@ -58,11 +58,12 @@ export const tunings = [
 const notesArray = Object.values(notes);
 const A4_NUMBER = 69;
 const OCTAVES_COVERED = 8;
+const LOWER_OCTAVE_INDEX = -1;
 
 export const strings: gtrString[] = [];
-for (let octave = -1; octave <= OCTAVES_COVERED; octave++) {
+for (let octave = 0; octave <= OCTAVES_COVERED; octave++) {
   for (let noteIndex = 0; noteIndex < notesArray.length; noteIndex++) {
-    const label = `${notesArray[noteIndex]}${octave}` as NoteWithOctave;
+    const label = `${notesArray[noteIndex]}${LOWER_OCTAVE_INDEX + octave}` as NoteWithOctave;
     strings.push({value: octave * 12 + noteIndex, label});
   }
 }

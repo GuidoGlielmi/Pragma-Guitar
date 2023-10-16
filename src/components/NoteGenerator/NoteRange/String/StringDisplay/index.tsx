@@ -10,31 +10,55 @@ import {
   NoteGeneratorContext,
   NoteGeneratorProps,
 } from '../../../../../contexts/NodeGeneratorContext';
+import {AnimatePresence, motion} from 'framer-motion';
 
 interface StringDisplayProps {
   height: number;
-  pitch: number;
+  pitch: StringStateValue;
   index: number;
   selected: boolean;
   select: (i: number) => void;
 }
 
-const StringDisplay = ({height, pitch, index, selected, select}: StringDisplayProps) => {
+const StringDisplay = ({
+  height,
+  pitch: {id, pitch},
+  index,
+  selected,
+  select,
+}: StringDisplayProps) => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-  const {stringModifiedChecker, modifyTuning, removeString} = useContext(
+  const {stringModifiedChecker, incrementPitch, decrementPitch, removeString} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
   const modifyTuningHandler = (n: number) => {
-    modifyTuning(n, index);
-    if (selected) changePitchRange(ps => [undefined, ps[1]! + n]);
+    if (n > 0) incrementPitch(index);
+    else decrementPitch(index);
+    if (selected) changePitchRange(ps => [ps[0], ps[1]! + n]);
   };
 
   return (
     <div className={S.stringContainer}>
       <div>
         <input type='radio' name='string' checked={selected} onChange={() => select(index)} />
-        <NoteWithOctave pitch={pitch} />
+        <AnimatePresence mode='wait'>
+          <motion.div
+            key={pitch}
+            transition={{
+              opacity: {duration: 0.05},
+              color: {duration: 0.3, ease: 'easeIn'},
+            }}
+            initial={{opacity: 0, color: '#b53f3f'}}
+            animate={{
+              opacity: 1,
+              color: '#e2e2e2',
+            }}
+            exit={{opacity: 0}}
+          >
+            <NoteWithOctave pitch={pitch} />
+          </motion.div>
+        </AnimatePresence>
       </div>
       <div
         style={{
@@ -51,7 +75,7 @@ const StringDisplay = ({height, pitch, index, selected, select}: StringDisplayPr
             className='button'
             style={{
               transform: 'rotateZ(180deg)',
-              ...(stringModifiedChecker(index) === true && {background: '#ff5151ad'}),
+              ...(stringModifiedChecker(id) === true && {background: '#ff5151ad'}),
             }}
             onClick={() => modifyTuningHandler(1)}
           >
@@ -61,7 +85,7 @@ const StringDisplay = ({height, pitch, index, selected, select}: StringDisplayPr
             title='Decrease semitone'
             style={{
               transform: 'translateY(2px)',
-              ...(stringModifiedChecker(index) === false && {background: '#ff5151ad'}),
+              ...(stringModifiedChecker(id) === false && {background: '#ff5151ad'}),
             }}
             className='button'
             onClick={() => modifyTuningHandler(-1)}
@@ -69,7 +93,7 @@ const StringDisplay = ({height, pitch, index, selected, select}: StringDisplayPr
             <ChevronDown color='white' />
           </button>
         </div>
-        <button title='Remove string' onClick={() => removeString(index)}>
+        <button title='Remove string' onClick={() => removeString(id)}>
           X
         </button>
       </div>

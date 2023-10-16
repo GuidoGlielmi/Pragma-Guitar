@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, forwardRef} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
@@ -11,22 +11,25 @@ import {
   NoteGeneratorContext,
   NoteGeneratorProps,
 } from '../../../../../contexts/NodeGeneratorContext';
-const TuningBoard = () => {
+
+const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
   const {tuning, fretsAmount} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   const [selectedStringIndex, setSelectedStringIndex] = useState<number>();
 
   useEffect(() => {
+    if (selectedStringIndex === undefined) return;
     changePitchRange([
-      tuning.pitches[selectedStringIndex!],
-      tuning.pitches[selectedStringIndex!] + fretsAmount,
+      tuning.pitches[selectedStringIndex].pitch,
+      tuning.pitches[selectedStringIndex].pitch + fretsAmount,
     ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStringIndex]);
 
   return (
     <div
+      ref={boardRef}
       className={S.tuningBoard}
       style={{
         display: 'flex',
@@ -56,10 +59,10 @@ const TuningBoard = () => {
               const mirroredIndex = arr.length - 1 - i;
               return (
                 <motion.div
-                  id={`${i}`}
-                  key={i}
+                  id={`${v.id}`}
+                  key={v.id}
                   style={{scrollMarginTop: 50}}
-                  layoutId={`${i}`}
+                  layoutId={`${v.id}`}
                   initial={{opacity: 0, background: '#ffffff55'}}
                   animate={{
                     opacity: [0, 0, 0, 1],
@@ -70,7 +73,6 @@ const TuningBoard = () => {
                 >
                   <StringDisplay
                     pitch={v}
-                    key={i}
                     height={i + 1}
                     index={mirroredIndex}
                     selected={selectedStringIndex === mirroredIndex}
@@ -85,6 +87,6 @@ const TuningBoard = () => {
       <StringGroupModifier />
     </div>
   );
-};
+});
 
 export default TuningBoard;

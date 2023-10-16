@@ -20,15 +20,16 @@ export const customStyles = {
 
 export const customStylesMaxContent = {
   ...customStyles,
-  container: (provided: any, _state: any) => ({
+  container: (provided: any) => ({
     ...provided,
     width: '150px',
     margin: 'auto',
   }),
-  option: (provided: any) => ({
+  option: (provided: any, state: any) => ({
     ...provided,
     color: '#464646',
-    background: '#f7f7f7',
+    cursor: 'pointer',
+    background: state.isFocused ? '#e7e7e7' : '#f7f7f7',
   }),
 };
 

@@ -9,7 +9,7 @@ import {
 import S from './StringGroupModifier.module.css';
 
 const StringGroupModifier = () => {
-  const {tuning, setTuning, modifyTuning} = useContext(
+  const {tuning, setTuning, incrementPitch, decrementPitch} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
@@ -18,7 +18,7 @@ const StringGroupModifier = () => {
       <button
         className={S.resetButton}
         onClick={() => {
-          setTuning(tunings.indexOf(tuning));
+          setTuning(tunings.findIndex(t => t.label === tuning.label));
         }}
         style={{padding: 0}}
         title='Reset tuning'
@@ -28,14 +28,14 @@ const StringGroupModifier = () => {
       <div>
         <button
           title='Increase all strings'
-          onClick={() => modifyTuning(1)}
+          onClick={() => incrementPitch()}
           style={{transform: 'rotateZ(180deg)'}}
         >
           <ChevronDown color='white' />
         </button>
         <button
           title='Decrease all strings'
-          onClick={() => modifyTuning(-1)}
+          onClick={() => decrementPitch()}
           style={{transform: 'translateY(2px)'}}
         >
           <ChevronDown color='white' />
