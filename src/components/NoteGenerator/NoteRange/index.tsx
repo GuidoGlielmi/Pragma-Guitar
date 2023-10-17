@@ -20,15 +20,13 @@ const optionsEntries = Object.entries(options) as [keyof typeof options, JSX.Ele
 
 const RangeSelector = () => {
   const [overflowHidden, setOverflowHidden] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
-  const slideForward = useRef(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const prevIndex = useRef(selectedIndex);
 
   const sectionSelectionHandler = (i: number) => {
     setOverflowHidden(true);
-    setSelectedIndex(ps => {
-      slideForward.current = ps !== null ? ps! > i : i === 0;
-      return ps === i ? null : i;
-    });
+    prevIndex.current = selectedIndex;
+    setSelectedIndex(i);
   };
 
   return (
@@ -39,11 +37,11 @@ const RangeSelector = () => {
     >
       <h3>Play Note</h3>
       <RangeOptions selectedIndex={selectedIndex} setSection={sectionSelectionHandler} />
-      <RangeSelection
+      <SelectedRange
         selectedIndex={selectedIndex}
         overflowHidden={overflowHidden}
         setOverflowHidden={setOverflowHidden}
-        slideForward={slideForward}
+        prevIndex={prevIndex}
       />
     </div>
   );
@@ -52,7 +50,7 @@ const RangeSelector = () => {
 const animate = {x: 0, opacity: 1};
 
 type RangeOptionsProps = {
-  selectedIndex: number | null;
+  selectedIndex: number;
   setSection: (i: number) => void;
 };
 
@@ -75,24 +73,28 @@ const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
   );
 };
 
-type RangeSelectionProps = {
-  selectedIndex: number | null;
+type SelectedRangeProps = {
+  selectedIndex: number;
   overflowHidden: boolean;
   setOverflowHidden: Dispatch<React.SetStateAction<boolean>>;
-  slideForward: React.MutableRefObject<boolean>;
+  prevIndex: React.RefObject<number>;
 };
 
-const RangeSelection: FC<RangeSelectionProps> = ({
+const RIGHT = 200;
+const LEFT = -200;
+
+const SelectedRange: FC<SelectedRangeProps> = ({
   selectedIndex,
   overflowHidden,
   setOverflowHidden,
-  slideForward,
+  prevIndex,
 }) => {
-  const hasSelection = selectedIndex !== null;
+  const currentIsLast = selectedIndex === Object.keys(options).length - 1;
+
   return (
     <div
       style={{
-        height: hasSelection ? (optionsEntries[selectedIndex][0] === 'In String' ? 430 : 60) : 0,
+        height: optionsEntries[selectedIndex][0] === 'In String' ? 430 : 60,
         transition: 'height 0.2s ease',
         overflow: overflowHidden ? 'hidden' : 'visible',
       }}
@@ -106,10 +108,13 @@ const RangeSelection: FC<RangeSelectionProps> = ({
       >
         <motion.div
           style={{position: 'absolute', top: 0, width: '90%', height: '100%'}}
-          initial={{x: slideForward.current ? -200 : 200, opacity: 0}}
+          initial={{
+            x: selectedIndex === 0 || prevIndex.current! > selectedIndex! ? LEFT : RIGHT,
+            opacity: 0,
+          }}
           transition={{type: 'spring', mass: 0.4, duration: 0.01}}
           animate={animate}
-          exit={{x: slideForward.current ? -200 : 200, opacity: 0}}
+          exit={{opacity: 0, y: '100%'}}
           onAnimationStart={def => {
             if (def === animate) {
               setOverflowHidden(true);
@@ -117,7 +122,7 @@ const RangeSelection: FC<RangeSelectionProps> = ({
           }}
           key={selectedIndex}
         >
-          {hasSelection ? optionsEntries[selectedIndex][1] : null}
+          {optionsEntries[selectedIndex][1]}
         </motion.div>
       </AnimatePresence>
     </div>

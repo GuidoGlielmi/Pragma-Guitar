@@ -43,11 +43,7 @@ const Note = () => {
     (pitch: number) => {
       if ((from !== null && from !== strings[0]) || (to !== null && to !== strings.at(-1))) {
         if (pitch === pitchToPlay) return true;
-      } else {
-        if (pitchToPlay && !(Math.abs(pitch - pitchToPlay) % 12)) {
-          return true;
-        }
-      }
+      } else if (pitchToPlay && !(Math.abs(pitch - pitchToPlay) % 12)) return true;
       return false;
     },
     [pitchToPlay, from, to],
