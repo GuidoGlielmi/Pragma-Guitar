@@ -69,7 +69,6 @@ export class AudioEcosystem extends AudioContext {
   }
 
   #startMic() {
-    console.log('resume');
     if (!this.micStream) return;
     this.micStream.getAudioTracks()?.forEach(at => (at.enabled = true));
     this.micNode = this.createMediaStreamSource(this.micStream);
@@ -77,7 +76,6 @@ export class AudioEcosystem extends AudioContext {
   }
 
   #pauseMic() {
-    console.log('pause');
     this.micStream?.getAudioTracks()?.forEach(at => (at.enabled = false));
     this.micNode?.disconnect();
     this.micNode = undefined;

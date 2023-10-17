@@ -7,7 +7,7 @@ import {
   NoteGeneratorTuningProps,
 } from '../../../../contexts/NoteGeneratorTuningContext';
 import TuningBoard from './TuningBoard';
-import {TuningOptionWithButton} from '../../../common/SelectWithButton';
+import {TuningOptionWithButton} from '../../../common/ReactSelect/TuningOptionWithButton';
 import {convertStateToTuning} from '../../../../constants/notes';
 import FretModifier from './FretModifier';
 import TuningSaver from './TuningSaver';

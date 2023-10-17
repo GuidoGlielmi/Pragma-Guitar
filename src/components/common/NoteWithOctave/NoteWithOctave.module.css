@@ -1,10 +1,10 @@
 .container {
   position: relative;
-  text-shadow: 2px 2px 1px #111;
+  padding-right: 9px;
 }
-
 .container span:last-of-type {
   position: absolute;
+  min-width: 8px;
   bottom: 0;
   font-size: 0.7em;
 }

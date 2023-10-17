@@ -19,7 +19,7 @@ const DEFAULT_COUNTDOWN_INITIAL_VALUE = 5;
 const MIN_COUNTDOWN_VALUE = 0;
 const MAX_COUNTDOWN_VALUE = 99;
 
-type TPitchRange = [gtrString | null, gtrString | null];
+type TPitchRange = [GtrString | null, GtrString | null];
 type TPitchToPlay = number | null;
 export interface NoteGeneratorProps {
   generatePitch: () => void;
@@ -36,7 +36,7 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
   const {started} = useContext(AudioContext) as AudioProps;
   const {eng} = useContext(LanguageContext) as LanguageProps;
 
-  const [pitchRange, setPitchRange] = useState<[gtrString | null, gtrString | null]>([null, null]);
+  const [pitchRange, setPitchRange] = useState<[GtrString | null, GtrString | null]>([null, null]);
   const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);
   const [countdownInitialValue, setCountdownInitialValue] = useState(
     DEFAULT_COUNTDOWN_INITIAL_VALUE,
@@ -67,7 +67,6 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
         newRange = e([ps[0]?.value || 0, ps[1]?.value || strings.at(-1)!.value]);
       } else if (e[0] === null || e[1] === null) return [null, null];
       else newRange = e;
-      console.log(ps[0], newRange[0], strings[rangeLimiter(newRange[0]!, ...pitchRangeLimits)]);
       return [
         newRange[0] === undefined
           ? ps[0]

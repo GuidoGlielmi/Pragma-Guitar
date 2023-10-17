@@ -16,7 +16,7 @@ declare global {
   // export type NoteWithOctave = `${Note}${Octave}`;
   export type NoteWithOctave = `${string}${Octave}`;
 
-  export type gtrString = {value: number; label: NoteWithOctave; labelEs: NoteWithOctave};
+  export type GtrString = {value: number; label: NoteWithOctave; labelEs: NoteWithOctave};
   export type MediaType = 'audio' | 'video';
   export type MediaDirection = 'input' | 'output';
   export type Device = [string, MediaType, MediaDirection];

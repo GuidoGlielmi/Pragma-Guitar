@@ -9,7 +9,6 @@ export const persistentChecker = (
     const result = await fn(...newValues);
     const positiveOutcome = condition(result);
     if (positiveOutcome) {
-      console.log({remainingTries});
       if (!remainingTries) {
         return onSuccess(result);
       }

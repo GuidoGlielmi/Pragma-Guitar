@@ -1,4 +1,4 @@
-import {Dispatch, FC, useRef, useState} from 'react';
+import {Dispatch, FC, useContext, useRef, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import StringNoteRange from './String';
 import CustomNoteRange from './Custom';
@@ -6,6 +6,9 @@ import './NoteRange.css';
 import Free from './Free';
 import NoteGeneratorTuningProvider from '../../../contexts/NoteGeneratorTuningContext';
 import useTranslation from '../../../hooks/useTranslation';
+import {NoteGeneratorContext, NoteGeneratorProps} from '../../../contexts/NodeGeneratorContext';
+import {LanguageContext, LanguageProps} from '../../../contexts/LanguageContext';
+import NoteWithOctave from '../../common/NoteWithOctave';
 
 const options = {
   ['Free Mode']: <Free />,
@@ -58,23 +61,35 @@ type RangeOptionsProps = {
 };
 
 const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
+  const {
+    pitchRange: [from, to],
+  } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+
+  const {eng} = useContext(LanguageContext) as LanguageProps;
+
   const rangeOptionsTitles = useTranslation(optionsEntries.map(([k]) => k));
 
   return (
-    <div className='rangeOptions'>
-      {optionsEntries.map(([title], i) => (
-        <button
-          id={title.replaceAll(/ /g, '')}
-          key={title}
-          style={{
-            ...(selectedIndex === i && {borderBottom: '1px solid #646cff', color: 'white'}),
-          }}
-          onClick={() => setSection(i)}
-        >
-          {rangeOptionsTitles[i]}
-        </button>
-      ))}
-    </div>
+    <>
+      <div className='rangeOptions'>
+        {optionsEntries.map(([title], i) => (
+          <button
+            id={title.replaceAll(/ /g, '')}
+            key={title}
+            style={{
+              ...(selectedIndex === i && {borderBottom: '1px solid #646cff', color: 'white'}),
+            }}
+            onClick={() => setSection(i)}
+          >
+            {rangeOptionsTitles[i]}
+          </button>
+        ))}
+      </div>
+      <div className='rangeToPlayContainer'>
+        <NoteWithOctave pitch={from?.value!} />
+        <NoteWithOctave pitch={to?.value!} />
+      </div>
+    </>
   );
 };
 

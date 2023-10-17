@@ -28,7 +28,7 @@ export const pitchToNote = (pitch: number | null, eng = true) => {
 };
 
 export const getOctave = (pitch: number | null) => {
-  return pitch ? Math.floor(pitch / 12) - 1 : null;
+  return pitch !== null ? Math.floor(pitch / 12) - 1 : null;
 };
 
 export const getPitchAndOctave = (pitch: number | null) => {

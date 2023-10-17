@@ -60,7 +60,7 @@ const A4_PITCH = 69;
 const OCTAVES_COVERED = 8;
 const LOWER_OCTAVE_INDEX = -1;
 
-export const strings: gtrString[] = [];
+export const strings: GtrString[] = [];
 for (let octave = 0; octave <= OCTAVES_COVERED; octave++) {
   for (let noteIndex = 0; noteIndex < notesArray.length; noteIndex++) {
     const label = `${notesArray[noteIndex][0]}${LOWER_OCTAVE_INDEX + octave}` as NoteWithOctave;
