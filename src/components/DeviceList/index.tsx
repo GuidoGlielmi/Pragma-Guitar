@@ -3,10 +3,13 @@ import ChevronDown from '../../icons/ChevronDown';
 import {AudioContext, AudioProps} from '../../contexts/AudioContext';
 import S from './DeviceList.module.css';
 import Refresh from '../../icons/Refresh';
+import useTranslation from '../../hooks/useTranslation';
 
 const DeviceList = () => {
   const {devices, askDevicesInfoPermission, setDevicesHandler, selectedDevice, setSelectedDevice} =
     useContext(AudioContext) as AudioProps;
+
+  const [devicesString] = useTranslation('Devices');
 
   const [devicesShown, setDevicesShown] = useState(false);
 
@@ -24,7 +27,7 @@ const DeviceList = () => {
     <div className={S.devicesContainer}>
       <div>
         <div className={S.titleContainer}>
-          <span>Devices</span>
+          <span>{devicesString}</span>
           <button onClick={showDevices}>
             <ChevronDown />
           </button>

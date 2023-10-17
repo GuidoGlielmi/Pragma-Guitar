@@ -14,6 +14,7 @@ import NoteGeneratorProvider, {
 } from '../../contexts/NodeGeneratorContext';
 import Timer from './Timer';
 import './NoteGenerator.css';
+import useTranslation from '../../hooks/useTranslation';
 
 export const Component = () => {
   const {started} = useContext(AudioContext) as AudioProps;
@@ -51,6 +52,8 @@ const Note = () => {
 
   const {pitch, correct, currStreak, maxStreak} = useCorrectPitch({condition});
 
+  const [bestStreakString] = useTranslation(['Best Streak']);
+
   useEffect(() => {
     if (correct && correctNoteAudio.current) audioEcosystem.playBuffer(correctNoteAudio.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,7 +68,11 @@ const Note = () => {
           {started && <Notes pitch={pitch} correct={correct} currStreak={currStreak} />}
         </AnimatePresence>
       </div>
-      {!!maxStreak && <div className='painterFont'>Best streak: {maxStreak}</div>}
+      {!!maxStreak && (
+        <div className='painterFont'>
+          {bestStreakString}: {maxStreak}
+        </div>
+      )}
     </>
   );
 };

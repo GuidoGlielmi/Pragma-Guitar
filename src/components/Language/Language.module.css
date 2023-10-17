@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 20px;
+  color: #222;
+  border-radius: 5px;
+}
+.container button {
+  background-color: #ccc;
+  color: #222;
+  padding: 3px 7px;
+}

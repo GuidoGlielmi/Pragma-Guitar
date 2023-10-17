@@ -5,6 +5,7 @@ import CustomNoteRange from './Custom';
 import './NoteRange.css';
 import Free from './Free';
 import NoteGeneratorTuningProvider from '../../../contexts/NoteGeneratorTuningContext';
+import useTranslation from '../../../hooks/useTranslation';
 
 const options = {
   ['Free Mode']: <Free />,
@@ -23,6 +24,8 @@ const RangeSelector = () => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const prevIndex = useRef(selectedIndex);
 
+  const [playNoteString] = useTranslation('Play Note');
+
   const sectionSelectionHandler = (i: number) => {
     setOverflowHidden(true);
     prevIndex.current = selectedIndex;
@@ -35,7 +38,7 @@ const RangeSelector = () => {
       className='rangeSelectorContainer'
       style={{overflow: overflowHidden ? 'hidden' : 'visible'}}
     >
-      <h3>Play Note</h3>
+      <h3>{playNoteString}</h3>
       <RangeOptions selectedIndex={selectedIndex} setSection={sectionSelectionHandler} />
       <SelectedRange
         selectedIndex={selectedIndex}
@@ -55,6 +58,8 @@ type RangeOptionsProps = {
 };
 
 const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
+  const rangeOptionsTitles = useTranslation(optionsEntries.map(([k]) => k));
+
   return (
     <div className='rangeOptions'>
       {optionsEntries.map(([title], i) => (
@@ -66,7 +71,7 @@ const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
           }}
           onClick={() => setSection(i)}
         >
-          {title}
+          {rangeOptionsTitles[i]}
         </button>
       ))}
     </div>

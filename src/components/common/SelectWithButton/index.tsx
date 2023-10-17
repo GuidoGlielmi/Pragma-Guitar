@@ -11,7 +11,7 @@ export const TuningOptionWithButton = (props: OptionProps<Tuning>) => {
   return (
     <components.Option {...props}>
       <div className='flexCentered'>
-        {props.children}
+        <span>{props.children}</span>
         <button
           className='painterButton'
           onClick={e => {

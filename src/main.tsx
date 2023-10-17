@@ -14,6 +14,7 @@ import {ErrorBoundary} from './ErrorBoundary/index.tsx';
 import 'intro.js/introjs.css';
 import AudioProvider from './contexts/AudioContext';
 import {routes} from './constants/routes.tsx';
+import LanguageProvider from './contexts/LanguageContext/index.tsx';
 
 const sections = createRoutesFromElements(
   <Route element={<App />}>
@@ -26,9 +27,11 @@ const sections = createRoutesFromElements(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
   <ErrorBoundary>
-    <AudioProvider>
-      <RouterProvider router={createBrowserRouter(sections)} />
-    </AudioProvider>
+    <LanguageProvider>
+      <AudioProvider>
+        <RouterProvider router={createBrowserRouter(sections)} />
+      </AudioProvider>
+    </LanguageProvider>
     <Analytics />
   </ErrorBoundary>,
   // </React.StrictMode>,

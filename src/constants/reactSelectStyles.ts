@@ -22,14 +22,14 @@ export const customStylesMaxContent = {
   ...customStyles,
   container: (provided: any) => ({
     ...provided,
-    width: '150px',
+    width: 'max-content',
     margin: 'auto',
   }),
   option: (provided: any, state: any) => ({
     ...provided,
     color: '#464646',
     cursor: 'pointer',
-    background: state.isFocused ? '#e7e7e7' : '#f7f7f7',
+    background: state.isFocused ? '#d7d7d7' : '#f7f7f7',
   }),
 };
 

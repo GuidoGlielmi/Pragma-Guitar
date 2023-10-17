@@ -1,6 +1,9 @@
 import {useState, useRef} from 'react';
+import useTranslation from './useTranslation';
 
 const useTap = (snapValue = 5) => {
+  const [tapString] = useTranslation('Tap');
+
   const [bpm, setBpm] = useState(0);
   const prevTime = useRef(0);
   const tapHandler = () => {
@@ -8,7 +11,7 @@ const useTap = (snapValue = 5) => {
     setBpm(getSnappedValue(~~(1 / ((currTime - prevTime.current) / 1000 / 60)), snapValue));
     prevTime.current = currTime;
   };
-  return [<button onClick={tapHandler}>Tap</button>, bpm] as [JSX.Element, number];
+  return [<button onClick={tapHandler}>{tapString}</button>, bpm] as [JSX.Element, number];
 };
 
 export function getSnappedValue(value: number, snapUnit = 5, multiplier = 1) {

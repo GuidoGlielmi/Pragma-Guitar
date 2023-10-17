@@ -134,6 +134,6 @@ p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 3px;
+  gap: 5px;
   text-align: left;
 }

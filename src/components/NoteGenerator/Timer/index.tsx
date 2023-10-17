@@ -6,6 +6,7 @@ import {AudioContext, AudioProps} from '../../../contexts/AudioContext';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../contexts/NodeGeneratorContext';
 import {pollRemainingTime} from '../../../helpers/timer';
 import S from './Timer.module.css';
+import useTranslation from '../../../hooks/useTranslation';
 
 const Timer = () => {
   const {started} = useContext(AudioContext) as AudioProps;
@@ -14,6 +15,8 @@ const Timer = () => {
   ) as NoteGeneratorProps;
 
   const [remainingMs, setRemainingMS] = useState(countdownInitialValue * 1000);
+
+  const [countdownString] = useTranslation('Countdown');
 
   useEffect(() => {
     setRemainingMS(countdownInitialValue * 1000);
@@ -55,7 +58,7 @@ const Timer = () => {
 
   return (
     <div className={S.timerContainer}>
-      <h3>Countdown</h3>
+      <h3>{countdownString}</h3>
       <div className={S.countdownContainer}>
         <button onClick={() => setCountdownInitialValue(ps => ps - 1)} id='minus'>
           <Minus />

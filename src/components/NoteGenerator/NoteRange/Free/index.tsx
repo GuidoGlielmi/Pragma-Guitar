@@ -1,9 +1,12 @@
 import {useEffect, useContext} from 'react';
 import {strings} from '../../../../constants/notes';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
+import useTranslation from '../../../../hooks/useTranslation';
 
 const Free = () => {
   const {pitchRange, changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+
+  const [exactOctaveString, anyOctaveString] = useTranslation(['Exact Octave', 'Any Octave']);
 
   useEffect(() => {
     changePitchRange([null, null]);
@@ -40,7 +43,7 @@ const Free = () => {
             changePitchRange([null, null]);
           }}
         />
-        <label htmlFor='any'>Any Octave</label>
+        <label htmlFor='any'>{anyOctaveString}</label>
       </div>
       <div
         style={{
@@ -59,7 +62,7 @@ const Free = () => {
             changePitchRange([0, strings.length - 1]);
           }}
         />
-        <label htmlFor='exact'>Exact Octave</label>
+        <label htmlFor='exact'>{exactOctaveString}</label>
       </div>
     </div>
   );

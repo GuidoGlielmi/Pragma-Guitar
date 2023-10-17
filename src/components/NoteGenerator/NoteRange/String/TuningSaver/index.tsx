@@ -7,6 +7,7 @@ import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
 } from '../../../../../contexts/NoteGeneratorTuningContext';
+import useTranslation from '../../../../../hooks/useTranslation';
 
 const TuningSaver = () => {
   const {saveTuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
@@ -14,6 +15,12 @@ const TuningSaver = () => {
   const [showTuningToSave, setShowTuningToSave] = useState(false);
   const [tuningToSaveName, setTuningToSaveName] = useState('');
   const [nameUnavailable, setNameUnavailable] = useState(false);
+
+  const [saveTuningString, nameString, nameInUseString] = useTranslation([
+    'Save Tuning',
+    'Name',
+    'Name already in use!',
+  ]);
 
   const saveTuningHandler = () => {
     const saved = saveTuning(tuningToSaveName);
@@ -40,7 +47,7 @@ const TuningSaver = () => {
             title='Save Tuning'
             onClick={() => setShowTuningToSave(true)}
           >
-            Save Tuning
+            {saveTuningString}
           </button>
         ) : (
           <>
@@ -48,7 +55,7 @@ const TuningSaver = () => {
               value={tuningToSaveName}
               onChange={e => setTuningToSaveName(e.target.value)}
               style={nameUnavailable ? {borderColor: 'red'} : {}}
-              placeholder='Name'
+              placeholder={nameString}
             />
             {nameUnavailable && (
               <p
@@ -61,7 +68,7 @@ const TuningSaver = () => {
                   transform: 'translateY(110%)',
                 }}
               >
-                Name already in use!
+                {nameInUseString}
               </p>
             )}
             <button disabled={!tuningToSaveName} onClick={saveTuningHandler}>

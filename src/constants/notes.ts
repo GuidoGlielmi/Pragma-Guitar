@@ -1,18 +1,18 @@
 export const minBPS = 10;
 export const maxBPS = 300;
 export const notes = {
-  C: 'C',
-  'C#': 'C#',
-  D: 'D',
-  'D#': 'D#',
-  E: 'E',
-  F: 'F',
-  'F#': 'F#',
-  G: 'G',
-  'G#': 'G#',
-  A: 'A',
-  'A#': 'A#',
-  B: 'B',
+  C: 'Do',
+  'C#': 'Do#',
+  D: 'Re',
+  'D#': 'Re#',
+  E: 'Mi',
+  F: 'Fa',
+  'F#': 'Fa#',
+  G: 'Sol',
+  'G#': 'Sol#',
+  A: 'La',
+  'A#': 'La#',
+  B: 'Si',
 };
 
 export const convertTuningToState = (t: Tuning): TuningState => ({
@@ -55,7 +55,7 @@ export const tunings = [
   {label: 'Nashville', pitches: [52, 57, 62, 67, 71, 76]},
 ] as Tuning[];
 
-const notesArray = Object.values(notes);
+const notesArray = Object.entries(notes);
 const A4_PITCH = 69;
 const OCTAVES_COVERED = 8;
 const LOWER_OCTAVE_INDEX = -1;
@@ -63,7 +63,8 @@ const LOWER_OCTAVE_INDEX = -1;
 export const strings: gtrString[] = [];
 for (let octave = 0; octave <= OCTAVES_COVERED; octave++) {
   for (let noteIndex = 0; noteIndex < notesArray.length; noteIndex++) {
-    const label = `${notesArray[noteIndex]}${LOWER_OCTAVE_INDEX + octave}` as NoteWithOctave;
-    strings.push({value: octave * 12 + noteIndex, label});
+    const label = `${notesArray[noteIndex][0]}${LOWER_OCTAVE_INDEX + octave}` as NoteWithOctave;
+    const labelEs = `${notesArray[noteIndex][1]}${LOWER_OCTAVE_INDEX + octave}` as NoteWithOctave;
+    strings.push({value: octave * 12 + noteIndex, label, labelEs});
   }
 }

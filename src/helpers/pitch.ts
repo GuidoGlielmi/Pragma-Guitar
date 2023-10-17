@@ -18,10 +18,13 @@ export const getFrecuencyFromPitch = (pitch: number) => {
   return 440 * 2 ** ((pitch - middlePitch) / 12);
 };
 
-export const pitchToNote = (pitch: number | null) => {
+export const pitchToNote = (pitch: number | null, eng = true) => {
   if (pitch === null) return [null, null];
   const coveredOctaves = Math.floor(pitch / 12) * 12;
-  return [Object.values(notes)[pitch - coveredOctaves], getOctave(pitch)] as [string, number];
+  return [Object[eng ? 'keys' : 'values'](notes)[pitch - coveredOctaves], getOctave(pitch)] as [
+    string,
+    number,
+  ];
 };
 
 export const getOctave = (pitch: number | null) => {

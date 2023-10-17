@@ -5,6 +5,8 @@ import {AudioContext, AudioProps} from './contexts/AudioContext';
 import NavBar from './components/Navbar';
 import DeviceList from './components/DeviceList';
 import './App.css';
+import useTranslation from './hooks/useTranslation';
+import Language from './components/Language';
 
 function App() {
   const location = useLocation();
@@ -17,6 +19,7 @@ function App() {
 
   return (
     <main>
+      <Language />
       <DeviceList />
       <NavBar />
       <StartButton />
@@ -45,9 +48,12 @@ const Sections = () => {
 
 const StartButton = () => {
   const {start, stop, started} = useContext(AudioContext) as AudioProps;
+
+  const [startString, stopString] = useTranslation(['Start', 'Stop']);
+
   return (
     <button onClick={started ? stop : start} id='start'>
-      {started ? 'Stop' : 'Start'}
+      {started ? stopString : startString}
     </button>
   );
 };
