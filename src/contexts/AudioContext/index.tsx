@@ -9,7 +9,7 @@ import {
   SetStateAction,
   useEffect,
 } from 'react';
-import {AudioEcosystem} from '../../helpers/AudioEnvironment';
+import {AudioEcosystem} from '../../helpers/AudioEcosystem';
 import useChange from '../../hooks/useChange';
 
 export interface AudioProps {

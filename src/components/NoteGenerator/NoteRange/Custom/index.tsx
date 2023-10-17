@@ -33,6 +33,7 @@ const CustomNoteRange = () => {
           id='to'
           value={to}
           onChange={e => changePitchRange([undefined, e!.value])} // value is index
+          isOptionDisabled={e => strings.indexOf(e) < strings.indexOf(from!)}
         />
       </div>
     </div>

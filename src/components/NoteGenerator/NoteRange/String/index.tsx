@@ -1,4 +1,4 @@
-import {useContext, useRef} from 'react';
+import {useContext, useEffect, useRef} from 'react';
 import Select from 'react-select';
 import {customStylesMaxContent} from '../../../../constants/reactSelectStyles';
 import S from './String.module.css';
@@ -12,6 +12,7 @@ import {convertStateToTuning} from '../../../../constants/notes';
 import FretModifier from './FretModifier';
 import TuningSaver from './TuningSaver';
 import useTranslation from '../../../../hooks/useTranslation';
+import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 
 enum AddStringMessages {
   Upper = 'Add Upper string',
@@ -19,7 +20,9 @@ enum AddStringMessages {
 }
 
 const StringNoteRange = () => {
-  const {tuning, tunings, setTuning, addString} = useContext(
+  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+
+  const {tuning, tunings, setTuning, addString, fretsAmount} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
@@ -30,6 +33,11 @@ const StringNoteRange = () => {
     'Add Lower String',
     'Add Upper String',
   ]);
+
+  useEffect(() => {
+    changePitchRange([tuning.pitches[0].pitch, tuning.pitches.at(-1)!.original! + fretsAmount]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const addStringHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (e.currentTarget.title === AddStringMessages.Upper) {
