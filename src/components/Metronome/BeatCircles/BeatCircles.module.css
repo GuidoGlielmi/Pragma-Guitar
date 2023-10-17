@@ -1,0 +1,10 @@
+.beatContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.beatUnit {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}

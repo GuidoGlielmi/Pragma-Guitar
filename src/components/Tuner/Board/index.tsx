@@ -13,43 +13,40 @@ const third = 33;
 
 const Board = ({frecuency}: BoardProps) => {
   const detune = centsOffFromClosestPitch(frecuency || 0) / 100;
-  const pitch = frecuency ? pitchFromFrequency(frecuency) : null;
+  const pitch = frecuency ? pitchFromFrequency(frecuency) : undefined;
   const lowerBandPercentage = frecuency === null ? third / 2 : (1 - detune) * third - third / 2;
   return (
     <section className={S.container}>
       <div>
-        <AnimatePresence>
-          <motion.div
-            key={pitch}
-            exit={{opacity: 0}}
-            transition={{duration: 0.075}}
-            style={{left: `${lowerBandPercentage}%`}}
-            className={S.lowPitchContainer}
-          >
-            {pitch && <NoteWithOctave pitch={pitch - 1} />}
-          </motion.div>
-        </AnimatePresence>
-        <div
-          style={{left: `${third + lowerBandPercentage}%`}}
-          className={S.middleAndHighPitchContainer}
-        >
+        <Band pitch={pitch! - 1} percentage={lowerBandPercentage} />
+        <div style={{left: `${third + lowerBandPercentage}%`}}>
           {pitch && <NoteWithOctave pitch={pitch} />}
         </div>
-        <AnimatePresence>
-          <motion.div
-            key={pitch}
-            exit={{opacity: 0}}
-            transition={{duration: 0.075}}
-            style={{left: `${third * 2 + lowerBandPercentage}%`}}
-            className={S.middleAndHighPitchContainer}
-          >
-            {pitch && <NoteWithOctave pitch={pitch + 1} />}
-          </motion.div>
-        </AnimatePresence>
+        <Band pitch={pitch! + 1} percentage={third * 2 + lowerBandPercentage} />
         <span className={S.xAxis} />
         <span className={S.value} />
       </div>
     </section>
+  );
+};
+
+type BandProps = {
+  pitch: number | null;
+  percentage: number;
+};
+
+const Band = ({pitch, percentage}: BandProps) => {
+  return (
+    <AnimatePresence>
+      <motion.div
+        key={pitch}
+        exit={{opacity: 0}}
+        transition={{duration: 0.075}}
+        style={{left: `${percentage}%`}}
+      >
+        {!!pitch && <NoteWithOctave pitch={pitch - 1} />}
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

@@ -15,8 +15,6 @@ const CustomNoteRange = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // console.log({from, to});
-
   return (
     <div id='customNoteRange' style={{display: 'flex', gap: 10, justifyContent: 'center'}}>
       <div>

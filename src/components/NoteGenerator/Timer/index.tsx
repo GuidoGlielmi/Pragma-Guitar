@@ -24,7 +24,7 @@ const Timer = () => {
 
     let remainingCountdownTimeProvider = pollRemainingTime(countdownInitialValue);
 
-    const stopProvider = () => {
+    const reset = () => {
       setRemainingMS(countdownInitialValue * 1000);
       remainingCountdownTimeProvider.return();
     };
@@ -32,7 +32,7 @@ const Timer = () => {
     const intervalId = setInterval(() => {
       const remainingMs = remainingCountdownTimeProvider.next().value!;
       if (remainingMs <= 0) {
-        stopProvider();
+        reset();
         remainingCountdownTimeProvider = pollRemainingTime(countdownInitialValue);
         generatePitch();
         return;
@@ -41,7 +41,7 @@ const Timer = () => {
     }, 50);
 
     return () => {
-      stopProvider();
+      reset();
       clearInterval(intervalId);
     };
   }, [started, countdownInitialValue, generatePitch]);
