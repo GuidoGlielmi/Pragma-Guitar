@@ -1,6 +1,7 @@
 /* eslint-disable no-empty */
 import {useState, useEffect, useContext} from 'react';
 import {AudioContext, AudioProps, audioEcosystem} from '../contexts/AudioContext';
+import {debounce} from '../helpers/timer';
 
 interface MetronomeProps {
   bpm: number;
@@ -30,13 +31,14 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
     const denominator = bar[1];
     const msInterval = bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
 
-    const task = () => {
+    const task = debounce(() => {
       setPosition(ps => {
         const isLast = ps === bar[0] - 1 || ps === -1;
         audioEcosystem.playBuffer(isLast ? firstClickAudioBuffer : clickAudioBuffer);
         return isLast ? 0 : ps + 1;
       });
-    };
+    });
+
     const stopTask = pollTask(msInterval, task);
 
     return () => {

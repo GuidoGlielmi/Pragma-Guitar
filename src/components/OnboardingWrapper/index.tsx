@@ -1,4 +1,4 @@
-import {PropsWithChildren, useState, useRef, useEffect, useContext} from 'react';
+import {PropsWithChildren, useState, useEffect, useContext} from 'react';
 import QuestionMark from '../../icons/QuestionMark';
 import {Steps} from 'intro.js-react';
 import S from './OnboardingWrapper.module.css';

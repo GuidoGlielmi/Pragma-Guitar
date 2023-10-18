@@ -1,4 +1,4 @@
-import {Dispatch, FC, useContext, useRef, useState} from 'react';
+import {Dispatch, FC, useRef, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
 import StringNoteRange from './String';
 import CustomNoteRange from './Custom';

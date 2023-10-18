@@ -1,4 +1,5 @@
 import {useState, useRef, useEffect} from 'react';
+import {debounce, throttle} from '../helpers/timer';
 
 interface NumberInputProps extends React.HTMLProps<HTMLInputElement> {
   initialValue?: number;
@@ -16,52 +17,63 @@ const useNumberInput = ({
 }: NumberInputProps = {}) => {
   const [value, setValue] = useState(initialValue);
   const [dragging, setDragging] = useState(false);
+
   const prevY = useRef(0);
+
   const changeHandler = (value: number) => {
     setValue(ps => {
       const newValue = ~~(value === 0 ? value : Math.max(min, Math.min(value, max)) || ps);
       return newValue;
     });
   };
+
+  const touchDragHandler = (e: TTouchDragEvent) => {
+    const currY = e.touches[0].pageY;
+    setValue(ps => {
+      const value = ps + (currY - prevY.current > 0 ? -1 : 1);
+      return Math.max(min, Math.min(value, max));
+    });
+    prevY.current = currY;
+  };
+
+  const mouseDragHandler = (e: MouseEvent) => {
+    setValue(ps => {
+      const value = ps + (e.movementY > 0 ? -1 : 1);
+      return Math.max(min, Math.min(value, max));
+    });
+  };
+
+  const onTouchMove = useRef(throttle(touchDragHandler, 10)) as Readonly<
+    React.MutableRefObject<Task<[TTouchDragEvent]>>
+  >;
+  const onChange = useRef(debounce(changeHandler, 10)) as Readonly<
+    React.MutableRefObject<Task<[number]>>
+  >;
+
   useEffect(() => {
-    const onMouseMove = throttle(dragHandler, 10);
     const onMouseUp = () => setDragging(false);
-    if (dragging) {
-      window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    return () => {
       window.addEventListener('mouseup', onMouseUp);
-      return () => {
-        window.removeEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
-      };
-    }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!dragging) return;
+    const onMouseMove = throttle(mouseDragHandler, 10);
+    window.addEventListener('mousemove', onMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dragging]);
 
   const add = (newValue: number) => {
-    changeHandler(newValue + value);
+    onChange.current(newValue + value);
   };
 
   const subtract = (newValue: number) => {
-    changeHandler(newValue + value);
-  };
-
-  const dragHandler = (
-    e: React.MouseEvent<HTMLInputElement, MouseEvent> & React.TouchEvent<HTMLInputElement>,
-  ) => {
-    if (!dragging) return;
-    if (e.movementY !== undefined) {
-      setValue(ps => {
-        const value = ps + (e.movementY > 0 ? -1 : 1);
-        return Math.max(min, Math.min(value, max));
-      });
-    } else {
-      const currY = e.touches[0].pageY;
-      setValue(ps => {
-        const value = ps + (currY - prevY.current > 0 ? -1 : 1);
-        return Math.max(min, Math.min(value, max));
-      });
-      prevY.current = currY;
-    }
+    onChange.current(newValue + value);
   };
 
   return {
@@ -71,7 +83,7 @@ const useNumberInput = ({
         style={{...style, cursor: dragging ? 'grabbing' : 'grab', userSelect: 'none'}}
         value={value || ''}
         onBlur={() => setValue(ps => ps || min)}
-        onChange={e => changeHandler(+e.target.value)}
+        onChange={e => onChange.current(+e.target.value)}
         onMouseDown={() => {
           setDragging(true);
         }}
@@ -81,7 +93,7 @@ const useNumberInput = ({
         onTouchEnd={() => {
           setDragging(false);
         }}
-        onTouchMove={throttle(dragHandler, 10)}
+        onTouchMove={onTouchMove.current}
       />
     ),
     value,
@@ -91,16 +103,6 @@ const useNumberInput = ({
   };
 };
 
-export const throttle = (fn: (...args: any[]) => any, delay = 50): ((...args: any[]) => any) => {
-  let timer: number | undefined;
-
-  return (...args: any[]) => {
-    if (timer !== undefined) return;
-    timer = setTimeout(() => {
-      timer = undefined;
-      fn(...args);
-    }, delay);
-  };
-};
+type TTouchDragEvent = React.TouchEvent<HTMLInputElement>;
 
 export default useNumberInput;

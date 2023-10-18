@@ -13,6 +13,8 @@ declare global {
     detune: number | null;
   };
 
+  export type Task<T extends any[]> = (...args: T) => void;
+
   export type Note = keyof typeof notes;
   export type NoteEs = (typeof notes)[keyof typeof notes];
   export type Octave = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';

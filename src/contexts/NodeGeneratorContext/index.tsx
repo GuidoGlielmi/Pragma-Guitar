@@ -18,7 +18,6 @@ import {
 import {rangeLimiter} from '../../helpers/valueRange';
 import {AudioContext, AudioProps} from '../AudioContext';
 import {getRandomIndexGenerator} from '../../helpers/randomIndexGenerator';
-import {LanguageContext, LanguageProps} from '../LanguageContext';
 
 const DEFAULT_COUNTDOWN_INITIAL_VALUE = 5;
 
@@ -37,7 +36,6 @@ export const NoteGeneratorContext = createContext<NoteGeneratorProps | null>(nul
 
 const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
   const {started} = useContext(AudioContext) as AudioProps;
-  const {eng} = useContext(LanguageContext) as LanguageProps;
 
   const [pitchRange, setPitchRange] = useState<[GtrString | null, GtrString | null]>([null, null]);
   const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);

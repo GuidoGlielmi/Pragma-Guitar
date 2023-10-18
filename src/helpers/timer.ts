@@ -8,3 +8,22 @@ export function* pollRemainingTime(countdownTimeInSeconds: number) {
     currentTime = new Date().getTime();
   }
 }
+
+export const debounce = <T extends any[]>(fn: Task<T>, delay = 50): Task<T> => {
+  let timer: number | undefined;
+  return (...args: T) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+};
+
+export const throttle = <T extends any[]>(fn: Task<T>, delay = 50): Task<T> => {
+  let timer: number | undefined;
+  return (...args: T) => {
+    if (timer !== undefined) return;
+    timer = setTimeout(() => {
+      timer = undefined;
+      fn(...args);
+    }, delay);
+  };
+};

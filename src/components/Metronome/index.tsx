@@ -8,7 +8,7 @@ import BeatCircles from './BeatCircles';
 import Header from './Header';
 import Bar from './Bar';
 
-export const Component = () => {
+const Metronome = () => {
   const {
     input,
     value: bpm,
@@ -33,4 +33,4 @@ export const Component = () => {
   );
 };
 
-export default Component;
+export default Metronome;
