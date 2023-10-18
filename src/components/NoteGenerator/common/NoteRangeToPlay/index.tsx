@@ -1,6 +1,7 @@
 import {useContext} from 'react';
 import NoteWithOctave from '../../../common/NoteWithOctave';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
+import {strings} from '../../../../constants/notes';
 
 const NoteRangeToPlay = () => {
   const {
@@ -9,8 +10,8 @@ const NoteRangeToPlay = () => {
 
   return (
     <div className='rangeToPlayContainer'>
-      <NoteWithOctave pitch={from?.value!} />
-      <NoteWithOctave pitch={to?.value!} />
+      <NoteWithOctave pitch={from?.value! ?? strings[0].value} />
+      <NoteWithOctave pitch={to?.value! ?? strings.at(-1)!.value} />
     </div>
   );
 };

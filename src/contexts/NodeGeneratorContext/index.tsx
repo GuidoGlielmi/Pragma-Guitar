@@ -9,15 +9,18 @@ import {
   FC,
   PropsWithChildren,
 } from 'react';
-import {pitchRangeLimits, strings} from '../../constants/notes';
+import {
+  MAX_COUNTDOWN_VALUE,
+  MIN_COUNTDOWN_VALUE,
+  pitchRangeLimits,
+  strings,
+} from '../../constants/notes';
 import {rangeLimiter} from '../../helpers/valueRange';
 import {AudioContext, AudioProps} from '../AudioContext';
 import {getRandomIndexGenerator} from '../../helpers/randomIndexGenerator';
 import {LanguageContext, LanguageProps} from '../LanguageContext';
 
 const DEFAULT_COUNTDOWN_INITIAL_VALUE = 5;
-const MIN_COUNTDOWN_VALUE = 0;
-const MAX_COUNTDOWN_VALUE = 99;
 
 type TPitchRange = [GtrString | null, GtrString | null];
 type TPitchToPlay = number | null;

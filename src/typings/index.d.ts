@@ -2,7 +2,10 @@ import {notes} from '../constants/notes';
 import {Step} from 'intro.js';
 
 declare global {
-  export type StepWithAction = Step & {click?: boolean};
+  export type StepWithActionAndTranslation = Omit<Step, 'intro'> & {
+    intro: {es: string; en: string};
+    click?: boolean;
+  };
   export type UsePitch = {
     note: Note | null;
     frecuency: number | null;

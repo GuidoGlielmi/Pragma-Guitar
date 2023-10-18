@@ -13,7 +13,6 @@ import FretModifier from './FretModifier';
 import TuningSaver from './TuningSaver';
 import useTranslation from '../../../../hooks/useTranslation';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
-import NoteRangeToPlay from '../../common/NoteRangeToPlay';
 
 enum AddStringMessages {
   Upper = 'Add Upper string',
@@ -61,7 +60,6 @@ const StringNoteRange = () => {
   return (
     <>
       <div className={S.stringSection}>
-        <NoteRangeToPlay />
         <Select
           components={{Option: TuningOptionWithButton}}
           isSearchable={false}

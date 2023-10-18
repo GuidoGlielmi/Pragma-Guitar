@@ -20,7 +20,7 @@ const NoteGenerator = () => {
   const {started} = useContext(AudioContext) as AudioProps;
 
   return (
-    <OnboardingWrapper steps={noteGenerator} stepsToUpdate={started ? [13, 14] : undefined}>
+    <OnboardingWrapper steps={noteGenerator} stepsToUpdate={started ? [12, 13] : undefined}>
       <div className='container'>
         <NoteGeneratorProvider>
           <Note />

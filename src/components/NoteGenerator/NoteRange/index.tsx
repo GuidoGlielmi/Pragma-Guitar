@@ -7,6 +7,7 @@ import Free from './Free';
 import NoteGeneratorTuningProvider from '../../../contexts/NoteGeneratorTuningContext';
 import useTranslation from '../../../hooks/useTranslation';
 import {TranslationKeys} from '../../../helpers/translations';
+import NoteRangeToPlay from '../common/NoteRangeToPlay';
 
 type TSection = {
   [key in TranslationKeys]: {
@@ -17,14 +18,14 @@ type TSection = {
 
 const options = {
   ['Free Mode']: {element: <Free />, height: 0},
-  ['In Note Range']: {element: <CustomNoteRange />, height: 100},
+  ['In Note Range']: {element: <CustomNoteRange />, height: 60},
   ['In String']: {
     element: (
       <NoteGeneratorTuningProvider>
         <StringNoteRange />
       </NoteGeneratorTuningProvider>
     ),
-    height: 470,
+    height: 420,
   },
 } as TSection;
 
@@ -87,6 +88,7 @@ const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
           </button>
         ))}
       </div>
+      <NoteRangeToPlay />
     </>
   );
 };

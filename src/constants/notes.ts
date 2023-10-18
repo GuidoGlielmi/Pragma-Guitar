@@ -68,3 +68,6 @@ for (let octave = 0; octave <= OCTAVES_COVERED; octave++) {
     strings.push({value: octave * 12 + noteIndex, label, labelEs});
   }
 }
+
+export const MIN_COUNTDOWN_VALUE = 0;
+export const MAX_COUNTDOWN_VALUE = 60;

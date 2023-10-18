@@ -57,7 +57,7 @@ const Timer = () => {
   };
 
   return (
-    <div className={S.timerContainer}>
+    <div id='timerContainer' className={S.timerContainer}>
       <h3>{countdownString}</h3>
       <div className={S.countdownContainer}>
         <button onClick={() => setCountdownInitialValue(ps => ps - 1)} id='minus'>

@@ -54,8 +54,8 @@
   display: flex;
   gap: 10px;
   justify-content: center;
-  margin: 0 auto;
-  min-width: 75px;
+  margin: 5px auto 10px;
+  min-width: 85px;
   min-height: 40px;
   width: max-content;
   padding: 5px 8px;
