@@ -6,21 +6,29 @@ import './NoteRange.css';
 import Free from './Free';
 import NoteGeneratorTuningProvider from '../../../contexts/NoteGeneratorTuningContext';
 import useTranslation from '../../../hooks/useTranslation';
-import {NoteGeneratorContext, NoteGeneratorProps} from '../../../contexts/NodeGeneratorContext';
-import {LanguageContext, LanguageProps} from '../../../contexts/LanguageContext';
-import NoteWithOctave from '../../common/NoteWithOctave';
+import {TranslationKeys} from '../../../helpers/translations';
 
-const options = {
-  ['Free Mode']: <Free />,
-  ['In Note Range']: <CustomNoteRange />,
-  ['In String']: (
-    <NoteGeneratorTuningProvider>
-      <StringNoteRange />
-    </NoteGeneratorTuningProvider>
-  ),
+type TSection = {
+  [key in TranslationKeys]: {
+    element: JSX.Element;
+    height: number;
+  };
 };
 
-const optionsEntries = Object.entries(options) as [keyof typeof options, JSX.Element][];
+const options = {
+  ['Free Mode']: {element: <Free />, height: 0},
+  ['In Note Range']: {element: <CustomNoteRange />, height: 100},
+  ['In String']: {
+    element: (
+      <NoteGeneratorTuningProvider>
+        <StringNoteRange />
+      </NoteGeneratorTuningProvider>
+    ),
+    height: 470,
+  },
+} as TSection;
+
+const optionsEntries = Object.entries(options);
 
 const RangeSelector = () => {
   const [overflowHidden, setOverflowHidden] = useState(false);
@@ -61,13 +69,7 @@ type RangeOptionsProps = {
 };
 
 const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
-  const {
-    pitchRange: [from, to],
-  } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-
-  const {eng} = useContext(LanguageContext) as LanguageProps;
-
-  const rangeOptionsTitles = useTranslation(optionsEntries.map(([k]) => k));
+  const rangeOptionsTitles = useTranslation(optionsEntries.map(([k]) => k) as TranslationKeys[]);
 
   return (
     <>
@@ -84,10 +86,6 @@ const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
             {rangeOptionsTitles[i]}
           </button>
         ))}
-      </div>
-      <div className='rangeToPlayContainer'>
-        <NoteWithOctave pitch={from?.value!} />
-        <NoteWithOctave pitch={to?.value!} />
       </div>
     </>
   );
@@ -109,12 +107,10 @@ const SelectedRange: FC<SelectedRangeProps> = ({
   setOverflowHidden,
   prevIndex,
 }) => {
-  const currentIsLast = selectedIndex === Object.keys(options).length - 1;
-
   return (
     <div
       style={{
-        height: optionsEntries[selectedIndex][0] === 'In String' ? 430 : 60,
+        height: optionsEntries[selectedIndex][1].height,
         transition: 'height 0.2s ease',
         overflow: overflowHidden ? 'hidden' : 'visible',
       }}
@@ -142,7 +138,7 @@ const SelectedRange: FC<SelectedRangeProps> = ({
           }}
           key={selectedIndex}
         >
-          {optionsEntries[selectedIndex][1]}
+          {optionsEntries[selectedIndex][1].element}
         </motion.div>
       </AnimatePresence>
     </div>

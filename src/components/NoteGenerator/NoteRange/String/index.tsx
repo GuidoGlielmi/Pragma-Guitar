@@ -13,6 +13,7 @@ import FretModifier from './FretModifier';
 import TuningSaver from './TuningSaver';
 import useTranslation from '../../../../hooks/useTranslation';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
+import NoteRangeToPlay from '../../common/NoteRangeToPlay';
 
 enum AddStringMessages {
   Upper = 'Add Upper string',
@@ -20,7 +21,10 @@ enum AddStringMessages {
 }
 
 const StringNoteRange = () => {
-  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+  const {
+    changePitchRange,
+    pitchRange: [from, to],
+  } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   const {tuning, tunings, setTuning, addString, fretsAmount} = useContext(
     NoteGeneratorTuningContext,
@@ -55,29 +59,32 @@ const StringNoteRange = () => {
   };
 
   return (
-    <div className={S.stringSection}>
-      <Select
-        components={{Option: TuningOptionWithButton}}
-        isSearchable={false}
-        styles={customStylesMaxContent}
-        options={tunings}
-        // menuIsOpen={true}
-        value={convertStateToTuning(tuning)}
-        onChange={e => {
-          setTuning(tunings.indexOf(e as Tuning));
-        }}
-        placeholder={tuningString}
-      />
-      <FretModifier />
-      <button title={AddStringMessages.Upper} onClick={addStringHandler}>
-        {addUpperString}
-      </button>
-      <TuningBoard ref={boardRef} />
-      <button title={AddStringMessages.Lower} onClick={addStringHandler}>
-        {addLowerString}
-      </button>
-      <TuningSaver />
-    </div>
+    <>
+      <div className={S.stringSection}>
+        <NoteRangeToPlay />
+        <Select
+          components={{Option: TuningOptionWithButton}}
+          isSearchable={false}
+          styles={customStylesMaxContent}
+          options={tunings}
+          // menuIsOpen={true}
+          value={convertStateToTuning(tuning)}
+          onChange={e => {
+            setTuning(tunings.indexOf(e as Tuning));
+          }}
+          placeholder={tuningString}
+        />
+        <FretModifier />
+        <button title={AddStringMessages.Upper} onClick={addStringHandler}>
+          {addUpperString}
+        </button>
+        <TuningBoard ref={boardRef} />
+        <button title={AddStringMessages.Lower} onClick={addStringHandler}>
+          {addLowerString}
+        </button>
+        <TuningSaver />
+      </div>
+    </>
   );
 };
 

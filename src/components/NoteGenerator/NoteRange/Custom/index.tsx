@@ -3,6 +3,7 @@ import {strings} from '../../../../constants/notes';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 import useTranslation from '../../../../hooks/useTranslation';
 import NoteWithOctaveSelect from '../../../common/ReactSelect/NoteWithOctaveSelect';
+import NoteRangeToPlay from '../../common/NoteRangeToPlay';
 
 const CustomNoteRange = () => {
   const {
@@ -18,23 +19,29 @@ const CustomNoteRange = () => {
   }, []);
 
   return (
-    <div id='customNoteRange' style={{display: 'flex', gap: 10, justifyContent: 'center'}}>
-      <div>
-        <label htmlFor='from'>{fromString}</label>
-        <NoteWithOctaveSelect
-          id='from'
-          value={from}
-          onChange={e => changePitchRange([e!.value, undefined])} // value is index
-        />
-      </div>
-      <div>
-        <label htmlFor='to'>{toString}</label>
-        <NoteWithOctaveSelect
-          id='to'
-          value={to}
-          onChange={e => changePitchRange([undefined, e!.value])} // value is index
-          isOptionDisabled={e => strings.indexOf(e) < strings.indexOf(from!)}
-        />
+    <div
+      id='customNoteRange'
+      style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}
+    >
+      <NoteRangeToPlay />
+      <div style={{display: 'flex', gap: 10, justifyContent: 'center'}}>
+        <div>
+          <label htmlFor='from'>{fromString}</label>
+          <NoteWithOctaveSelect
+            id='from'
+            value={from}
+            onChange={e => changePitchRange([e!.value, undefined])} // value is index
+          />
+        </div>
+        <div>
+          <label htmlFor='to'>{toString}</label>
+          <NoteWithOctaveSelect
+            id='to'
+            value={to}
+            onChange={e => changePitchRange([undefined, e!.value])} // value is index
+            isOptionDisabled={e => strings.indexOf(e) < strings.indexOf(from!)}
+          />
+        </div>
       </div>
     </div>
   );
