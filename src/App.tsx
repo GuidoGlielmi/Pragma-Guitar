@@ -1,5 +1,5 @@
 import {useEffect, useContext, Suspense} from 'react';
-import {AnimatePresence, motion} from 'framer-motion';
+import {m, LazyMotion, domAnimation} from 'framer-motion';
 import {Outlet, useLocation} from 'react-router-dom';
 import {AudioContext, AudioProps} from './contexts/AudioContext';
 import NavBar from './components/Navbar';
@@ -7,6 +7,8 @@ import DeviceList from './components/DeviceList';
 import './App.css';
 import useTranslation from './hooks/useTranslation';
 import Language from './components/Language';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 function App() {
   const location = useLocation();
@@ -30,19 +32,19 @@ function App() {
 
 const Sections = () => {
   return (
-    <AnimatePresence mode='wait'>
-      <Suspense fallback={<div>CARGANDO</div>}>
-        <motion.div
+    <Suspense fallback={<Skeleton width='min(40vw, 400px)' height='min(50vh, 500px)' />}>
+      <LazyMotion features={domAnimation}>
+        <m.div
           key={location.pathname}
           initial={{opacity: 0}}
           animate={{opacity: 1}}
           exit={{opacity: 0}}
-          transition={{duration: 0.1}}
+          transition={{duration: 0.25}}
         >
           <Outlet />
-        </motion.div>
-      </Suspense>
-    </AnimatePresence>
+        </m.div>
+      </LazyMotion>
+    </Suspense>
   );
 };
 

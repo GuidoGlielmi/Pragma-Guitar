@@ -41,33 +41,10 @@ const StringDisplay = ({
   return (
     <div className={S.stringContainer}>
       <div>
-        <input type='radio' name='string' checked={selected} onChange={() => select(index)} />
-        <AnimatePresence mode='wait'>
-          <motion.div
-            key={pitch}
-            transition={{
-              opacity: {duration: 0.05},
-              color: {duration: 0.3, ease: 'easeIn'},
-            }}
-            initial={{opacity: 0, color: '#b53f3f'}}
-            animate={{
-              opacity: 1,
-              color: '#e2e2e2',
-            }}
-            exit={{opacity: 0}}
-          >
-            <NoteWithOctave pitch={pitch} />
-          </motion.div>
-        </AnimatePresence>
+        <input type='checkbox' name='string' checked={selected} onChange={() => select(index)} />
+        <Note pitch={pitch} />
       </div>
-      <div
-        style={{
-          ...(selected && {filter: 'drop-shadow(0 0 7px #999)'}),
-        }}
-      >
-        <div className={S.stringBall} />
-        <div className={S.string} style={{height}} />
-      </div>
+      <String selected={selected} height={height} />
       <div>
         <div>
           <button
@@ -97,6 +74,41 @@ const StringDisplay = ({
           X
         </button>
       </div>
+    </div>
+  );
+};
+
+const Note = ({pitch}: {pitch: number}) => {
+  return (
+    <AnimatePresence mode='wait'>
+      <motion.div
+        key={pitch}
+        transition={{
+          opacity: {duration: 0.05},
+          color: {duration: 0.3, ease: 'easeIn'},
+        }}
+        initial={{opacity: 0, color: '#b53f3f'}}
+        animate={{
+          opacity: 1,
+          color: '#e2e2e2',
+        }}
+        exit={{opacity: 0}}
+      >
+        <NoteWithOctave pitch={pitch} />
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+const String = ({selected, height}: {selected: boolean; height: number}) => {
+  return (
+    <div
+      style={{
+        ...(selected && {filter: 'drop-shadow(0 0 7px #999)'}),
+      }}
+    >
+      <div className={S.stringBall} />
+      <div className={S.string} style={{height}} />
     </div>
   );
 };

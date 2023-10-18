@@ -16,13 +16,13 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
   const {tuning, fretsAmount} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
-  const [selectedStringIndex, setSelectedStringIndex] = useState<number>();
+  const [selectedStringIndex, setSelectedStringIndex] = useState<number | null>();
 
   useEffect(() => {
     if (selectedStringIndex === undefined) return;
     changePitchRange([
-      tuning.pitches[selectedStringIndex].pitch,
-      tuning.pitches[selectedStringIndex].pitch + fretsAmount,
+      tuning.pitches[selectedStringIndex ?? 0].pitch,
+      tuning.pitches[selectedStringIndex ?? tuning.pitches.length - 1].pitch + fretsAmount,
     ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStringIndex]);
@@ -76,7 +76,7 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
                     height={i + 1}
                     index={mirroredIndex}
                     selected={selectedStringIndex === mirroredIndex}
-                    select={(i: number) => setSelectedStringIndex(i)}
+                    select={(i: number) => setSelectedStringIndex(ps => (ps === i ? null : i))}
                   />
                 </motion.div>
               );

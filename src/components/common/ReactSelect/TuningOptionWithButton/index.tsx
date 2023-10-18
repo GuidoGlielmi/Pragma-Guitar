@@ -13,6 +13,7 @@ export const TuningOptionWithButton = (props: OptionProps<Tuning, false>) => {
       <div className='flexCentered'>
         <span>{props.children}</span>
         <button
+          style={{background: 'transparent', color: '#222'}}
           className='painterButton'
           onClick={e => {
             e.stopPropagation();

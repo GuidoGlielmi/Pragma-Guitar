@@ -1,8 +1,6 @@
-import {Component as NoteGenerator} from '../components/NoteGenerator';
-import {Component as Tuner} from '../components/Tuner';
-import {Component as Metronome} from '../components/Metronome';
+import {lazy} from 'react';
 
-export const lazyRoutes = [
+export const routes = [
   {
     title: 'Note Generator',
     path: '/note-generator',
@@ -10,14 +8,4 @@ export const lazyRoutes = [
   },
   {title: 'Metronome', path: '/metronome', element: () => import('../components/Metronome')},
   {title: 'Tuner', path: '/tuner', element: () => import('../components/Tuner')},
-];
-
-export const routes = [
-  {
-    title: 'Note Generator',
-    path: '/note-generator',
-    element: <NoteGenerator />,
-  },
-  {title: 'Metronome', path: '/metronome', element: <Metronome />},
-  {title: 'Tuner', path: '/tuner', element: <Tuner />},
 ];

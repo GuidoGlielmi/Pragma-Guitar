@@ -16,7 +16,7 @@ import Timer from './Timer';
 import './NoteGenerator.css';
 import useTranslation from '../../hooks/useTranslation';
 
-export const Component = () => {
+const NoteGenerator = () => {
   const {started} = useContext(AudioContext) as AudioProps;
 
   return (
@@ -77,9 +77,7 @@ const Note = () => {
   );
 };
 
-export function ErrorBoundary() {
-  return <div />;
-}
+export default NoteGenerator;
 
 // let ringInterval: number;
 // let previousMs = 0;

@@ -2,7 +2,7 @@ import usePitch from '../../hooks/usePitch';
 import './Tuner.css';
 import Board from './Board';
 
-export const Component = () => {
+const Tuner = () => {
   const {detune, frecuency, pitch} = usePitch();
 
   return (
@@ -13,6 +13,4 @@ export const Component = () => {
   );
 };
 
-export function ErrorBoundary() {
-  return <div />;
-}
+export default Tuner;

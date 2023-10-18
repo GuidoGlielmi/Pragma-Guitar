@@ -1,4 +1,4 @@
-import {lazy, Suspense} from 'react';
+import {createElement, lazy, Suspense} from 'react';
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -13,13 +13,14 @@ import './index.css';
 import {ErrorBoundary} from './ErrorBoundary/index.tsx';
 import 'intro.js/introjs.css';
 import AudioProvider from './contexts/AudioContext';
-import {lazyRoutes} from './constants/routes.tsx';
+import {routes} from './constants/routes.tsx';
 import LanguageProvider from './contexts/LanguageContext/index.tsx';
+import {SkeletonTheme} from 'react-loading-skeleton';
 
 const sections = createRoutesFromElements(
   <Route element={<App />}>
-    {lazyRoutes.map(r => (
-      <Route key={r.path} path={r.path} lazy={r.element} />
+    {routes.map(r => (
+      <Route key={r.path} path={r.path} element={createElement(lazy(r.element))} />
     ))}
     <Route path='*' element={<Navigate to='/note-generator' replace />} />
   </Route>,
@@ -27,11 +28,13 @@ const sections = createRoutesFromElements(
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
   <ErrorBoundary>
-    <LanguageProvider>
-      <AudioProvider>
-        <RouterProvider router={createBrowserRouter(sections)} />
-      </AudioProvider>
-    </LanguageProvider>
+    <SkeletonTheme baseColor='#3f3d4a' highlightColor='#6f6c81'>
+      <LanguageProvider>
+        <AudioProvider>
+          <RouterProvider router={createBrowserRouter(sections)} />
+        </AudioProvider>
+      </LanguageProvider>
+    </SkeletonTheme>
     <Analytics />
   </ErrorBoundary>,
   // </React.StrictMode>,
