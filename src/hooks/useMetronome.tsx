@@ -1,7 +1,7 @@
 /* eslint-disable no-empty */
-import {useState, useEffect, useContext} from 'react';
+import {useState, useEffect, useContext, useRef} from 'react';
 import {AudioContext, AudioProps, audioEcosystem} from '../contexts/AudioContext';
-import {debounce} from '../helpers/timer';
+import {debounce, pollTask} from '../helpers/timer';
 
 interface MetronomeProps {
   bpm: number;
@@ -25,24 +25,29 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
   const [position, setPosition] = useState(-1);
   const [bar, setBar] = useState<[number, number]>([initialNumerator, initialDenominator]);
 
+  const stopPollRef = useRef<() => void>();
+  const debouncedPollRef = useRef(
+    debounce((msInterval: number, numerator: number) => {
+      const task = () =>
+        setPosition(ps => {
+          const isLast = ps === numerator - 1 || ps === -1;
+          audioEcosystem.playBuffer(isLast ? firstClickAudioBuffer : clickAudioBuffer);
+          return isLast ? 0 : ps + 1;
+        });
+      stopPollRef.current = pollTask(msInterval, task);
+    }, 2000),
+  );
+
   useEffect(() => {
     if (!started) return;
-
-    const denominator = bar[1];
+    const [numerator, denominator] = bar;
     const msInterval = bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
 
-    const task = debounce(() => {
-      setPosition(ps => {
-        const isLast = ps === bar[0] - 1 || ps === -1;
-        audioEcosystem.playBuffer(isLast ? firstClickAudioBuffer : clickAudioBuffer);
-        return isLast ? 0 : ps + 1;
-      });
-    });
-
-    const stopTask = pollTask(msInterval, task);
+    const cancelPollingSchedule = debouncedPollRef.current(msInterval, numerator);
 
     return () => {
-      stopTask?.();
+      cancelPollingSchedule();
+      stopPollRef.current?.();
       setPosition(-1);
     };
   }, [started, bpm, bar]);
@@ -57,23 +62,6 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
 const bpmToFrecuency = (bpm: number) => (1 / (bpm / 60)) * 1000;
 
 export default useMetronome;
-
-function pollTask(msInterval: number, task: () => void) {
-  let interval: number;
-  task();
-  let targetTime = performance.now() + msInterval;
-  const poll = () => {
-    if (performance.now() >= targetTime - 15) {
-      clearInterval(interval);
-      while (performance.now() < targetTime - 2);
-      task();
-      targetTime += msInterval;
-      interval = setInterval(poll);
-    }
-  };
-  interval = setInterval(poll);
-  return () => clearInterval(interval);
-}
 
 // const isPowerOfTwo = (n: number) => {
 //   if (n <= 0) return false;

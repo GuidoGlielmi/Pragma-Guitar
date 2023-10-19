@@ -53,6 +53,13 @@ const StartButton = () => {
 
   const [startString, stopString] = useTranslation(['Start', 'Stop']);
 
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => e.key === 'Enter' && (started ? stop : start)();
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [started]);
+
   return (
     <button onClick={started ? stop : start} id='start'>
       {started ? stopString : startString}

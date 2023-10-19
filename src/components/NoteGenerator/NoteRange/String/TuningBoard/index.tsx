@@ -34,7 +34,7 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
       style={{
         display: 'flex',
         gap: 10,
-        height: 200,
+        maxHeight: 225,
         overflow: 'scroll',
         overflowX: 'hidden',
         position: 'relative',

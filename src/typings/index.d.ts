@@ -13,7 +13,7 @@ declare global {
     detune: number | null;
   };
 
-  export type Task<T extends any[]> = (...args: T) => void;
+  export type Task<T extends any[] = undefined, R = void> = (...args: T) => R;
 
   export type Note = keyof typeof notes;
   export type NoteEs = (typeof notes)[keyof typeof notes];

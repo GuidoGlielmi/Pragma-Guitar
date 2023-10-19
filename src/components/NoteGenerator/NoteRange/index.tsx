@@ -25,7 +25,7 @@ const options = {
         <StringNoteRange />
       </NoteGeneratorTuningProvider>
     ),
-    height: 420,
+    height: 445,
   },
 } as TSection;
 
