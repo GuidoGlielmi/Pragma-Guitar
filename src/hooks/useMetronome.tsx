@@ -25,7 +25,6 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
   const [position, setPosition] = useState(-1);
   const [bar, setBar] = useState<[number, number]>([initialNumerator, initialDenominator]);
 
-  const stopPollRef = useRef<() => void>();
   const debouncedPollRef = useRef(
     debounce((msInterval: number, numerator: number) => {
       const task = () =>
@@ -34,8 +33,8 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
           audioEcosystem.playBuffer(isLast ? firstClickAudioBuffer : clickAudioBuffer);
           return isLast ? 0 : ps + 1;
         });
-      stopPollRef.current = pollTask(msInterval, task);
-    }, 2000),
+      return pollTask(msInterval, task);
+    }, 100),
   );
 
   useEffect(() => {
@@ -43,11 +42,10 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
     const [numerator, denominator] = bar;
     const msInterval = bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
 
-    const cancelPollingSchedule = debouncedPollRef.current(msInterval, numerator);
+    const stopPollingSchedule = debouncedPollRef.current(msInterval, numerator);
 
     return () => {
-      cancelPollingSchedule();
-      stopPollRef.current?.();
+      stopPollingSchedule();
       setPosition(-1);
     };
   }, [started, bpm, bar]);
