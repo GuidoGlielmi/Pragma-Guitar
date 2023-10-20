@@ -31,6 +31,7 @@ const translationsKeys = {
   'Save Tuning': 'Guardar Afinación',
   Name: 'Nombre',
   'Name already in use!': 'El nombre ya está en uso',
+  'Microphone permission is needed': 'Se necesita permiso para utilizar el micrófono',
   ...notificationTranslationKeys,
 };
 

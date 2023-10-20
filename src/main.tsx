@@ -16,6 +16,7 @@ import AudioProvider from './contexts/AudioContext';
 import {routes} from './constants/routes.tsx';
 import LanguageProvider from './contexts/LanguageContext/index.tsx';
 import {SkeletonTheme} from 'react-loading-skeleton';
+import ToastProvider from './contexts/ToastContext/index.tsx';
 
 const sections = createRoutesFromElements(
   <Route element={<App />}>
@@ -30,9 +31,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <ErrorBoundary>
     <SkeletonTheme baseColor='#3f3d4a' highlightColor='#6f6c81'>
       <LanguageProvider>
-        <AudioProvider>
-          <RouterProvider router={createBrowserRouter(sections)} />
-        </AudioProvider>
+        <ToastProvider>
+          <AudioProvider>
+            <RouterProvider router={createBrowserRouter(sections)} />
+          </AudioProvider>
+        </ToastProvider>
       </LanguageProvider>
     </SkeletonTheme>
     <Analytics />

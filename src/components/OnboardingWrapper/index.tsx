@@ -37,7 +37,6 @@ const OnboardingWrapper = ({
           highlightClass: S.highlight,
         }}
         onChange={(i, el) => {
-          console.log(steps[i]);
           if (steps[i].click) {
             (el as HTMLElement).click();
           }

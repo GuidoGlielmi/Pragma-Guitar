@@ -1,7 +1,8 @@
 const A4Frequency = 440;
 const semitoneRatio = Math.pow(2, 1 / 12);
 
-export const pitchFromFrequency = (frequency: number) => {
+export const pitchFromFrequency = (frequency: number | null) => {
+  if (frequency === null) return null;
   const noteNum = 12 * (Math.log(frequency / 440) / Math.log(2));
   return Math.round(noteNum) + 69;
 };

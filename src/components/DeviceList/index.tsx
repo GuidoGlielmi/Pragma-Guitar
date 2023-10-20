@@ -21,12 +21,8 @@ const DeviceList = () => {
 
   const showDevices = async () => {
     if (devicesShown) return setDevicesShown(false);
-    try {
-      await askDevicesInfoPermission();
-      setDevicesShown(true);
-    } catch (err) {
-      console.log(err);
-    }
+    const granted = await askDevicesInfoPermission();
+    if (granted) setDevicesShown(true);
   };
 
   return (

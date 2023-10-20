@@ -58,11 +58,18 @@ export const getFrecuencyDamper = (strength = 3) => {
   };
 };
 
-export const getMusicalInfoFromFrecuency = (f: number) => {
-  const pitch = pitchFromFrequency(f);
+export const getMusicalInfoFromFrecuency = (f: number | null): Omit<NoteInfo, 'frecuency'> => {
+  if (f === null) return initialNoteInfo;
+  const pitch = pitchFromFrequency(f) as number;
   return {
     pitch,
     note: Object.values(notes)[pitch % 12] as keyof typeof notes,
     detune: centsOffFromPitch(f, pitch),
   };
+};
+
+const initialNoteInfo = {
+  note: null,
+  pitch: null,
+  detune: null,
 };

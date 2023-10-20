@@ -31,14 +31,17 @@ export class AudioEcosystem extends AudioContext {
     return this.decodeAudioData(buffer);
   }
 
+  getDeviceId(device: MediaStream) {
+    return device.getAudioTracks()[0].getSettings().deviceId;
+  }
+
   async getMicInputStream(deviceId?: string) {
     return navigator.mediaDevices.getUserMedia({
       audio: {
         deviceId,
         echoCancellation: true,
         autoGainControl: false,
-        noiseSuppression: false,
-        // latency: 0,
+        noiseSuppression: true,
       },
     });
   }
