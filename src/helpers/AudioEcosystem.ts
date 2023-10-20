@@ -5,7 +5,7 @@ export class AudioEcosystem extends AudioContext {
   analyserNode: AnalyserNode;
   gainNode?: GainNode;
 
-  micStream?: MediaStream;
+  micStream?: MediaStream; // .stop() renders the stream unusable
   micNode?: MediaStreamAudioSourceNode; // a node is the main required element of an AudioContext
 
   constructor() {
@@ -13,12 +13,6 @@ export class AudioEcosystem extends AudioContext {
     this.analyserNode = this.createAnalyser();
     this.analyserNode.fftSize = 2048;
     this.suspend();
-  }
-
-  async getPermittedDeviceId() {
-    return (await navigator.mediaDevices.getUserMedia({audio: true}))
-      .getAudioTracks()[0]
-      .getSettings().deviceId;
   }
 
   async resume() {

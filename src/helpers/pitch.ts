@@ -33,7 +33,7 @@ export const getOctave = (pitch: number | null) => {
 
 export const getPitchAndOctave = (pitch: number | null) => {
   if (strings[pitch!] === undefined) return ['', ''];
-  return strings[pitch!].label.split(/(\d)/);
+  return strings[pitch!].label.split(/(-?\d)/);
 };
 
 export const getPitch = (
@@ -44,7 +44,8 @@ export const getPitch = (
 ) => {
   audioEcosystem.analyserNode.getFloatTimeDomainData(buf);
   const [frecuency, clarity] = pitchDetector.findPitch(buf, audioEcosystem.sampleRate);
-  if (frecuency < minFrecuency || frecuency > maxFrecuency) return;
+  // console.log(frecuency, clarity);
+  if (frecuency < minFrecuency || frecuency > maxFrecuency || clarity < 0.5) return -1;
   if (clarity < 0.9) return;
   return frecuency;
 };

@@ -5,7 +5,7 @@ import {TranslationKeys, translate} from '../helpers/translations';
 const useTranslation = (key: TranslationKeys | TranslationKeys[]) => {
   const {eng} = useContext(LanguageContext) as LanguageProps;
   const keys = key instanceof Array ? key : [key];
-  return keys.map(k => translate(k, eng));
+  return keys.map(k => translate(k, eng)) as TranslationKeys[];
 };
 
 export default useTranslation;

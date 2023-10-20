@@ -1,3 +1,8 @@
+const notificationTranslationKeys = {
+  'No audio detected': 'No se ha detectado audio',
+  'Get closer to the microphone': 'Acérquese al micrófono',
+};
+
 const translationsKeys = {
   Devices: 'Dispositivos',
   Start: 'Empezar',
@@ -25,10 +30,12 @@ const translationsKeys = {
   Tuning: 'Afinación',
   'Save Tuning': 'Guardar Afinación',
   Name: 'Nombre',
-  'Name already in use!': 'El nombre ya está en uso'
+  'Name already in use!': 'El nombre ya está en uso',
+  ...notificationTranslationKeys,
 };
 
-export type TranslationKeys = keyof typeof translationsKeys;
+export type NotificationTranslationKeys = keyof typeof notificationTranslationKeys;
+export type TranslationKeys = keyof typeof translationsKeys | NotificationTranslationKeys;
 
 export const translate = (str: TranslationKeys | string, eng: boolean | null = true) => {
   const translation = translationsKeys[str as TranslationKeys];

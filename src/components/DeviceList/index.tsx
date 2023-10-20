@@ -4,10 +4,16 @@ import {AudioContext, AudioProps} from '../../contexts/AudioContext';
 import S from './DeviceList.module.css';
 import Refresh from '../../icons/Refresh';
 import useTranslation from '../../hooks/useTranslation';
+import OutsideClickCloser from '../common/OutsideClickCloser';
 
 const DeviceList = () => {
-  const {devices, askDevicesInfoPermission, setDevicesHandler, selectedDevice, setSelectedDevice} =
-    useContext(AudioContext) as AudioProps;
+  const {
+    devices,
+    askDevicesInfoPermission,
+    setDevicesHandler,
+    selectedDeviceId,
+    setSelectedDeviceId,
+  } = useContext(AudioContext) as AudioProps;
 
   const [devicesString] = useTranslation('Devices');
 
@@ -19,38 +25,44 @@ const DeviceList = () => {
       await askDevicesInfoPermission();
       setDevicesShown(true);
     } catch (err) {
-      console.log('error');
+      console.log(err);
     }
   };
 
   return (
-    <div className={S.devicesContainer}>
-      <div>
-        <div className={S.titleContainer}>
-          <span>{devicesString}</span>
-          <button onClick={showDevices}>
-            <ChevronDown />
+    <OutsideClickCloser
+      shown={devicesShown}
+      close={() => setDevicesShown(false)}
+      id='closeDeviceList'
+    >
+      <div className={S.devicesContainer}>
+        <div>
+          <div className={S.titleContainer}>
+            <span>{devicesString}</span>
+            <button onClick={showDevices}>
+              <ChevronDown />
+            </button>
+          </div>
+          <button onClick={() => setDevicesHandler()} className={devicesShown ? S.floatRight : ''}>
+            <Refresh />
           </button>
         </div>
-        <button onClick={() => setDevicesHandler()} className={devicesShown ? S.floatRight : ''}>
-          <Refresh />
-        </button>
+        {devicesShown &&
+          devices.map(d => {
+            return (
+              <button
+                onClick={() => {
+                  setSelectedDeviceId(d.deviceId);
+                }}
+                key={d.deviceId}
+                style={{filter: `invert(${d.deviceId === selectedDeviceId ? 100 : 0}%)`}}
+              >
+                {d.label}
+              </button>
+            );
+          })}
       </div>
-      {devicesShown &&
-        devices.map(d => {
-          return (
-            <button
-              onClick={() => {
-                setSelectedDevice(d);
-              }}
-              key={d.deviceId}
-              style={{filter: `invert(${d === selectedDevice ? 100 : 0}%)`}}
-            >
-              {d.label}
-            </button>
-          );
-        })}
-    </div>
+    </OutsideClickCloser>
   );
 };
 
