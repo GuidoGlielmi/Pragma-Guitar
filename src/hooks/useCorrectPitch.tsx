@@ -1,7 +1,7 @@
-import {useState, useEffect, useContext, useRef} from 'react';
-import {AudioContext, AudioProps} from '../contexts/AudioContext';
+import {useState, useEffect, useRef} from 'react';
 
 import usePitch from './usePitch';
+import useDebouncedChange from './useDebouncedChange';
 
 type Condition = {
   delay?: number;
@@ -24,6 +24,7 @@ const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
   const [currStreak, setCurrStreak] = useState(0);
   const [maxStreak, setMaxStreak] = useState(+localStorage.getItem('maxStreak')! || 0);
   const [correct, setCorrect] = useState(false);
+  const correctDebounced = useDebouncedChange(correct, 200);
 
   const prevCorrect = useRef(correct);
 
@@ -42,15 +43,7 @@ const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
 
   useEffect(() => {
     if (correct) return;
-    const isCorrect = !!pitch && (condition?.(pitch) || pitch === target);
-    if (isCorrect) {
-      const timer = setTimeout(() => {
-        setCorrect(true);
-      }, 400);
-      return () => {
-        clearTimeout(timer);
-      };
-    }
+    setCorrect(!!pitch && (condition?.(pitch) ?? pitch === target));
   }, [pitch, target, condition, correct]);
 
   useEffect(() => {
@@ -65,7 +58,7 @@ const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
     note,
     pitch,
     frecuency,
-    correct,
+    correct: correctDebounced ?? false,
     currStreak,
     maxStreak,
   };

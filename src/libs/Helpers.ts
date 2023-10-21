@@ -47,11 +47,7 @@ export const centsOffFromPitch = (frequency: number, pitch: number) => {
 };
 
 export const getDetunePercent = (detune: number) => {
-  if (detune > 0) {
-    return 50 + detune;
-  } else {
-    return 50 + -detune;
-  }
+  return 50 + (detune > 0 ? detune : -detune);
 };
 
 const addSemitones = (frequency: number, semitones: number) => {

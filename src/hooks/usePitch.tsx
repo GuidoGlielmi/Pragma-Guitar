@@ -35,7 +35,7 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
   ]);
 
   const [frecuency, setFrecuency] = useState<number | null>(null);
-  const debouncedPitch = useDebouncedChange(pitchFromFrequency(frecuency), 100);
+  const debouncedPitch = useDebouncedChange(pitchFromFrequency(frecuency), 50);
 
   useEffect(() => {
     if (!started) return;
@@ -77,9 +77,7 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
       ? {
           frecuency,
           pitch: debouncedPitch,
-          note: Object[eng ? 'keys' : 'values'](notes)[
-            (debouncedPitch || 0) % 12
-          ] as keyof typeof notes,
+          note: Object[eng ? 'keys' : 'values'](notes)[(debouncedPitch || 0) % 12],
           detune: centsOffFromPitch(frecuency, debouncedPitch),
         }
       : initialNoteInfo;

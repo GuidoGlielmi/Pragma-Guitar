@@ -50,7 +50,7 @@ const Note = () => {
     [pitchToPlay, from, to],
   );
 
-  const {pitch, correct, currStreak, maxStreak} = useCorrectPitch({condition});
+  const {pitch, correct, currStreak, maxStreak, detune} = useCorrectPitch({condition});
 
   const [bestStreakString] = useTranslation(['Best Streak']);
 
@@ -65,7 +65,9 @@ const Note = () => {
         <RangeSelector />
         <Timer />
         <AnimatePresence>
-          {started && <Notes pitch={pitch} correct={correct} currStreak={currStreak} />}
+          {started && (
+            <Notes pitch={pitch} correct={correct} currStreak={currStreak} detune={detune} />
+          )}
         </AnimatePresence>
       </div>
       {!!maxStreak && (

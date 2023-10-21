@@ -46,7 +46,7 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
   );
 
   const [notification, setNotification] = useState<NotificationTranslationKeys | ''>('');
-  const debouncedNotification = useDebouncedChange(notification, 3000, {['']: 500});
+  const debouncedNotification = useDebouncedChange(notification, 10_000, {['']: 500});
 
   const [started, setStarted] = useState<boolean | null>(null);
 

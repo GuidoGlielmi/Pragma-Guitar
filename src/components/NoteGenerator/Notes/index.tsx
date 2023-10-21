@@ -11,9 +11,10 @@ interface NotesProps {
   pitch: number | null;
   correct: boolean;
   currStreak: number;
+  detune: number | null;
 }
 
-const Notes = ({correct, pitch, currStreak}: NotesProps) => {
+const Notes = ({correct, pitch, currStreak, detune}: NotesProps) => {
   return (
     <motion.div
       style={{overflow: 'hidden'}}
@@ -32,7 +33,7 @@ const Notes = ({correct, pitch, currStreak}: NotesProps) => {
       <div className='notesDisplay'>
         <NoteToPlay />
         <ArrowRight />
-        <NotePlayed pitch={pitch} />
+        <NotePlayed pitch={pitch} detune={detune} />
       </div>
       <AnimatePresence mode='wait'>
         <motion.div
