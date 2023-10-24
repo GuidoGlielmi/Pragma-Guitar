@@ -1,19 +1,7 @@
+import {TLanguages} from '../helpers/translations';
+
 export const minBPS = 10;
 export const maxBPS = 300;
-export const notes = {
-  C: 'Do',
-  'C#': 'Do#',
-  D: 'Re',
-  'D#': 'Re#',
-  E: 'Mi',
-  F: 'Fa',
-  'F#': 'Fa#',
-  G: 'Sol',
-  'G#': 'Sol#',
-  A: 'La',
-  'A#': 'La#',
-  B: 'Si',
-};
 
 export const convertTuningToState = (t: Tuning): TuningState => ({
   ...t,
@@ -24,8 +12,6 @@ export const convertStateToTuning = (t: TuningState): Tuning => ({
   ...t,
   pitches: t.pitches.map(p => p.pitch),
 });
-
-export const pitchRangeLimits = [0, 108] as [number, number];
 
 export const tunings = [
   // Standard Tuning
@@ -55,19 +41,61 @@ export const tunings = [
   {label: 'Nashville', pitches: [52, 57, 62, 67, 71, 76]},
 ] as Tuning[];
 
-const notesArray = Object.entries(notes);
-const A4_PITCH = 69;
-const OCTAVES_COVERED = 8;
-const LOWER_OCTAVE_INDEX = -1;
-
-export const strings: GtrString[] = [];
-for (let octave = 0; octave <= OCTAVES_COVERED; octave++) {
-  for (let noteIndex = 0; noteIndex < notesArray.length; noteIndex++) {
-    const label = `${notesArray[noteIndex][0]}${LOWER_OCTAVE_INDEX + octave}` as NoteWithOctave;
-    const labelEs = `${notesArray[noteIndex][1]}${LOWER_OCTAVE_INDEX + octave}` as NoteWithOctave;
-    strings.push({value: octave * 12 + noteIndex, label, labelEs});
-  }
+export interface Notes {
+  C: string;
+  'C#': string;
+  D: string;
+  'D#': string;
+  E: string;
+  F: string;
+  'F#': string;
+  G: string;
+  'G#': string;
+  A: string;
+  'A#': string;
+  B: string;
 }
+
+enum NoteEn {
+  C = 'C',
+  'C#' = 'C#',
+  D = 'D',
+  'D#' = 'D#',
+  E = 'E',
+  F = 'F',
+  'F#' = 'F#',
+  G = 'G',
+  'G#' = 'G#',
+  A = 'A',
+  'A#' = 'A#',
+  B = 'B',
+}
+
+enum NoteEs {
+  C = 'Do',
+  'C#' = 'Do#',
+  D = 'Re',
+  'D#' = 'Re#',
+  E = 'Mi',
+  F = 'Fa',
+  'F#' = 'Fa#',
+  G = 'Sol',
+  'G#' = 'Sol#',
+  A = 'La',
+  'A#' = 'La#',
+  B = 'Si',
+}
+
+export const notes: TLanguages<Notes> = {
+  en: NoteEn,
+  es: NoteEs,
+};
+
+const OCTAVES_COVERED = 9;
+export const OCTAVE_NOTES_AMOUNT = 12;
+
+export const MAX_PITCH_INDEX = OCTAVE_NOTES_AMOUNT * OCTAVES_COVERED - 1;
+export const pitchRangeLimits = [0, MAX_PITCH_INDEX] as [number, number];
 
 export const MIN_COUNTDOWN_VALUE = 0;
 export const MAX_COUNTDOWN_VALUE = 60;

@@ -6,11 +6,11 @@ import './NoteRange.css';
 import Free from './Free';
 import NoteGeneratorTuningProvider from '../../../contexts/NoteGeneratorTuningContext';
 import useTranslation from '../../../hooks/useTranslation';
-import {TranslationKeys} from '../../../helpers/translations';
 import NoteRangeToPlay from '../common/NoteRangeToPlay';
+import {Translation} from '../../../helpers/translations';
 
 type TSection = {
-  [key in TranslationKeys]: {
+  [key in keyof Translation]: {
     element: JSX.Element;
     height: number;
   };
@@ -70,7 +70,9 @@ type RangeOptionsProps = {
 };
 
 const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
-  const rangeOptionsTitles = useTranslation(optionsEntries.map(([k]) => k) as TranslationKeys[]);
+  const rangeOptionsTitles = useTranslation(
+    optionsEntries.map(([k]) => k) as (keyof Translation)[],
+  );
 
   return (
     <>

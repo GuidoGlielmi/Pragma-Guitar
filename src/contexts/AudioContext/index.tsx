@@ -11,16 +11,17 @@ import {
   useEffect,
 } from 'react';
 import {AudioEcosystem} from '../../helpers/AudioEcosystem';
-import {NotificationTranslationKeys} from '../../helpers/translations';
 import useDebouncedChange from '../../hooks/useDebouncedChange';
 import {ToastContext, ToastProps} from '../ToastContext';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import {NotificationTranslation} from '../../helpers/translations';
 
 export interface AudioProps {
   started: boolean | null;
   start: () => Promise<void>;
   stop: () => Promise<void>;
-  notification: NotificationTranslationKeys | '';
-  setNotification: Dispatch<SetStateAction<NotificationTranslationKeys | ''>>;
+  notification: keyof NotificationTranslation | '';
+  setNotification: Dispatch<SetStateAction<keyof NotificationTranslation | ''>>;
   startOscillator: (frec: number) => void;
   stopOscillator: () => void;
   getMicInputStream: () => Promise<void>;
@@ -41,12 +42,13 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
   const {setMessage} = useContext(ToastContext) as ToastProps;
 
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string | undefined>(
-    localStorage.getItem(DEFAULT_DEVICE_ID_STORAGE_NAME)! || undefined,
+  const [selectedDeviceId, setSelectedDeviceId] = useLocalStorage(
+    '',
+    DEFAULT_DEVICE_ID_STORAGE_NAME,
   );
 
-  const [notification, setNotification] = useState<NotificationTranslationKeys | ''>('');
-  const debouncedNotification = useDebouncedChange(notification, 10_000, {['']: 500});
+  const [notification, setNotification] = useState<keyof NotificationTranslation | ''>('');
+  const [debouncedNotification] = useDebouncedChange(notification, 10_000, {['']: 500});
 
   const [started, setStarted] = useState<boolean | null>(null);
 
@@ -73,10 +75,6 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
     }
   };
 
-  useEffect(() => {
-    localStorage.setItem(DEFAULT_DEVICE_ID_STORAGE_NAME, selectedDeviceId || '');
-  }, [selectedDeviceId]);
-
   const askDevicesInfoPermission = async () => {
     // navigator.mediaDevices.enumerateDevices() will return an empty label attribute value if the permission for accessing the mediadevice is not given.
     try {
@@ -84,7 +82,7 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
       setDevicesHandler(audioEcosystem.getDeviceId(permittedDevice));
       return true;
     } catch (err) {
-      setSelectedDeviceId(undefined);
+      setSelectedDeviceId('');
       return false;
     }
   };
@@ -105,7 +103,7 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
 
   const getMicInputStream = async () => {
     const permittedDeviceId = await audioEcosystem.setMicInputStreamHandler(selectedDeviceId);
-    setSelectedDeviceId(permittedDeviceId);
+    setSelectedDeviceId(permittedDeviceId || '');
     console.log(audioEcosystem.micStream?.getAudioTracks()[0].label);
   };
 

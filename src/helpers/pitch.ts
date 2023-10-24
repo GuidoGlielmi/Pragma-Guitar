@@ -1,7 +1,5 @@
 import {PitchDetector} from 'pitchy';
-import {notes, strings} from '../constants/notes';
 import {audioEcosystem} from '../contexts/AudioContext';
-import {centsOffFromPitch, pitchFromFrequency} from '../libs/Helpers';
 
 const c5Pitch = 72;
 const firstHalfOctavesAmount = c5Pitch / 12;
@@ -18,22 +16,8 @@ export const getFrecuencyFromPitch = (pitch: number) => {
   return 440 * 2 ** ((pitch - middlePitch) / 12);
 };
 
-export const pitchToNote = (pitch: number | null, eng = true) => {
-  if (pitch === null) return [null, null];
-  const coveredOctaves = Math.floor(pitch / 12) * 12;
-  return [Object[eng ? 'keys' : 'values'](notes)[pitch - coveredOctaves], getOctave(pitch)] as [
-    string,
-    number,
-  ];
-};
-
 export const getOctave = (pitch: number | null) => {
   return pitch !== null ? Math.floor(pitch / 12) - 1 : null;
-};
-
-export const getPitchAndOctave = (pitch: number | null) => {
-  if (strings[pitch!] === undefined) return ['', ''];
-  return strings[pitch!].label.split(/(-?\d)/);
 };
 
 export const getPitch = (
@@ -56,20 +40,4 @@ export const getFrecuencyDamper = (strength = 3) => {
     prevF = (newFrec * strength - newFrec + (prevF ?? newFrec)) / Math.abs(strength);
     return Math.abs(prevF);
   };
-};
-
-export const getMusicalInfoFromFrecuency = (f: number | null): Omit<NoteInfo, 'frecuency'> => {
-  if (f === null) return initialNoteInfo;
-  const pitch = pitchFromFrequency(f) as number;
-  return {
-    pitch,
-    note: Object.values(notes)[pitch % 12] as keyof typeof notes,
-    detune: centsOffFromPitch(f, pitch),
-  };
-};
-
-const initialNoteInfo = {
-  note: null,
-  pitch: null,
-  detune: null,
 };

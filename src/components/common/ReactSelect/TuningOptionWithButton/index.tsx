@@ -12,16 +12,19 @@ export const TuningOptionWithButton = (props: OptionProps<Tuning, false>) => {
     <components.Option {...props}>
       <div className='flexCentered'>
         <span>{props.children}</span>
-        <button
-          style={{background: 'transparent', color: '#222'}}
-          className='painterButton'
-          onClick={e => {
-            e.stopPropagation();
-            deleteTuning(props.data.label);
-          }}
-        >
-          X
-        </button>
+        {props.data.deletable && (
+          <button
+            style={{background: 'transparent', color: '#222'}}
+            className='painterButton'
+            onClick={e => {
+              e.stopPropagation();
+              deleteTuning(props.data.label);
+            }}
+            title='Delete Tuning'
+          >
+            X
+          </button>
+        )}
       </div>
     </components.Option>
   );

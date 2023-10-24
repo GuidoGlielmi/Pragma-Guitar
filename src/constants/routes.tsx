@@ -1,3 +1,5 @@
+import {Translation} from '../helpers/translations';
+
 export const routes = [
   {
     title: 'Note Generator',
@@ -6,4 +8,4 @@ export const routes = [
   },
   {title: 'Metronome', path: '/metronome', element: () => import('../components/Metronome')},
   {title: 'Tuner', path: '/tuner', element: () => import('../components/Tuner')},
-];
+] as {title: keyof Translation; path: string; element: any}[];

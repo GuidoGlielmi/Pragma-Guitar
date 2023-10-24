@@ -1,15 +1,19 @@
 import {useContext} from 'react';
 import S from './Language.module.css';
 import {LanguageContext, LanguageProps} from '../../contexts/LanguageContext';
+import {Language} from '../../helpers/translations';
 
-const Language = () => {
+const Languages = () => {
   const {setEng} = useContext(LanguageContext) as LanguageProps;
   return (
     <div className={S.container}>
-      <button onClick={() => setEng(true)}>EN</button>
-      <button onClick={() => setEng(false)}>ES</button>
+      {Object.keys(Language).map(languageKey => (
+        <button key={languageKey} onClick={() => setEng(languageKey as Language)}>
+          {languageKey.toUpperCase()}
+        </button>
+      ))}
     </div>
   );
 };
 
-export default Language;
+export default Languages;

@@ -41,7 +41,7 @@ const StringDisplay = ({
   return (
     <div className={S.stringContainer}>
       <div>
-        <input type='checkbox' name='string' checked={selected} onChange={() => select(index)} />
+        <input type='checkbox' name='string' checked={selected} onChange={() => select(id)} />
         <Note pitch={pitch} />
       </div>
       <String selected={selected} height={height} />

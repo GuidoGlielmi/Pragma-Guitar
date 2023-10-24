@@ -1,7 +1,6 @@
 import {useContext, useEffect, useCallback} from 'react';
 import {AnimatePresence} from 'framer-motion';
 import {AudioContext, AudioProps, audioEcosystem} from '../../contexts/AudioContext';
-import {strings} from '../../constants/notes';
 import OnboardingWrapper from '../OnboardingWrapper';
 import {noteGenerator} from '../../constants/steps';
 import useCorrectPitch from '../../hooks/useCorrectPitch';
@@ -15,6 +14,8 @@ import NoteGeneratorProvider, {
 import Timer from './Timer';
 import './NoteGenerator.css';
 import useTranslation from '../../hooks/useTranslation';
+import useStreak from '../../hooks/useStreak';
+import {MAX_PITCH_INDEX} from '../../constants/notes';
 
 const NoteGenerator = () => {
   const {started} = useContext(AudioContext) as AudioProps;
@@ -42,7 +43,7 @@ const Note = () => {
 
   const condition = useCallback(
     (pitch: number) => {
-      if ((from !== null && from !== strings[0]) || (to !== null && to !== strings.at(-1))) {
+      if ((from !== null && from !== 0) || (to !== null && to !== MAX_PITCH_INDEX)) {
         if (pitch === pitchToPlay) return true;
       } else if (pitchToPlay && !(Math.abs(pitch - pitchToPlay) % 12)) return true;
       return false;
@@ -50,7 +51,9 @@ const Note = () => {
     [pitchToPlay, from, to],
   );
 
-  const {pitch, correct, currStreak, maxStreak, detune} = useCorrectPitch({condition});
+  const {correct, frecuency} = useCorrectPitch({condition});
+
+  const [currStreak, maxStreak] = useStreak(correct, 'maxStreak');
 
   const [bestStreakString] = useTranslation(['Best Streak']);
 
@@ -65,9 +68,7 @@ const Note = () => {
         <RangeSelector />
         <Timer />
         <AnimatePresence>
-          {started && (
-            <Notes pitch={pitch} correct={correct} currStreak={currStreak} detune={detune} />
-          )}
+          {started && <Notes frecuency={frecuency} correct={correct} currStreak={currStreak} />}
         </AnimatePresence>
       </div>
       {!!maxStreak && (

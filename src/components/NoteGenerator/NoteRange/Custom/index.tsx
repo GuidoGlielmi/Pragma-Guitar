@@ -1,8 +1,8 @@
 import {useEffect, useContext} from 'react';
-import {strings} from '../../../../constants/notes';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 import useTranslation from '../../../../hooks/useTranslation';
 import NoteWithOctaveSelect from '../../../common/ReactSelect/NoteWithOctaveSelect';
+import {MAX_PITCH_INDEX} from '../../../../constants/notes';
 
 const CustomNoteRange = () => {
   const {
@@ -13,7 +13,7 @@ const CustomNoteRange = () => {
   const [fromString, toString] = useTranslation(['From', 'To']);
 
   useEffect(() => {
-    changePitchRange([0, strings.length - 1]);
+    changePitchRange([0, MAX_PITCH_INDEX]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -23,17 +23,18 @@ const CustomNoteRange = () => {
         <label htmlFor='from'>{fromString}</label>
         <NoteWithOctaveSelect
           id='from'
-          value={from}
-          onChange={e => changePitchRange([e!.value, undefined])} // value is index
+          value={{value: from ?? 0}}
+          onChange={e => changePitchRange([e?.value!, undefined])} // value is index
+          isOptionDisabled={e => e.value > to!}
         />
       </div>
       <div>
         <label htmlFor='to'>{toString}</label>
         <NoteWithOctaveSelect
           id='to'
-          value={to}
-          onChange={e => changePitchRange([undefined, e!.value])} // value is index
-          isOptionDisabled={e => strings.indexOf(e) < strings.indexOf(from!)}
+          value={{value: to ?? MAX_PITCH_INDEX}}
+          onChange={e => changePitchRange([undefined, e?.value!])} // value is index
+          isOptionDisabled={e => e.value < from!}
         />
       </div>
     </div>

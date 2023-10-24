@@ -1,11 +1,17 @@
-import {createContext, useMemo, useState, FC, PropsWithChildren, useContext} from 'react';
-import {NoteGeneratorContext, NoteGeneratorProps} from '../NodeGeneratorContext';
 import {
-  pitchRangeLimits,
-  tunings as defaultTunings,
-  convertTuningToState,
-} from '../../constants/notes';
+  createContext,
+  useEffect,
+  useMemo,
+  useState,
+  FC,
+  PropsWithChildren,
+  useContext,
+} from 'react';
+import {NoteGeneratorContext, NoteGeneratorProps} from '../NodeGeneratorContext';
+import {pitchRangeLimits, tunings, convertTuningToState} from '../../constants/notes';
 import {rangeLimiter, setterRangeLimiter} from '../../helpers/valueRange';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import useChange from '../../hooks/usePrevValue';
 
 export interface NoteGeneratorTuningProps {
   tuning: TuningState;
@@ -14,7 +20,7 @@ export interface NoteGeneratorTuningProps {
   changeFretsAmount: (n: number) => void;
   removeString: (id: number) => void;
   addString: (higher: boolean) => void;
-  saveTuning: (name: string) => boolean;
+  saveTuning: (label: string) => boolean;
   tunings: Tuning[];
   stringModifiedChecker: (i: number) => boolean | null;
   deleteTuning: (label: string) => void;
@@ -29,29 +35,37 @@ export const NoteGeneratorTuningContext = createContext<NoteGeneratorTuningProps
 const E2_PITCH = 40;
 const PERSISTED_TUNINGS_VARIABLE_NAME = 'customTunings';
 const PERSISTED_FRET_AMOUNT_VARIABLE_NAME = 'fretsAmount';
-const DEFAULT_FRETS_AMOUNT = 24;
+const MAX_FRETS_AMOUNT = 24;
+
 const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProviderProps>> = ({
   children,
 }) => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
-  const [tunings, setTunings] = useState<Tuning[]>([
-    ...JSON.parse(localStorage.getItem(PERSISTED_TUNINGS_VARIABLE_NAME) || '[]'),
-    ...defaultTunings,
-  ]);
-  const [tuning, setTuning] = useState<TuningState>(convertTuningToState(tunings[0]));
-  const [fretsAmount, setFretsAmount] = useState(
-    JSON.parse(localStorage.getItem(PERSISTED_TUNINGS_VARIABLE_NAME)!) || DEFAULT_FRETS_AMOUNT,
+  const [persistedTunings, setPersistedTunings] = useLocalStorage<Tuning[], PersistableTuning[]>(
+    [],
+    PERSISTED_TUNINGS_VARIABLE_NAME,
+    tunings =>
+      tunings.map(t => {
+        const {deletable, ...props} = t;
+        return props;
+      }),
   );
+
+  const getAllTunings = () => [...persistedTunings, ...tunings];
+
+  const [fretsAmount, setFretsAmount] = useLocalStorage(
+    MAX_FRETS_AMOUNT,
+    PERSISTED_FRET_AMOUNT_VARIABLE_NAME,
+  );
+  const [tuning, setTuning] = useState<TuningState>(convertTuningToState(getAllTunings()[0]));
 
   const changeFretsAmount = (n: number) => {
     changePitchRange(ps => [undefined, ps[1]! + n]);
-    setFretsAmount(setterRangeLimiter(n, {min: 0, max: 24}));
+    setFretsAmount(setterRangeLimiter(n, {min: 0, max: MAX_FRETS_AMOUNT}));
   };
 
-  const getOriginalTuning = () => tunings.find(t => t.label === tuning.label)!;
-
-  const setTuningHandler = (i: number) => setTuning(convertTuningToState(tunings[i]));
+  const setTuningHandler = (i: number) => setTuning(convertTuningToState(getAllTunings()[i]));
 
   const modifyPitches = (pitches: StringStateValue[], halfStepsAmount: number, i?: number) => {
     let newPitches = JSON.parse(JSON.stringify(pitches)) as StringStateValue[];
@@ -92,42 +106,18 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     setTuning(ps => ({...ps, pitches: ps.pitches.filter(p => p.id !== id)}));
   };
 
-  const saveTuning = (name: string) => {
-    if (tunings.some(t => t.label === name)) return false;
-    const newTuning = {label: name, pitches: tuning.pitches.map(p => p.pitch)};
-    setTunings(ps => [newTuning, ...ps]);
-    persistTuning(newTuning);
-    persistFretsAmount();
+  const saveTuning = (label: string) => {
+    if (tunings.some(t => t.label === label)) return false;
+    const newTuning = {label: label, pitches: tuning.pitches.map(p => p.pitch)} as Tuning;
+    setPersistedTunings(ps => [newTuning, ...ps.filter(t => t.label !== label)]);
+    setTuning(ps => ({...ps, pitches: ps.pitches.map(p => ({...p, original: p.pitch}))}));
     return true;
   };
 
-  const persistTuning = (tuning: Tuning) => {
-    localStorage.setItem(
-      PERSISTED_TUNINGS_VARIABLE_NAME,
-      JSON.stringify([tuning, ...getSavedTunings()]),
-    );
-  };
-
-  const persistFretsAmount = () => {
-    localStorage.setItem(PERSISTED_FRET_AMOUNT_VARIABLE_NAME, `${fretsAmount}`);
-  };
-
-  const getSavedTunings = (): Tuning[] =>
-    JSON.parse(localStorage.getItem(PERSISTED_TUNINGS_VARIABLE_NAME) || '[]');
-
   const deleteTuning = (label: string) => {
-    const originalTuning = getOriginalTuning();
-    setTuning(convertTuningToState(tunings.find(t => t !== originalTuning)!));
-    setTunings(ps => ps.filter(t => t !== originalTuning));
-
-    const savedTunings = getSavedTunings();
-    const originalSavedTuning = savedTunings.find(t => t.label === label);
-    if (originalSavedTuning) {
-      localStorage.setItem(
-        PERSISTED_TUNINGS_VARIABLE_NAME,
-        JSON.stringify(savedTunings.filter(t => t !== originalSavedTuning)),
-      );
-    }
+    const originalTuning = persistedTunings.find(t => t.label === label)!;
+    setTuning(convertTuningToState(getAllTunings().find(t => t !== originalTuning)!));
+    setPersistedTunings(ps => ps.filter(t => t !== originalTuning));
   };
 
   const stringModifiedChecker = (id: number) => {
@@ -135,6 +125,11 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     if (!string || string.original === null || string.pitch === string.original) return null;
     return string.pitch > string.original;
   };
+
+  // useEffect(() => {
+  //   changePitchRange([tuning.pitches[0].pitch, tuning.pitches.at(-1)!.pitch + fretsAmount]);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [tuning]);
 
   const contextValue = useMemo(
     () => ({
@@ -147,13 +142,15 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       removeString,
       addString,
       saveTuning,
-      getSavedTunings,
-      tunings,
+      tunings: [
+        ...persistedTunings.map(t => ({...t, deletable: true})),
+        ...tunings.map(t => ({...t, deletable: false})),
+      ],
       stringModifiedChecker,
       deleteTuning,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tuning, fretsAmount, tunings],
+    [tuning, fretsAmount, persistedTunings],
   );
   return (
     <NoteGeneratorTuningContext.Provider value={contextValue}>

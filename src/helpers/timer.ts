@@ -9,15 +9,15 @@ export function* pollRemainingTime(countdownTimeInSeconds: number) {
   }
 }
 
-export const debounce = <T extends any[]>(
-  fn: Task<T, void | (() => void)>,
+export const debounce = <T extends (...args: any) => void | (() => void)>(
+  fn: T,
   delay = 50,
-): Task<T, () => void> => {
+): ((...args: Parameters<T>) => () => void) => {
   let timer: number | undefined;
-  return (...args: T) => {
+  return (...args: Parameters<T>) => {
     clearTimeout(timer);
     let cancelCb: void | (() => void);
-    timer = setTimeout(() => (cancelCb = fn(...args)), delay);
+    timer = setTimeout(() => (cancelCb = fn(args)), delay);
     return () => {
       cancelCb?.();
       clearTimeout(timer);
@@ -25,15 +25,15 @@ export const debounce = <T extends any[]>(
   };
 };
 
-export const throttle = <T extends any[]>(fn: Task<T>, delay = 50): Task<T> => {
+export const throttle = <T extends (...args: any) => void>(fn: T, delay = 50): T => {
   let timer: number | undefined;
-  return (...args: T) => {
+  return ((...args: Parameters<T>) => {
     if (timer !== undefined) return;
     timer = setTimeout(() => {
       timer = undefined;
-      fn(...args);
+      fn(args);
     }, delay);
-  };
+  }) as T;
 };
 
 export function pollTask(msInterval: number, task: () => void) {
@@ -54,25 +54,25 @@ export function pollTask(msInterval: number, task: () => void) {
   };
 }
 
-export function controlledPollTask<T extends any[]>(
+export function controlledPollTask<T extends (...args: any) => void>(
   msInterval: number,
-  task: Task<T>,
-): [start: (...args: T) => void, stop: () => void] {
+  task: T,
+): [start: (...args: Parameters<T>) => void, stop: () => void] {
   let interval: number;
   let targetTime: number;
-  const poll = (...args: T) => {
+  const poll = (...args: Parameters<T>) => {
     if (performance.now() < targetTime - 5) return;
     clearInterval(interval);
     while (performance.now() < targetTime - 2);
-    task(...args);
+    task(args);
     targetTime += msInterval;
     interval = setInterval(() => poll(...args));
   };
   return [
-    (...args: T) => {
+    (...args: Parameters<T>) => {
       targetTime = performance.now() + msInterval;
       clearInterval(interval);
-      task(...args);
+      task(args);
       interval = setInterval(() => poll(...args));
     },
     () => {

@@ -1,5 +1,4 @@
 import {useContext} from 'react';
-import {pitchToNote} from '../../../helpers/pitch';
 import S from './NoteWithOctave.module.css';
 import {LanguageContext, LanguageProps} from '../../../contexts/LanguageContext';
 
@@ -10,9 +9,9 @@ const NoteWithOctave = ({
   pitch: number | null;
   withShadow?: boolean;
 }) => {
-  const {eng} = useContext(LanguageContext) as LanguageProps;
+  const {getNoteWithOctave} = useContext(LanguageContext) as LanguageProps;
 
-  const [note, octave] = pitchToNote(pitch === undefined ? null : pitch, eng);
+  const [note, octave] = getNoteWithOctave(pitch);
 
   return (
     <p

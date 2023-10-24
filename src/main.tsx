@@ -26,6 +26,7 @@ const sections = createRoutesFromElements(
     <Route path='*' element={<Navigate to='/note-generator' replace />} />
   </Route>,
 );
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   // <React.StrictMode>
   <ErrorBoundary>

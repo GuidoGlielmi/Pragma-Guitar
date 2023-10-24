@@ -1,26 +1,26 @@
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
-import {getPitchAndOctave} from '../../../../helpers/pitch';
 import {useContext} from 'react';
 import './NotePlayed.css';
-
-interface NotePlayedProps {
-  pitch: number | null;
-  detune: number | null;
-}
+import {centsOffFromPitch, pitchFromFrequency} from '../../../../libs/Helpers';
+import {LanguageContext, LanguageProps} from '../../../../contexts/LanguageContext';
 
 const MAX_SHADOW_Y_POSITION = 8;
 
-const NotePlayed = ({pitch, detune}: NotePlayedProps) => {
+const NotePlayed = ({frecuency}: {frecuency: number | null}) => {
+  const {getNoteWithOctave} = useContext(LanguageContext) as LanguageProps;
   const {
     pitchRange: [from, to],
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-
-  const [notePlayed, octavePlayed] = getPitchAndOctave(pitch);
+  const pitch = pitchFromFrequency(frecuency) as number;
+  const detune = centsOffFromPitch(frecuency, pitch);
+  const [notePlayed, octavePlayed] = getNoteWithOctave(pitch);
 
   const computedShadowYPosition = MAX_SHADOW_Y_POSITION * -(((detune || 0) * 2) / 100);
-  const textShadow = `0 ${computedShadowYPosition}px 0px #ffffff15`;
+  const textShadow = `0 ${computedShadowYPosition}px 0px #ffffff20`;
 
   const anyOctave = from === null && to === null;
+
+  // console.log(pitch, detune, computedShadowYPosition);
 
   return (
     <div className='notePlayedContainer'>

@@ -1,28 +1,55 @@
 import S from './Board.module.css';
-import {centsOffFromClosestPitch, pitchFromFrequency} from '../../../libs/Helpers';
 import NoteWithOctave from '../../common/NoteWithOctave';
-import {motion, AnimatePresence} from 'framer-motion';
+import {motion} from 'framer-motion';
+import {useEffect, useRef} from 'react';
 
 type BoardProps = {
   pitch: number | null;
-  frecuency: number | null;
   detune: number | null;
 };
 
 const third = 33;
 
-const Board = ({frecuency}: BoardProps) => {
-  const detune = centsOffFromClosestPitch(frecuency || 0) / 100;
-  const pitch = frecuency ? pitchFromFrequency(frecuency) : undefined;
-  const lowerBandPercentage = frecuency === null ? third / 2 : (1 - detune) * third - third / 2;
+const Board = ({detune, pitch}: BoardProps) => {
+  const prevNoteInfoRef = useRef<BoardProps>();
+
+  useEffect(() => {
+    if (detune !== null) prevNoteInfoRef.current = {pitch, detune};
+  }, [pitch, detune]);
+
+  const lowerBandPercentage =
+    prevNoteInfoRef.current === undefined
+      ? third / 2
+      : pitch === null || detune === null
+      ? (1 - prevNoteInfoRef.current.detune! / 100) * third - third / 2
+      : (1 - detune / 100) * third - third / 2;
+
   return (
     <section className={S.container}>
       <div>
-        <Band pitch={pitch! - 1} percentage={lowerBandPercentage} />
+        <Band
+          pitch={
+            pitch
+              ? pitch - 1
+              : prevNoteInfoRef.current?.pitch
+              ? prevNoteInfoRef.current?.pitch - 1
+              : null
+          }
+          percentage={lowerBandPercentage}
+        />
         <div style={{left: `${third + lowerBandPercentage}%`}}>
-          {pitch && <NoteWithOctave pitch={pitch} />}
+          <NoteWithOctave pitch={pitch ?? prevNoteInfoRef.current?.pitch ?? null} />
         </div>
-        <Band pitch={pitch! + 1} percentage={third * 2 + lowerBandPercentage} />
+        <Band
+          pitch={
+            pitch
+              ? pitch + 1
+              : prevNoteInfoRef.current?.pitch
+              ? prevNoteInfoRef.current?.pitch + 1
+              : null
+          }
+          percentage={third * 2 + lowerBandPercentage}
+        />
         <span className={S.xAxis} />
         <span className={S.value} />
       </div>
@@ -37,16 +64,14 @@ type BandProps = {
 
 const Band = ({pitch, percentage}: BandProps) => {
   return (
-    <AnimatePresence>
-      <motion.div
-        key={pitch}
-        exit={{opacity: 0}}
-        transition={{duration: 0.075}}
-        style={{left: `${percentage}%`}}
-      >
-        {!!pitch && <NoteWithOctave pitch={pitch - 1} />}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={pitch}
+      exit={{opacity: 0}}
+      transition={{duration: 0.075}}
+      style={{left: `${percentage}%`}}
+    >
+      <NoteWithOctave pitch={pitch} />
+    </motion.div>
   );
 };
 

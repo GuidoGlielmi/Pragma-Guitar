@@ -1,14 +1,12 @@
 import {AudioContext, AudioProps} from '../../../../contexts/AudioContext';
-import {
-  getFrecuencyFromPitch,
-  getMiddleOctavePitch,
-  getPitchAndOctave,
-} from '../../../../helpers/pitch';
+import {getFrecuencyFromPitch, getMiddleOctavePitch} from '../../../../helpers/pitch';
 import {useContext} from 'react';
 import './NoteToPlay.css';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
+import {LanguageContext, LanguageProps} from '../../../../contexts/LanguageContext';
 
 const NoteToPlay = () => {
+  const {getNoteWithOctave} = useContext(LanguageContext) as LanguageProps;
   const {startOscillator, stopOscillator} = useContext(AudioContext) as AudioProps;
 
   const {
@@ -16,7 +14,7 @@ const NoteToPlay = () => {
     pitchRange: [from, to],
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
-  const [noteToPlay, octaveToPlay] = getPitchAndOctave(pitchToPlay);
+  const [noteToPlay, octaveToPlay] = getNoteWithOctave(pitchToPlay);
 
   const anyOctave = from === null && to === null;
 

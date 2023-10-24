@@ -6,7 +6,7 @@ import NavBar from './components/Navbar';
 import DeviceList from './components/DeviceList';
 import './App.css';
 import useTranslation from './hooks/useTranslation';
-import Language from './components/Language';
+import Languages from './components/Language';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 
@@ -21,7 +21,7 @@ function App() {
 
   return (
     <main>
-      <Language />
+      <Languages />
       <DeviceList />
       <NavBar />
       <StartButton />

@@ -1,11 +1,10 @@
 import {Link, useLocation} from 'react-router-dom';
 import {routes} from '../../constants/routes';
 import useTranslation from '../../hooks/useTranslation';
-import {TranslationKeys} from '../../helpers/translations';
 import S from './NavBar.module.css';
 
 const NavBar = () => {
-  const routesTitles = useTranslation(routes.map(r => r.title) as TranslationKeys[]);
+  const routesTitles = useTranslation(routes.map(r => r.title));
   const location = useLocation();
 
   return (

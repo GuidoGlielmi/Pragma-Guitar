@@ -11,52 +11,36 @@ import {
   NoteGeneratorContext,
   NoteGeneratorProps,
 } from '../../../../../contexts/NodeGeneratorContext';
+import useChange from '../../../../../hooks/usePrevValue';
 
 const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
   const {tuning, fretsAmount} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
-  const [selectedStringIndex, setSelectedStringIndex] = useState<number | null>();
+  useChange(tuning, (prevTuning?: TuningState) => {
+    if (tuning.label !== prevTuning?.label) {
+      setSelectedStringId(null);
+    }
+  });
+
+  const [selectedStringId, setSelectedStringId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (selectedStringIndex === undefined) return;
+    const pitchObj = tuning.pitches.find(p => p.id === selectedStringId);
     changePitchRange([
-      tuning.pitches[selectedStringIndex ?? 0].pitch,
-      tuning.pitches[selectedStringIndex ?? tuning.pitches.length - 1].pitch + fretsAmount,
+      pitchObj?.pitch ?? tuning.pitches[0].pitch,
+      (pitchObj?.pitch ?? tuning.pitches.at(-1)!.pitch) + fretsAmount,
     ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStringIndex]);
+  }, [selectedStringId]);
 
   return (
-    <div
-      ref={boardRef}
-      className={S.tuningBoard}
-      style={{
-        display: 'flex',
-        gap: 10,
-        maxHeight: 225,
-        overflow: 'scroll',
-        overflowX: 'hidden',
-        position: 'relative',
-        padding: 10,
-        borderBottom: '2px solid #999',
-        borderTop: '2px solid #999',
-        margin: 0,
-        boxShadow: 'inset 0 0 23px black',
-      }}
-    >
-      <div style={{flexGrow: 1}}>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4,
-            marginBottom: 10,
-          }}
-        >
+    <div ref={boardRef} className={S.tuningBoard}>
+      <div>
+        <div>
           <AnimatePresence initial={false}>
-            {[...tuning.pitches].reverse().map((v, i, arr) => {
-              const mirroredIndex = arr.length - 1 - i;
+            {[...tuning.pitches].reverse().map((v, inverseIndex, arr) => {
+              const index = arr.length - 1 - inverseIndex;
               return (
                 <motion.div
                   id={`${v.id}`}
@@ -73,10 +57,10 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
                 >
                   <StringDisplay
                     pitch={v}
-                    height={i + 1}
-                    index={mirroredIndex}
-                    selected={selectedStringIndex === mirroredIndex}
-                    select={(i: number) => setSelectedStringIndex(ps => (ps === i ? null : i))}
+                    height={inverseIndex + 1}
+                    index={index}
+                    selected={selectedStringId === v.id}
+                    select={(id: number) => setSelectedStringId(ps => (ps === id ? null : id))}
                   />
                 </motion.div>
               );

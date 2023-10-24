@@ -5,8 +5,8 @@ const useDebouncedChange = <T,>(
   defaultTimeWindow: number,
   timeWindows?: {[key: string | number]: number},
 ) => {
-  const [changedValue, setChangedValue] = useState<T>();
-  const prevValueRef = useRef<T>();
+  const [changedValue, setChangedValue] = useState<T>(value);
+  const prevValueRef = useRef<T>(value);
   const timeoutRef = useRef<number>();
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const useDebouncedChange = <T,>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  return changedValue;
+  return [changedValue, setChangedValue] as [T, React.Dispatch<React.SetStateAction<T>>];
 };
 
 export default useDebouncedChange;

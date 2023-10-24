@@ -2,12 +2,9 @@ import {useState, useEffect, useRef} from 'react';
 
 import usePitch from './usePitch';
 import useDebouncedChange from './useDebouncedChange';
+import {pitchFromFrequency} from '../libs/Helpers';
 
-type Condition = {
-  delay?: number;
-  minFrecuency?: number;
-  maxFrecuency?: number;
-} & (
+type Condition =
   | {
       target?: number | null;
       condition: (pitch: number) => boolean;
@@ -15,52 +12,36 @@ type Condition = {
   | {
       target: number | null;
       condition?: (pitch: number) => boolean;
-    }
-);
-type UseCorrectPitch = UsePitch & {correct: boolean; currStreak: number; maxStreak: number};
+    };
+
+type UseCorrectPitch = {frecuency: number | null; correct: boolean};
 
 const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
-  const {detune, frecuency, pitch, note} = usePitch();
-  const [currStreak, setCurrStreak] = useState(0);
-  const [maxStreak, setMaxStreak] = useState(+localStorage.getItem('maxStreak')! || 0);
+  const frecuency = usePitch();
   const [correct, setCorrect] = useState(false);
-  const correctDebounced = useDebouncedChange(correct, 200);
+  const [correctDebounced, setCorrectDebounced] = useDebouncedChange(correct, 200);
 
   const prevCorrect = useRef(correct);
 
   useEffect(() => {
-    if (!prevCorrect.current) setCurrStreak(0);
     setCorrect(false);
+    setCorrectDebounced(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target, condition]);
 
   useEffect(() => {
-    setMaxStreak(ps => Math.max(ps, currStreak));
-  }, [currStreak]);
-
-  useEffect(() => {
-    localStorage.setItem('maxStreak', maxStreak.toString());
-  }, [maxStreak]);
-
-  useEffect(() => {
     if (correct) return;
+    const pitch = pitchFromFrequency(frecuency);
     setCorrect(!!pitch && (condition?.(pitch) ?? pitch === target));
-  }, [pitch, target, condition, correct]);
+  }, [frecuency, target, condition, correct]);
 
   useEffect(() => {
-    prevCorrect.current = correct;
-    if (correct) {
-      setCurrStreak(ps => ps + 1);
-    }
-  }, [correct]);
+    prevCorrect.current = correctDebounced;
+  }, [correctDebounced]);
 
   return {
-    detune,
-    note,
-    pitch,
     frecuency,
-    correct: correctDebounced ?? false,
-    currStreak,
-    maxStreak,
+    correct: correctDebounced,
   };
 };
 

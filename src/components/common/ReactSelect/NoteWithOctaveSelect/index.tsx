@@ -1,20 +1,20 @@
-import {useContext} from 'react';
 import {Props} from 'react-select';
 import Select, {GroupBase} from 'react-select';
 import {OptionWithNoteWithOctave} from '../OptionWithNoteWithOctave';
 import SingleValueWithNoteWithOctave from '../SingleValueWithNoteWithOctave';
 import {customStyles} from '../../../../constants/reactSelectStyles';
-import {strings} from '../../../../constants/notes';
-import {LanguageContext, LanguageProps} from '../../../../contexts/LanguageContext';
+import {MAX_PITCH_INDEX} from '../../../../constants/notes';
+
+const pitches = Array(MAX_PITCH_INDEX + 1)
+  .fill(null)
+  .map((_, i) => ({value: i}));
 
 function NoteWithOctaveSelect(
   props: Omit<
-    Props<GtrString, false, GroupBase<GtrString>>,
+    Props<{value: number}, false, GroupBase<{value: number}>>,
     'components' | 'getOptionLabel' | 'options' | 'styles'
   >,
 ) {
-  const {eng} = useContext(LanguageContext) as LanguageProps;
-
   return (
     <Select
       {...props}
@@ -22,10 +22,9 @@ function NoteWithOctaveSelect(
         Option: OptionWithNoteWithOctave,
         SingleValue: SingleValueWithNoteWithOctave,
       }}
-      getOptionLabel={o => (eng ? o.label : o.labelEs)}
       isSearchable={props.isSearchable ?? false}
       styles={customStyles}
-      options={strings}
+      options={pitches}
     />
   );
 }

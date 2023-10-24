@@ -20,10 +20,7 @@ enum AddStringMessages {
 }
 
 const StringNoteRange = () => {
-  const {
-    changePitchRange,
-    pitchRange: [from, to],
-  } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   const {tuning, tunings, setTuning, addString, fretsAmount} = useContext(
     NoteGeneratorTuningContext,

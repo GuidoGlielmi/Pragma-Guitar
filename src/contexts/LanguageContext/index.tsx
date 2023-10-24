@@ -1,35 +1,35 @@
-import {
-  createContext,
-  useMemo,
-  useState,
-  useEffect,
-  FC,
-  PropsWithChildren,
-  Dispatch,
-  SetStateAction,
-} from 'react';
+import {createContext, useMemo, FC, PropsWithChildren, Dispatch, SetStateAction} from 'react';
+import useLocalStorage from '../../hooks/useLocalStorage';
+import {Notes, OCTAVE_NOTES_AMOUNT, notes} from '../../constants/notes';
+import {Language} from '../../helpers/translations';
 
 export interface LanguageProps {
-  setEng: Dispatch<SetStateAction<boolean>>;
-  eng: boolean;
+  setEng: Dispatch<SetStateAction<Language>>;
+  eng: Language;
+  notes: Notes;
+  getNoteWithOctave: (pitch: number | null) => [string, string];
 }
 
 export const LanguageContext = createContext<LanguageProps | null>(null);
 
+const LANGUAGE_STORAGE_NAME = 'lang';
+const LOWER_OCTAVE_INDEX = -1;
+
 const LanguageProvider: FC<PropsWithChildren> = ({children}) => {
-  const [eng, setEng] = useState(true);
+  const [eng, setEng] = useLocalStorage(Language.en, LANGUAGE_STORAGE_NAME);
 
-  useEffect(() => {
-    const eng = localStorage.getItem('eng');
-    if (eng === null) return;
-    setEng(eng !== 'false');
-  }, []);
+  const getNoteWithOctave = (pitch: number | null): [string, string] => {
+    if (pitch === null) return ['', ''];
+    const octave = ~~(pitch / OCTAVE_NOTES_AMOUNT) + LOWER_OCTAVE_INDEX;
+    const note = Object.values(notes[eng])[pitch % OCTAVE_NOTES_AMOUNT];
+    return [note, `${octave}`];
+  };
 
-  useEffect(() => {
-    localStorage.setItem('eng', `${eng}`);
-  }, [eng]);
-
-  const contextValue = useMemo<LanguageProps>(() => ({setEng, eng}), [eng]);
+  const contextValue = useMemo<LanguageProps>(
+    () => ({setEng, eng, getNoteWithOctave, notes: notes[eng]}),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [eng],
+  );
 
   return <LanguageContext.Provider value={contextValue}>{children}</LanguageContext.Provider>;
 };

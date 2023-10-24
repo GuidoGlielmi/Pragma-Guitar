@@ -3,39 +3,26 @@ import {PitchDetector} from 'pitchy';
 import {AudioContext, AudioProps} from '../contexts/AudioContext';
 import {getFrecuencyDamper, getPitch} from '../helpers/pitch';
 import useTranslation from './useTranslation';
-import {NotificationTranslationKeys} from '../helpers/translations';
 import {ToastContext, ToastProps} from '../contexts/ToastContext';
-import useDebouncedChange from './useDebouncedChange';
-import {centsOffFromPitch, pitchFromFrequency} from '../libs/Helpers';
-import {notes} from '../constants/notes';
-import {LanguageContext, LanguageProps} from '../contexts/LanguageContext';
+import {NotificationTranslation} from '../helpers/translations';
 
 const buflen = 2048;
 
 const pitchDetector = PitchDetector.forFloat32Array(buflen);
 
-const initialNoteInfo = {
-  note: null,
-  pitch: null,
-  detune: null,
-  frecuency: null,
-};
-
 const buf = new Float32Array(buflen);
 
-const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {}): NoteInfo => {
-  const {eng} = useContext(LanguageContext) as LanguageProps;
+const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {}) => {
   const {started, getMicInputStream, setNotification} = useContext(AudioContext) as AudioProps;
   const {setMessage} = useContext(ToastContext) as ToastProps;
-  const [needMicAccessString] = useTranslation('Microphone permission is needed');
 
-  const [noAudioString, closerToTheMicString] = useTranslation([
+  const [noAudioString, closerToTheMicString, needMicAccessString] = useTranslation([
     'No audio detected',
     'Get closer to the microphone',
+    'Microphone permission is needed',
   ]);
 
   const [frecuency, setFrecuency] = useState<number | null>(null);
-  const debouncedPitch = useDebouncedChange(pitchFromFrequency(frecuency), 50);
 
   useEffect(() => {
     if (!started) return;
@@ -54,9 +41,9 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
         if (frecuency === -1 || !frecuency) {
           setFrecuency(null);
           if (frecuency === -1)
-            return setNotification(noAudioString as NotificationTranslationKeys);
+            return setNotification(noAudioString as keyof NotificationTranslation);
           if (!frecuency)
-            return setNotification(closerToTheMicString as NotificationTranslationKeys);
+            return setNotification(closerToTheMicString as keyof NotificationTranslation);
         }
         setNotification('');
         const dampedF = dampFrecuency(frecuency);
@@ -72,19 +59,7 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
 
-  const noteData =
-    debouncedPitch && frecuency
-      ? {
-          frecuency,
-          pitch: debouncedPitch,
-          note: Object[eng ? 'keys' : 'values'](notes)[(debouncedPitch || 0) % 12],
-          detune: centsOffFromPitch(frecuency, debouncedPitch),
-        }
-      : initialNoteInfo;
-
-  console.log(noteData);
-
-  return noteData;
+  return frecuency;
 };
 
 export default usePitch;

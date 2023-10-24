@@ -1,3 +1,27 @@
+.tuningBoard {
+  display: flex;
+  gap: 10px;
+  height: 225px; /* dont change to maxHeight (messes up with StringGroupModifier buttons) */
+  overflow: scroll;
+  overflow-x: hidden;
+  position: relative;
+  padding: 10px;
+  border-bottom: 2px solid #999;
+  border-top: 2px solid #999;
+  margin: 0;
+  box-shadow: inset 0 0 23px black;
+}
+
+.tuningBoard > div:first-child {
+  flex-grow: 1;
+}
+
+.tuningBoard > div:first-child > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
 .tuningBoard button {
   display: flex;
   justify-content: center;

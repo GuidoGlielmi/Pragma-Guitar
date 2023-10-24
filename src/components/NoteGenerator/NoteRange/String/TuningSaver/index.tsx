@@ -10,16 +10,18 @@ import {
 import useTranslation from '../../../../../hooks/useTranslation';
 
 const TuningSaver = () => {
-  const {saveTuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
+  const {saveTuning, tuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   const [showTuningToSave, setShowTuningToSave] = useState(false);
-  const [tuningToSaveName, setTuningToSaveName] = useState('');
+  const [tuningToSaveName, setTuningToSaveName] = useState(tuning.label);
   const [nameUnavailable, setNameUnavailable] = useState(false);
 
-  const [saveTuningString, nameString, nameInUseString] = useTranslation([
+  const [saveTuningString, nameString, nameInUseString, saveString, cancelString] = useTranslation([
     'Save Tuning',
     'Name',
     'Name already in use!',
+    'Save',
+    'Cancel',
   ]);
 
   const saveTuningHandler = () => {
@@ -71,10 +73,10 @@ const TuningSaver = () => {
                 {nameInUseString}
               </p>
             )}
-            <button disabled={!tuningToSaveName} onClick={saveTuningHandler}>
+            <button title={saveString} disabled={!tuningToSaveName} onClick={saveTuningHandler}>
               <TickButton />
             </button>
-            <button title='Cancel' onClick={cancelSave}>
+            <button title={cancelString} onClick={cancelSave}>
               <Cancel />
             </button>
           </>
