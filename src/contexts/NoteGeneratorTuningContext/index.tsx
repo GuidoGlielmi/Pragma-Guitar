@@ -49,17 +49,20 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       }),
   );
 
-  const getAllTunings = () => [...persistedTunings, ...tunings];
-
   const [fretsAmount, setFretsAmount] = useLocalStorage(
     MAX_FRETS_AMOUNT,
     PERSISTED_FRET_AMOUNT_VARIABLE_NAME,
   );
+
+  const getAllTunings = () => [...persistedTunings, ...tunings];
+
   const [tuning, setTuning] = useState<TuningState>(convertTuningToState(getAllTunings()[0]));
 
   const changeFretsAmount = (n: number) => {
-    changePitchRange(ps => [undefined, ps[1]! + n]);
-    setFretsAmount(setterRangeLimiter(n, {min: 0, max: MAX_FRETS_AMOUNT}));
+    const newFretsAmount = rangeLimiter(fretsAmount + n, 0, MAX_FRETS_AMOUNT);
+    const fretsToAdd = newFretsAmount - fretsAmount;
+    changePitchRange(ps => [undefined, ps[1]! + fretsToAdd]);
+    setFretsAmount(newFretsAmount);
   };
 
   const setTuningHandler = (i: number) => setTuning(convertTuningToState(getAllTunings()[i]));
@@ -124,7 +127,10 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     if (tunings.some(t => t.label === label)) return false;
     const newTuning = createTuning(label, tuning.pitches);
     setPersistedTunings(ps => [newTuning, ...ps.filter(t => t.label !== label)]);
-    setTuning(ps => ({...ps, pitches: ps.pitches.map(p => ({...p, original: p.pitch}))}));
+    setTuning(ps => ({
+      ...ps,
+      pitches: ps.pitches.map((p, i) => ({...p, originalPitch: p.pitch, originalIndex: i})),
+    }));
     return true;
   };
 

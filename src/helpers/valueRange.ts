@@ -1,8 +1,7 @@
 export const setterRangeLimiter = (value: number, {min = -Infinity, max = Infinity}) => {
   return (ps: number) => {
     const newValue = ps + value;
-    Math.min(max, Math.max(min, newValue));
-    return newValue;
+    return Math.min(max, Math.max(min, newValue));
   };
 };
 
