@@ -1,11 +1,12 @@
 import {PitchDetector} from 'pitchy';
 import {audioEcosystem} from '../contexts/AudioContext';
 
-const c5Pitch = 72;
-const firstHalfOctavesAmount = c5Pitch / 12;
+const E2_PITCH = 40;
+const C5_PITCH = 72;
+const firstHalfOctavesAmount = C5_PITCH / 12;
 export const getMiddleOctavePitch = (pitch: number) => {
   const octavesDiff = Math.abs(pitch / 12 - firstHalfOctavesAmount);
-  if (pitch >= c5Pitch) {
+  if (pitch >= C5_PITCH) {
     return pitch - 12 * Math.ceil(octavesDiff);
   }
   return pitch + 12 * Math.floor(octavesDiff);

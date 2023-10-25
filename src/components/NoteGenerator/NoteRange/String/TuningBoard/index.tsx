@@ -4,8 +4,8 @@ import {
   NoteGeneratorTuningProps,
 } from '../../../../../contexts/NoteGeneratorTuningContext';
 import {AnimatePresence, motion} from 'framer-motion';
-import StringDisplay from '../StringDisplay';
-import StringGroupModifier from '../StringGroupModifier';
+import StringDisplay from './StringDisplay';
+import StringGroupModifier from './StringGroupModifier';
 import S from './TuningBoard.module.css';
 import {
   NoteGeneratorContext,

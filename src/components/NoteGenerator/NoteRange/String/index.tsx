@@ -35,7 +35,10 @@ const StringNoteRange = () => {
   ]);
 
   useEffect(() => {
-    changePitchRange([tuning.pitches[0].pitch, tuning.pitches.at(-1)!.original! + fretsAmount]);
+    changePitchRange([
+      tuning.pitches[0].pitch,
+      tuning.pitches.at(-1)!.originalPitch! + fretsAmount,
+    ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

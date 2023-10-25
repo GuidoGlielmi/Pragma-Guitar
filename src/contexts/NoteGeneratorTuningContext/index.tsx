@@ -1,6 +1,12 @@
 import {createContext, useMemo, useState, FC, PropsWithChildren, useContext} from 'react';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../NodeGeneratorContext';
-import {pitchRangeLimits, tunings, convertTuningToState} from '../../constants/notes';
+import {
+  pitchRangeLimits,
+  tunings,
+  convertTuningToState,
+  createString,
+  createTuning,
+} from '../../constants/notes';
 import {rangeLimiter, setterRangeLimiter} from '../../helpers/valueRange';
 import useLocalStorage from '../../hooks/useLocalStorage';
 
@@ -24,7 +30,6 @@ type NoteGeneratorTuningProviderProps = {children: React.ReactNode};
 
 export const NoteGeneratorTuningContext = createContext<NoteGeneratorTuningProps | null>(null);
 
-const E2_PITCH = 40;
 const PERSISTED_TUNINGS_VARIABLE_NAME = 'customTunings';
 const PERSISTED_FRET_AMOUNT_VARIABLE_NAME = 'fretsAmount';
 const MAX_FRETS_AMOUNT = 24;
@@ -58,11 +63,22 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   };
 
   const setTuningHandler = (i: number) => setTuning(convertTuningToState(getAllTunings()[i]));
-  const reset = () =>
-    setTuning(ps => ({
-      ...ps,
-      pitches: ps.pitches.filter(p => p.original !== null).map(p => ({...p, pitch: p.original!})),
-    }));
+  const reset = () => {
+    setTuning(ps => {
+      const originalTuning = getAllTunings().find(t => t.label === ps.label)!;
+      return {
+        ...ps,
+        pitches: originalTuning.pitches.map((op, oi) => ({
+          id:
+            ps.pitches.find(p => p.originalPitch === op && p.originalIndex === oi)?.id ||
+            Math.random(),
+          pitch: op,
+          originalPitch: op,
+          originalIndex: oi,
+        })),
+      };
+    });
+  };
 
   const modifyPitches = (pitches: StringStateValue[], halfStepsAmount: number, i?: number) => {
     let newPitches = JSON.parse(JSON.stringify(pitches)) as StringStateValue[];
@@ -87,11 +103,12 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     setTuning(ps => ({...ps, pitches: modifyPitches(ps.pitches, -1, i)}));
   };
 
-  const createString = (pitch: number) => ({original: null, pitch, id: Math.random()});
-
   const addString = (higher: boolean) => {
     setTuning(ps => {
-      const newPitch = createString(ps.pitches.at(-1)!.pitch ?? E2_PITCH);
+      const newPitch = createString(
+        higher ? ps.pitches.at(-1)!.pitch : ps.pitches[0].pitch,
+        higher ? ps.pitches.at(-1)!.originalIndex + 1 : ps.pitches[0].originalIndex - 1,
+      );
       return {
         ...ps,
         pitches: [...(higher ? [] : [newPitch]), ...ps.pitches, ...(higher ? [newPitch] : [])],
@@ -105,7 +122,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
 
   const saveTuning = (label: string) => {
     if (tunings.some(t => t.label === label)) return false;
-    const newTuning = {label: label, pitches: tuning.pitches.map(p => p.pitch)} as Tuning;
+    const newTuning = createTuning(label, tuning.pitches);
     setPersistedTunings(ps => [newTuning, ...ps.filter(t => t.label !== label)]);
     setTuning(ps => ({...ps, pitches: ps.pitches.map(p => ({...p, original: p.pitch}))}));
     return true;
@@ -119,8 +136,9 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
 
   const stringModifiedChecker = (id: number) => {
     const string = tuning.pitches.find(p => p.id === id);
-    if (!string || string.original === null || string.pitch === string.original) return null;
-    return string.pitch > string.original;
+    if (!string || string.originalPitch === null || string.pitch === string.originalPitch)
+      return null;
+    return string.pitch > string.originalPitch;
   };
 
   const contextValue = useMemo(

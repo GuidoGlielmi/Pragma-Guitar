@@ -5,12 +5,30 @@ export const maxBPS = 300;
 
 export const convertTuningToState = (t: Tuning): TuningState => ({
   ...t,
-  pitches: t.pitches.map(v => ({original: v, pitch: v, id: Math.random()})),
+  pitches: t.pitches.map((v, i) => ({
+    id: Math.random(),
+    originalIndex: i,
+    originalPitch: v,
+    pitch: v,
+  })),
 });
 
 export const convertStateToTuning = (t: TuningState): Tuning => ({
   ...t,
   pitches: t.pitches.map(p => p.pitch),
+});
+
+export const createTuning = (label: string, pitches: StringStateValue[]) =>
+  ({
+    label,
+    pitches: pitches.map(p => p.pitch),
+  } as Tuning);
+
+export const createString = (pitch: number, i: number): StringStateValue => ({
+  id: Math.random(),
+  originalIndex: i,
+  originalPitch: null,
+  pitch,
 });
 
 export const tunings = [

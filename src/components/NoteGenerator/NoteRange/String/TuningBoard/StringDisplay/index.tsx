@@ -2,14 +2,14 @@ import {useContext} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
-} from '../../../../../contexts/NoteGeneratorTuningContext';
-import ChevronDown from '../../../../../icons/ChevronDown';
-import NoteWithOctave from '../../../../common/NoteWithOctave';
+} from '../../../../../../contexts/NoteGeneratorTuningContext';
+import ChevronDown from '../../../../../../icons/ChevronDown';
+import NoteWithOctave from '../../../../../common/NoteWithOctave';
 import S from './StringDisplay.module.css';
 import {
   NoteGeneratorContext,
   NoteGeneratorProps,
-} from '../../../../../contexts/NodeGeneratorContext';
+} from '../../../../../../contexts/NodeGeneratorContext';
 import {AnimatePresence, motion} from 'framer-motion';
 
 interface StringDisplayProps {

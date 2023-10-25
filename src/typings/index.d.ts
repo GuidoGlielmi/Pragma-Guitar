@@ -19,6 +19,11 @@ declare global {
 
   export type PersistableTuning = {label: string; pitches: number[]};
   export type Tuning = PersistableTuning & {deletable: boolean};
-  export type StringStateValue = {original: number | null; pitch: number; id: number};
+  export type StringStateValue = {
+    id: number;
+    originalIndex: number;
+    originalPitch: number | null;
+    pitch: number;
+  };
   export type TuningState = Omit<Tuning, 'pitches'> & {pitches: StringStateValue[]};
 }
