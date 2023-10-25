@@ -62,12 +62,12 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
 
   const changePitchRange: PitchRangeSetter = e => {
     setPitchRange(ps => {
-      // strings has the same length as possible pitches
       let newRange: PitchRange;
       if (e instanceof Function) {
         newRange = e([ps[0] || 0, ps[1] || MAX_PITCH_INDEX]);
       } else if (e[0] === null || e[1] === null) return [null, null];
       else newRange = e;
+      if (newRange[0] === ps[0] && newRange[1] === ps[1]) return ps;
       return [
         newRange[0] === undefined ? ps[0] : rangeLimiter(newRange[0]!, ...pitchRangeLimits),
         newRange[1] === undefined ? ps[1] : rangeLimiter(newRange[1]!, ...pitchRangeLimits),

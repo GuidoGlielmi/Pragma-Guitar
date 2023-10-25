@@ -8,7 +8,7 @@ import S from './FretModifier.module.css';
 import useTranslation from '../../../../../hooks/useTranslation';
 
 const FretModifier = () => {
-  const {fretsAmount, changeFretsAmount} = useContext(
+  const {fretsAmount, decrementFretsAmount, incrementFretsAmount} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
@@ -17,9 +17,9 @@ const FretModifier = () => {
   return (
     <div className={S.fretsContainer}>
       <h4>{fretsString}</h4>
-      <button onClick={() => changeFretsAmount(-1)}>-</button>
+      <button onClick={decrementFretsAmount}>-</button>
       <p>{fretsAmount}</p>
-      <button onClick={() => changeFretsAmount(1)}>+</button>
+      <button onClick={incrementFretsAmount}>+</button>
     </div>
   );
 };

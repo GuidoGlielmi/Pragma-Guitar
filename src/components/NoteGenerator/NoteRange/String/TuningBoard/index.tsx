@@ -19,17 +19,13 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
   const [selectedStringId, setSelectedStringId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (tuning.pitches.every(p => p.id !== selectedStringId)) setSelectedStringId(null);
-  }, [tuning, selectedStringId]);
-
-  useEffect(() => {
     const pitchObj = tuning.pitches.find(p => p.id === selectedStringId);
-    changePitchRange([
-      pitchObj?.pitch ?? tuning.pitches[0].pitch,
-      (pitchObj?.pitch ?? tuning.pitches.at(-1)!.pitch) + fretsAmount,
-    ]);
+    if (!pitchObj) {
+      changePitchRange([tuning.pitches[0].pitch, tuning.pitches.at(-1)!.pitch + fretsAmount]);
+      setSelectedStringId(null);
+    } else changePitchRange([pitchObj.pitch, pitchObj.pitch + fretsAmount]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStringId]);
+  }, [selectedStringId, tuning, fretsAmount]);
 
   return (
     <div ref={boardRef} className={S.tuningBoard}>

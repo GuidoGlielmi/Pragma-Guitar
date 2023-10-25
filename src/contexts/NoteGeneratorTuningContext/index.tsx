@@ -1,5 +1,4 @@
-import {createContext, useMemo, useState, FC, PropsWithChildren, useContext} from 'react';
-import {NoteGeneratorContext, NoteGeneratorProps} from '../NodeGeneratorContext';
+import {createContext, useMemo, useState, FC, PropsWithChildren} from 'react';
 import {
   pitchRangeLimits,
   tunings,
@@ -15,7 +14,8 @@ export interface NoteGeneratorTuningProps {
   setTuning: (i: number) => void;
   reset: () => void;
   fretsAmount: number;
-  changeFretsAmount: (n: number) => void;
+  decrementFretsAmount: () => void;
+  incrementFretsAmount: () => void;
   removeString: (id: number) => void;
   addString: (higher: boolean) => void;
   saveTuning: (label: string) => boolean;
@@ -32,13 +32,11 @@ export const NoteGeneratorTuningContext = createContext<NoteGeneratorTuningProps
 
 const PERSISTED_TUNINGS_VARIABLE_NAME = 'customTunings';
 const PERSISTED_FRET_AMOUNT_VARIABLE_NAME = 'fretsAmount';
-const MAX_FRETS_AMOUNT = 24;
+const MAX_FRETS_AMOUNT = 50;
 
 const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProviderProps>> = ({
   children,
 }) => {
-  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-
   const [persistedTunings, setPersistedTunings] = useLocalStorage<Tuning[], PersistableTuning[]>(
     [],
     PERSISTED_TUNINGS_VARIABLE_NAME,
@@ -59,11 +57,11 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   const [tuning, setTuning] = useState<TuningState>(convertTuningToState(getAllTunings()[0]));
 
   const changeFretsAmount = (n: number) => {
-    const newFretsAmount = rangeLimiter(fretsAmount + n, 0, MAX_FRETS_AMOUNT);
-    const fretsToAdd = newFretsAmount - fretsAmount;
-    changePitchRange(ps => [undefined, ps[1]! + fretsToAdd]);
-    setFretsAmount(newFretsAmount);
+    setFretsAmount(setterRangeLimiter(n, {min: 0, max: MAX_FRETS_AMOUNT}));
   };
+
+  const incrementFretsAmount = () => changeFretsAmount(1);
+  const decrementFretsAmount = () => changeFretsAmount(-1);
 
   const setTuningHandler = (i: number) => setTuning(convertTuningToState(getAllTunings()[i]));
   const reset = () => {
@@ -153,9 +151,10 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       setTuning: setTuningHandler,
       reset,
       fretsAmount,
+      incrementFretsAmount,
+      decrementFretsAmount,
       incrementPitch,
       decrementPitch,
-      changeFretsAmount,
       removeString,
       addString,
       saveTuning,
