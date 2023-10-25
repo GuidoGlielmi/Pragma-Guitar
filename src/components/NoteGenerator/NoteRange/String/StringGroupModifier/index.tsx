@@ -1,5 +1,4 @@
 import {useContext} from 'react';
-import {tunings} from '../../../../../constants/notes';
 import ChevronDown from '../../../../../icons/ChevronDown';
 import Reset from '../../../../../icons/Reset';
 import {
@@ -9,20 +8,13 @@ import {
 import S from './StringGroupModifier.module.css';
 
 const StringGroupModifier = () => {
-  const {tuning, setTuning, incrementPitch, decrementPitch} = useContext(
+  const {reset, incrementPitch, decrementPitch} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
   return (
     <div className={S.allStringsButtonsContainer}>
-      <button
-        className={S.resetButton}
-        onClick={() => {
-          setTuning(tunings.findIndex(t => t.label === tuning.label));
-        }}
-        style={{padding: 0}}
-        title='Reset tuning'
-      >
+      <button className={S.resetButton} onClick={reset} style={{padding: 0}} title='Reset tuning'>
         <Reset />
       </button>
       <div>

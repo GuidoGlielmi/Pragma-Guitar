@@ -11,19 +11,16 @@ import {
   NoteGeneratorContext,
   NoteGeneratorProps,
 } from '../../../../../contexts/NodeGeneratorContext';
-import useChange from '../../../../../hooks/usePrevValue';
 
 const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
   const {tuning, fretsAmount} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
-  useChange(tuning, (prevTuning?: TuningState) => {
-    if (tuning.label !== prevTuning?.label) {
-      setSelectedStringId(null);
-    }
-  });
-
   const [selectedStringId, setSelectedStringId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (tuning.pitches.every(p => p.id !== selectedStringId)) setSelectedStringId(null);
+  }, [tuning, selectedStringId]);
 
   useEffect(() => {
     const pitchObj = tuning.pitches.find(p => p.id === selectedStringId);

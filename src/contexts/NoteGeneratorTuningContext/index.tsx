@@ -1,21 +1,13 @@
-import {
-  createContext,
-  useEffect,
-  useMemo,
-  useState,
-  FC,
-  PropsWithChildren,
-  useContext,
-} from 'react';
+import {createContext, useMemo, useState, FC, PropsWithChildren, useContext} from 'react';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../NodeGeneratorContext';
 import {pitchRangeLimits, tunings, convertTuningToState} from '../../constants/notes';
 import {rangeLimiter, setterRangeLimiter} from '../../helpers/valueRange';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import useChange from '../../hooks/usePrevValue';
 
 export interface NoteGeneratorTuningProps {
   tuning: TuningState;
   setTuning: (i: number) => void;
+  reset: () => void;
   fretsAmount: number;
   changeFretsAmount: (n: number) => void;
   removeString: (id: number) => void;
@@ -66,6 +58,11 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   };
 
   const setTuningHandler = (i: number) => setTuning(convertTuningToState(getAllTunings()[i]));
+  const reset = () =>
+    setTuning(ps => ({
+      ...ps,
+      pitches: ps.pitches.filter(p => p.original !== null).map(p => ({...p, pitch: p.original!})),
+    }));
 
   const modifyPitches = (pitches: StringStateValue[], halfStepsAmount: number, i?: number) => {
     let newPitches = JSON.parse(JSON.stringify(pitches)) as StringStateValue[];
@@ -126,15 +123,11 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     return string.pitch > string.original;
   };
 
-  // useEffect(() => {
-  //   changePitchRange([tuning.pitches[0].pitch, tuning.pitches.at(-1)!.pitch + fretsAmount]);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [tuning]);
-
   const contextValue = useMemo(
     () => ({
       tuning,
       setTuning: setTuningHandler,
+      reset,
       fretsAmount,
       incrementPitch,
       decrementPitch,
