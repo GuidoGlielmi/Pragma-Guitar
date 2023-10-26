@@ -81,15 +81,3 @@ const Note = () => {
 };
 
 export default NoteGenerator;
-
-// let ringInterval: number;
-// let previousMs = 0;
-// const executeAtInterval = (fn: (msPassed: number) => void, delay = 50) => {
-//   previousMs = new Date().getTime();
-//   ringInterval = setInterval(() => {
-//     const currentMs = new Date().getTime();
-//     const msPassed = currentMs - previousMs;
-//     previousMs = currentMs;
-//     fn(msPassed);
-//   }, delay);
-// };

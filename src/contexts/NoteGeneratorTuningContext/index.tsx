@@ -32,7 +32,9 @@ export const NoteGeneratorTuningContext = createContext<NoteGeneratorTuningProps
 
 const PERSISTED_TUNINGS_VARIABLE_NAME = 'customTunings';
 const PERSISTED_FRET_AMOUNT_VARIABLE_NAME = 'fretsAmount';
+const PERSISTED_PREFERRED_TUNING_VARIABLE_NAME = 'preferredTuning';
 const MAX_FRETS_AMOUNT = 50;
+const DEFAULT_FRETS_AMOUNT = 24;
 
 const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProviderProps>> = ({
   children,
@@ -40,21 +42,24 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   const [persistedTunings, setPersistedTunings] = useLocalStorage<Tuning[], PersistableTuning[]>(
     [],
     PERSISTED_TUNINGS_VARIABLE_NAME,
-    tunings =>
-      tunings.map(t => {
-        const {deletable, ...props} = t;
-        return props;
-      }),
+    {setter: tunings => tunings.map(t => ({...t, deletable: undefined}))},
   );
 
   const [fretsAmount, setFretsAmount] = useLocalStorage(
-    MAX_FRETS_AMOUNT,
+    DEFAULT_FRETS_AMOUNT,
     PERSISTED_FRET_AMOUNT_VARIABLE_NAME,
   );
 
   const getAllTunings = () => [...persistedTunings, ...tunings];
 
-  const [tuning, setTuning] = useState<TuningState>(convertTuningToState(getAllTunings()[0]));
+  const [tuning, setTuning] = useLocalStorage<TuningState, string>(
+    convertTuningToState(getAllTunings()[0]),
+    PERSISTED_PREFERRED_TUNING_VARIABLE_NAME,
+    {
+      getter: label => convertTuningToState(getAllTunings().find(t => t.label === label)!),
+      setter: t => t.label,
+    },
+  );
 
   const changeFretsAmount = (n: number) => {
     setFretsAmount(setterRangeLimiter(n, {min: 0, max: MAX_FRETS_AMOUNT}));

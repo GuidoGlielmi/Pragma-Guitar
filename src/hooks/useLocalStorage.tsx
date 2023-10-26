@@ -1,14 +1,25 @@
 import {useState, useEffect} from 'react';
 
-const useLocalStorage = <T extends TPersistable, TPersistable = T>(
+const useLocalStorage = <T, TPersistable = any>(
   initialValue: T,
   storageKey: string,
-  setter: (t: T) => TPersistable = t => t as TPersistable,
+  {
+    getter,
+    setter = (t: T) => t as any,
+  }: {
+    getter?: (t: TPersistable) => T;
+    setter?: (t: T) => TPersistable;
+  } = {
+    setter: (t: T) => t as any,
+  },
 ) => {
   const [state, setState] = useState<T>(
-    JSON.parse(localStorage.getItem(storageKey)!) ?? initialValue,
+    (() => {
+      const storedValue = JSON.parse(localStorage.getItem(storageKey)!);
+      // JSON can't directly parse strings, they should begin with quotes
+      return storedValue !== null ? (getter ? getter(storedValue) : storedValue) : initialValue;
+    })(),
   );
-  // JSON can't directly parse strings, they should begin with quotes
 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(setter(state)));

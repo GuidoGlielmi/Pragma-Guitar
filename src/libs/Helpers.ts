@@ -69,34 +69,3 @@ const subtractSemitones = (frequency: number, semitones: number) => {
 const frequencyFromPitch = (note: number) => {
   return referenceFrequency * Math.pow(2, (note - 69) / notesInOctaveAmount);
 };
-
-function snapToFraction(frequency: number, fraction: number): number {
-  const semitoneRatio = 2 ** (1 / 12);
-  const semitoneOffset = 69;
-  const referenceFrequency = 440;
-
-  const nearestSemitone = Math.round(
-    semitoneOffset + 12 * Math.log2(frequency / referenceFrequency),
-  );
-
-  // Calculate the nearest frequency within the semitone
-  const nearestFrequency =
-    referenceFrequency * Math.pow(semitoneRatio, nearestSemitone - semitoneOffset);
-
-  // Calculate the fraction of the semitone
-  const fractionOfSemitone =
-    nearestFrequency * Math.pow(semitoneRatio, fraction) - nearestFrequency;
-
-  // Snap the frequency to the nearest 1/10 fraction of a semitone
-  const snappedFrequency = nearestFrequency + fractionOfSemitone;
-
-  return snappedFrequency;
-}
-
-// Example usage
-const inputFrequency = 440; // A4 in Hz
-const fraction = 1 / 10; // 1/10 fraction of a semitone
-
-const snappedFrequency = snapToFraction(inputFrequency, fraction);
-console.log(snappedFrequency); // Output: 443.49288047847496 (Hz)
-// Output: 466.1637615180899 (closest frequency within 1/10 fraction of an octave)
