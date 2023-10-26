@@ -21,7 +21,6 @@ declare global {
   export type Tuning = PersistableTuning & {deletable: boolean};
   export type StringStateValue = {
     id: number;
-    originalIndex: number;
     originalPitch: number | null;
     pitch: number;
   };

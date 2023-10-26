@@ -1,4 +1,4 @@
-import {createContext, useMemo, useState, FC, PropsWithChildren} from 'react';
+import {createContext, useMemo, FC, PropsWithChildren} from 'react';
 import {
   pitchRangeLimits,
   tunings,
@@ -69,21 +69,9 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   const decrementFretsAmount = () => changeFretsAmount(-1);
 
   const setTuningHandler = (i: number) => setTuning(convertTuningToState(getAllTunings()[i]));
+
   const reset = () => {
-    setTuning(ps => {
-      const originalTuning = getAllTunings().find(t => t.label === ps.label)!;
-      return {
-        ...ps,
-        pitches: originalTuning.pitches.map((op, oi) => ({
-          id:
-            ps.pitches.find(p => p.originalPitch === op && p.originalIndex === oi)?.id ||
-            Math.random(),
-          pitch: op,
-          originalPitch: op,
-          originalIndex: oi,
-        })),
-      };
-    });
+    setTuning(ps => convertTuningToState(getAllTunings().find(t => t.label === ps.label)!));
   };
 
   const modifyPitches = (pitches: StringStateValue[], halfStepsAmount: number, i?: number) => {
@@ -111,10 +99,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
 
   const addString = (higher: boolean) => {
     setTuning(ps => {
-      const newPitch = createString(
-        higher ? ps.pitches.at(-1)!.pitch : ps.pitches[0].pitch,
-        higher ? ps.pitches.at(-1)!.originalIndex + 1 : ps.pitches[0].originalIndex - 1,
-      );
+      const newPitch = createString(ps.pitches[higher ? ps.pitches.length - 1 : 0].pitch);
       return {
         ...ps,
         pitches: [...(higher ? [] : [newPitch]), ...ps.pitches, ...(higher ? [newPitch] : [])],

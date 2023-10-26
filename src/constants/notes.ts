@@ -24,9 +24,8 @@ export const createTuning = (label: string, pitches: StringStateValue[]) =>
     pitches: pitches.map(p => p.pitch),
   } as Tuning);
 
-export const createString = (pitch: number, i: number): StringStateValue => ({
+export const createString = (pitch: number): StringStateValue => ({
   id: Math.random(),
-  originalIndex: i,
   originalPitch: null,
   pitch,
 });
