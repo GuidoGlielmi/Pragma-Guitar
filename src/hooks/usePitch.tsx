@@ -35,7 +35,7 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
       } catch (err) {
         return setMessage([needMicAccessString, 5000]);
       }
-      const dampFrecuency = getFrecuencyDamper();
+      // const dampFrecuency = getFrecuencyDamper();
       async function updatePitch() {
         const frecuency = getPitch(minFrecuency, maxFrecuency, pitchDetector, buf);
         if (frecuency === -1 || !frecuency) {
@@ -46,8 +46,8 @@ const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {})
             return setNotification(closerToTheMicString as keyof NotificationTranslation);
         }
         setNotification('');
-        const dampedF = dampFrecuency(frecuency);
-        setFrecuency(dampedF);
+        // const dampedF = dampFrecuency(frecuency);
+        setFrecuency(frecuency);
       }
       updatePitch();
       updateInterval = setInterval(updatePitch, interval);

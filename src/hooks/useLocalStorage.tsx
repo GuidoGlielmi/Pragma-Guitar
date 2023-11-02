@@ -26,6 +26,14 @@ const useLocalStorage = <T, TPersistable = any>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
+  useEffect(() => {
+    const storedValue = JSON.parse(localStorage.getItem(storageKey)!);
+    const newValue =
+      storedValue !== null ? (getter ? getter(storedValue) : storedValue) : initialValue;
+    setState(newValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
+
   return [state, setState] as [T, React.Dispatch<React.SetStateAction<T>>];
 };
 

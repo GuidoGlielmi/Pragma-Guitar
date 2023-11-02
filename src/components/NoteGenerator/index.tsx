@@ -16,6 +16,7 @@ import './NoteGenerator.css';
 import useTranslation from '../../hooks/useTranslation';
 import useStreak from '../../hooks/useStreak';
 import {MAX_PITCH_INDEX} from '../../constants/notes';
+import useMaxValue from '../../hooks/useMaxValue';
 
 const NoteGenerator = () => {
   const {started} = useContext(AudioContext) as AudioProps;
@@ -37,6 +38,7 @@ const Note = () => {
   const {
     pitchToPlay,
     pitchRange: [from, to],
+    countdownInitialValue,
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   const correctNoteAudio = useInitialBufferLoad('/audio/correct.mp3');
@@ -53,7 +55,8 @@ const Note = () => {
 
   const {correct, frecuency} = useCorrectPitch({condition});
 
-  const [currStreak, maxStreak] = useStreak(correct, 'maxStreak');
+  const currStreak = useStreak(correct);
+  const maxStreak = useMaxValue(currStreak, `maxStreakFor${countdownInitialValue}Seconds`);
 
   const [bestStreakString] = useTranslation(['Best Streak']);
 
@@ -63,20 +66,16 @@ const Note = () => {
   }, [correct]);
 
   return (
-    <>
-      <div className='noteContainer sectionBorder'>
-        <RangeSelector />
-        <Timer />
-        <AnimatePresence>
-          {started && <Notes frecuency={frecuency} correct={correct} currStreak={currStreak} />}
-        </AnimatePresence>
+    <div className='noteContainer sectionBorder'>
+      <RangeSelector />
+      <Timer />
+      <AnimatePresence>
+        {started && <Notes frecuency={frecuency} correct={correct} currStreak={currStreak} />}
+      </AnimatePresence>
+      <div className='painterFont'>
+        {bestStreakString}: {maxStreak}
       </div>
-      {!!maxStreak && (
-        <div className='painterFont'>
-          {bestStreakString}: {maxStreak}
-        </div>
-      )}
-    </>
+    </div>
   );
 };
 

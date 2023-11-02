@@ -19,7 +19,7 @@ type UseCorrectPitch = {frecuency: number | null; correct: boolean};
 const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
   const frecuency = usePitch();
   const [correct, setCorrect] = useState(false);
-  const [correctDebounced, setCorrectDebounced] = useDebouncedChange(correct, 200);
+  const [correctDebounced, setCorrectDebounced] = useDebouncedChange(correct, 250);
 
   const prevCorrect = useRef(correct);
 
