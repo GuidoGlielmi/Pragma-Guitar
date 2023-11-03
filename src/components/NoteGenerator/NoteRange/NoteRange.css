@@ -52,15 +52,30 @@
 
 .rangeToPlayContainer {
   display: flex;
-  gap: 10px;
   justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 130px;
+  height: 40px;
   margin: 5px auto 10px;
-  min-width: 85px;
-  min-height: 40px;
-  width: max-content;
-  padding: 5px 8px;
   border: 3px solid #82c9c3;
   border-radius: 5px;
+  overflow: hidden;
   background: #9ba0ff40;
   box-shadow: #111 0 0 8px inset;
+}
+
+.rangeToPlayContainer > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 45px;
+  height: 100%;
+}
+
+.rangeToPlayContainer > div > * {
+  position: absolute;
+  top: 50%;
+  left: 50%;
 }

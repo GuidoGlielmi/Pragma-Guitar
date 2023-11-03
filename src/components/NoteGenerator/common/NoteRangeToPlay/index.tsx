@@ -2,6 +2,7 @@ import {useContext} from 'react';
 import NoteWithOctave from '../../../common/NoteWithOctave';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
 import {MAX_PITCH_INDEX} from '../../../../constants/notes';
+import {AnimatePresence, motion} from 'framer-motion';
 
 const NoteRangeToPlay = () => {
   const {
@@ -10,7 +11,31 @@ const NoteRangeToPlay = () => {
 
   return (
     <div className='rangeToPlayContainer'>
-      <NoteWithOctave pitch={from ?? 0} /> - <NoteWithOctave pitch={to ?? MAX_PITCH_INDEX} />
+      <AnimatePresence>
+        <div>
+          <motion.div
+            key={from ?? 0}
+            initial={{x: '-50%', opacity: 0.5, y: '-150%'}}
+            animate={{x: '-50%', opacity: 1, y: '-50%'}}
+            exit={{x: '-50%', y: '50%'}}
+          >
+            <NoteWithOctave pitch={from ?? 0} />
+          </motion.div>
+        </div>
+      </AnimatePresence>
+      -
+      <AnimatePresence>
+        <div>
+          <motion.div
+            key={to ?? MAX_PITCH_INDEX}
+            initial={{x: '-50%', opacity: 0.5, y: '-150%'}}
+            animate={{x: '-50%', opacity: 1, y: '-50%'}}
+            exit={{x: '-50%', y: '50%'}}
+          >
+            <NoteWithOctave pitch={to ?? MAX_PITCH_INDEX} />
+          </motion.div>
+        </div>
+      </AnimatePresence>
     </div>
   );
 };
