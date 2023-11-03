@@ -7,7 +7,7 @@ const useStreak = (correct: boolean) => {
     if (correct) setCurrStreak(ps => ps + 1);
   }, [correct]);
 
-  return currStreak;
+  return [currStreak, setCurrStreak] as [number, React.Dispatch<React.SetStateAction<number>>];
 };
 
 export default useStreak;

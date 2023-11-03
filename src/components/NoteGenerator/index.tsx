@@ -55,10 +55,15 @@ const Note = () => {
 
   const {correct, frecuency} = useCorrectPitch({condition});
 
-  const currStreak = useStreak(correct);
+  const [currStreak, setCurrStreak] = useStreak(correct);
   const maxStreak = useMaxValue(currStreak, `maxStreakFor${countdownInitialValue}Seconds`);
 
   const [bestStreakString] = useTranslation(['Best Streak']);
+
+  useEffect(() => {
+    if (!correct) setCurrStreak(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [condition]);
 
   useEffect(() => {
     if (correct && correctNoteAudio.current) audioEcosystem.playBuffer(correctNoteAudio.current);

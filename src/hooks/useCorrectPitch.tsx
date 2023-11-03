@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react';
+import {useState, useEffect} from 'react';
 
 import usePitch from './usePitch';
 import useDebouncedChange from './useDebouncedChange';
@@ -26,8 +26,6 @@ const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
     MS_TO_CONSIDER_PITCH_READING_TO_BE_ACCURATE,
   );
 
-  const prevCorrect = useRef(correct);
-
   useEffect(() => {
     setCorrectDebounced(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,10 +36,6 @@ const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
     const pitch = pitchFromFrequency(frecuency);
     setCorrect(pitch !== null && (condition?.(pitch) ?? pitch === target));
   }, [frecuency, target, condition, correctDebounced]);
-
-  useEffect(() => {
-    prevCorrect.current = correctDebounced;
-  }, [correctDebounced]);
 
   return {
     frecuency,

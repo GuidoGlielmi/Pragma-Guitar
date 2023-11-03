@@ -43,8 +43,14 @@ const Notes = ({correct, frecuency, currStreak}: NotesProps) => {
           exit={{opacity: 0, ...(correct && {y: -30})}}
           transition={{duration: 0.1}}
         >
-          {correct ? <Tick /> : <Ellipsis />}
-          {correct && <Streak multiplier={currStreak} />}
+          {correct ? (
+            <>
+              <Tick />
+              <Streak multiplier={currStreak} />
+            </>
+          ) : (
+            <Ellipsis />
+          )}
           {/* <Streak multiplier={currStreak} /> */}
         </motion.div>
       </AnimatePresence>

@@ -10,8 +10,7 @@ const NoteRangeToPlay = () => {
 
   return (
     <div className='rangeToPlayContainer'>
-      <NoteWithOctave pitch={from ?? 0} />
-      <NoteWithOctave pitch={to ?? MAX_PITCH_INDEX} />
+      <NoteWithOctave pitch={from ?? 0} /> - <NoteWithOctave pitch={to ?? MAX_PITCH_INDEX} />
     </div>
   );
 };
