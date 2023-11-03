@@ -51,16 +51,20 @@ const Timer = () => {
 
   const remainingPercentage = (remainingMs / (countdownInitialValue * 1000)) * 100;
 
-  const onChangeArrowKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowUp') setCountdownInitialValue(ps => ps + 1);
-    else if (e.key === 'ArrowDown') setCountdownInitialValue(ps => ps - 1);
+  const decreaseCountdownInitialValue = () => {
+    setCountdownInitialValue(ps => (ps === 1 ? ps : ps - 1));
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') setCountdownInitialValue(ps => ps + 1);
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') decreaseCountdownInitialValue();
   };
 
   return (
     <div id='timerContainer' className={S.timerContainer}>
       <h3>{countdownString}</h3>
       <div className={S.countdownContainer}>
-        <button onClick={() => setCountdownInitialValue(ps => ps - 1)} id='minus'>
+        <button onClick={decreaseCountdownInitialValue} id='minus'>
           <Minus />
         </button>
         <div>
@@ -71,7 +75,7 @@ const Timer = () => {
               setCountdownInitialValue(+e.target.value || 0);
             }}
             onBlur={() => !countdownInitialValue && setCountdownInitialValue(1)}
-            onKeyDown={onChangeArrowKey}
+            onKeyDown={onKeyDown}
           />
           <ProgressRing percentage={remainingPercentage} />
         </div>
