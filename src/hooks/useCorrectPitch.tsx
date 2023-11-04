@@ -2,16 +2,18 @@ import {useState, useEffect} from 'react';
 
 import usePitch from './usePitch';
 import useDebouncedChange from './useDebouncedChange';
-import {pitchFromFrequency} from '../libs/Helpers';
+import {centsOffFromPitch, closestPitchFromFrequency} from '../libs/Helpers';
+
+type ConditionFn = (pitch: number, detune: number) => boolean;
 
 type Condition =
   | {
       target?: number | null;
-      condition: (pitch: number) => boolean;
+      condition: ConditionFn;
     }
   | {
       target: number | null;
-      condition?: (pitch: number) => boolean;
+      condition?: ConditionFn;
     };
 
 type UseCorrectPitch = {frecuency: number | null; correct: boolean};
@@ -33,8 +35,13 @@ const useCorrectPitch = ({target, condition}: Condition): UseCorrectPitch => {
 
   useEffect(() => {
     if (correctDebounced) return;
-    const pitch = pitchFromFrequency(frecuency);
-    setCorrect(pitch !== null && (condition?.(pitch) ?? pitch === target));
+    const pitch = closestPitchFromFrequency(frecuency);
+    const detune = centsOffFromPitch(frecuency, pitch);
+    setCorrect(
+      pitch !== null &&
+        detune !== null &&
+        (condition?.(pitch, Math.abs(detune)) ?? pitch === target),
+    );
   }, [frecuency, target, condition, correctDebounced]);
 
   return {

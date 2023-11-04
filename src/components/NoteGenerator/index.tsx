@@ -15,8 +15,10 @@ import Timer from './Timer';
 import './NoteGenerator.css';
 import useTranslation from '../../hooks/useTranslation';
 import useStreak from '../../hooks/useStreak';
-import {MAX_PITCH_INDEX} from '../../constants/notes';
 import useMaxValue from '../../hooks/useMaxValue';
+import {areSameNote} from '../../libs/Helpers';
+
+const MAX_ACCEPTABLE_DETUNE = 15;
 
 const NoteGenerator = () => {
   const {started} = useContext(AudioContext) as AudioProps;
@@ -44,11 +46,9 @@ const Note = () => {
   const correctNoteAudio = useInitialBufferLoad('/audio/correct.mp3');
 
   const condition = useCallback(
-    (pitch: number) => {
-      if ((from !== null && from !== 0) || (to !== null && to !== MAX_PITCH_INDEX)) {
-        if (pitch === pitchToPlay) return true;
-      } else if (pitchToPlay && !(Math.abs(pitch - pitchToPlay) % 12)) return true;
-      return false;
+    (pitch: number, detune: number) => {
+      if (detune > MAX_ACCEPTABLE_DETUNE || pitchToPlay === null) return false;
+      return from !== null && to !== null ? pitch === pitchToPlay : areSameNote(pitch, pitchToPlay);
     },
     [pitchToPlay, from, to],
   );
