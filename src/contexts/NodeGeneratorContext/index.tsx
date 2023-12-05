@@ -17,7 +17,7 @@ import {
 } from '../../constants/notes';
 import {rangeLimiter} from '../../helpers/valueRange';
 import {AudioContext, AudioProps} from '../AudioContext';
-import {getRandomIndexGenerator} from '../../helpers/randomIndexGenerator';
+import {generateRandomIndex} from '../../helpers/tuning';
 import useLocalStorage from '../../hooks/useLocalStorage';
 
 const DEFAULT_COUNTDOWN_INITIAL_VALUE = 5;
@@ -47,12 +47,14 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
   );
   const [from, to] = pitchRange;
 
-  const generateRandomIndex = useMemo(() => {
-    return getRandomIndexGenerator(from ?? 0, to ?? MAX_PITCH_INDEX);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pitchRange]);
-
-  const generatePitch = () => setPitchToPlay(generateRandomIndex());
+  const generatePitch = () =>
+    setPitchToPlay(ps => {
+      const generate = () => generateRandomIndex(from ?? 0, to ?? MAX_PITCH_INDEX);
+      let newValue;
+      do newValue = generate();
+      while (newValue == ps);
+      return newValue;
+    });
 
   useEffect(() => {
     if (!started) return setPitchToPlay(null);

@@ -5,9 +5,7 @@ const useInitialBufferLoad = (path: string) => {
   const bufferRef = useRef<AudioBuffer>();
 
   useEffect(() => {
-    (async () => {
-      bufferRef.current = await audioEcosystem.loadAudioFile(path);
-    })();
+    audioEcosystem.loadAudioFile(path).then(af => (bufferRef.current = af));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -34,13 +34,10 @@ const Timer = () => {
 
     const intervalId = setInterval(() => {
       const remainingMs = remainingCountdownTimeProvider.next().value!;
-      if (remainingMs <= 0) {
-        reset();
-        remainingCountdownTimeProvider = pollRemainingTime(countdownInitialValue);
-        generatePitch();
-        return;
-      }
-      setRemainingMS(remainingMs);
+      if (remainingMs > 0) return setRemainingMS(remainingMs);
+      reset();
+      remainingCountdownTimeProvider = pollRemainingTime(countdownInitialValue);
+      generatePitch();
     }, 50);
 
     return () => {
