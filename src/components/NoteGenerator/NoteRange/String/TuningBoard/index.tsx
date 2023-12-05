@@ -11,6 +11,7 @@ import {
   NoteGeneratorContext,
   NoteGeneratorProps,
 } from '../../../../../contexts/NodeGeneratorContext';
+import {getHighestPitch, getLowestPitch} from '../../../../../helpers/tuning';
 
 const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
@@ -21,7 +22,7 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
   useEffect(() => {
     const pitchObj = tuning.pitches.find(p => p.id === selectedStringId);
     if (!pitchObj) {
-      changePitchRange([tuning.pitches[0].pitch, tuning.pitches.at(-1)!.pitch + fretsAmount]);
+      changePitchRange([getLowestPitch(tuning), getHighestPitch(tuning) + fretsAmount]);
       setSelectedStringId(null);
     } else changePitchRange([pitchObj.pitch, pitchObj.pitch + fretsAmount]);
     // eslint-disable-next-line react-hooks/exhaustive-deps

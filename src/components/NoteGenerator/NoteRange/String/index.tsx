@@ -13,6 +13,7 @@ import FretModifier from './FretModifier';
 import TuningSaver from './TuningSaver';
 import useTranslation from '../../../../hooks/useTranslation';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
+import {getHighestPitch, getLowestPitch} from '../../../../helpers/tuning';
 
 enum AddStringMessages {
   Upper = 'Add Upper string',
@@ -35,10 +36,7 @@ const StringNoteRange = () => {
   ]);
 
   useEffect(() => {
-    changePitchRange([
-      tuning.pitches[0].pitch,
-      tuning.pitches.at(-1)!.originalPitch! + fretsAmount,
-    ]);
+    changePitchRange([getLowestPitch(tuning), getHighestPitch(tuning) + fretsAmount]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
