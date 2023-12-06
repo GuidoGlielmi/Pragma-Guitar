@@ -1,4 +1,4 @@
-import {useState, useEffect, useContext, forwardRef} from 'react';
+import {useContext, forwardRef} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
@@ -7,33 +7,18 @@ import {AnimatePresence, motion} from 'framer-motion';
 import StringDisplay from './StringDisplay';
 import StringGroupModifier from './StringGroupModifier';
 import S from './TuningBoard.module.css';
-import {
-  NoteGeneratorContext,
-  NoteGeneratorProps,
-} from '../../../../../contexts/NodeGeneratorContext';
-import {getHighestPitch, getLowestPitch} from '../../../../../helpers/tuning';
 
 const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
-  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-  const {tuning, fretsAmount} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
-
-  const [selectedStringId, setSelectedStringId] = useState<number | null>(null);
-
-  useEffect(() => {
-    const pitchObj = tuning.pitches.find(p => p.id === selectedStringId);
-    if (!pitchObj) {
-      changePitchRange([getLowestPitch(tuning), getHighestPitch(tuning) + fretsAmount]);
-      setSelectedStringId(null);
-    } else changePitchRange([pitchObj.pitch, pitchObj.pitch + fretsAmount]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStringId, tuning, fretsAmount]);
+  const {tuning, selectedStringId, setSelectedStringId} = useContext(
+    NoteGeneratorTuningContext,
+  ) as NoteGeneratorTuningProps;
 
   return (
     <div ref={boardRef} className={S.tuningBoard}>
       <div>
         <div>
           <AnimatePresence initial={false}>
-            {[...tuning.pitches].reverse().map((v, inverseIndex, arr) => {
+            {[...tuning.strings].reverse().map((v, inverseIndex, arr) => {
               const index = arr.length - 1 - inverseIndex;
               return (
                 <motion.div
@@ -54,7 +39,7 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
                     height={inverseIndex + 1}
                     index={index}
                     selected={selectedStringId === v.id}
-                    select={(id: number) => setSelectedStringId(ps => (ps === id ? null : id))}
+                    select={setSelectedStringId}
                   />
                 </motion.div>
               );

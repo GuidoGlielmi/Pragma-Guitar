@@ -21,9 +21,7 @@ enum AddStringMessages {
 }
 
 const StringNoteRange = () => {
-  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-
-  const {tuning, tunings, setTuning, addString, fretsAmount} = useContext(
+  const {tuning, tunings, setTuning, addString} = useContext(
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
@@ -34,11 +32,6 @@ const StringNoteRange = () => {
     'Add Lower String',
     'Add Upper String',
   ]);
-
-  useEffect(() => {
-    changePitchRange([getLowestPitch(tuning), getHighestPitch(tuning) + fretsAmount]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const addStringHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (e.currentTarget.title === AddStringMessages.Upper) {
