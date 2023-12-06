@@ -24,5 +24,5 @@ declare global {
     originalPitch: number | null;
     pitch: number;
   };
-  export type TuningState = Omit<Tuning, 'pitches'> & {pitches: StringStateValue[]};
+  export type TuningState = Omit<Tuning, 'pitches'> & {strings: StringStateValue[]};
 }

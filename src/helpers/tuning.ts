@@ -15,7 +15,7 @@ export const generateRandomIndex = (from: number, to: number) =>
   ~~(Math.random() * (to - from)) + from;
 
 export const getLowestPitch = (t: TuningState) =>
-  t.pitches.reduce((p, c) => Math.min(p, c.pitch), Infinity);
+  t.strings.reduce((p, c) => Math.min(p, c.pitch), Infinity);
 
 export const getHighestPitch = (t: TuningState) =>
-  t.pitches.reduce((p, c) => Math.max(p, c.pitch), -Infinity);
+  t.strings.reduce((p, c) => Math.max(p, c.pitch), -Infinity);
