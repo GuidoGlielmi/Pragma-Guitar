@@ -132,7 +132,8 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     const newTuning = createTuning(label, tuning.strings);
     setPersistedTunings(ps => [newTuning, ...ps.filter(t => t.label !== label)]);
     setTuning(ps => ({
-      ...ps,
+      label,
+      deletable: true,
       strings: ps.strings.map((p, i) => ({...p, originalPitch: p.pitch, originalIndex: i})),
     }));
     return true;
