@@ -14,7 +14,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "typeRoots": ["./typings"],
-
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    },
     /* Linting */
     "strict": true,
     "noUnusedLocals": false,

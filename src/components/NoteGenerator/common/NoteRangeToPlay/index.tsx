@@ -1,6 +1,6 @@
 import {useContext} from 'react';
-import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
-import {MAX_PITCH_INDEX} from '../../../../constants/notes';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
+import {MAX_PITCH_INDEX} from '@/constants/notes';
 import Note from './Note';
 
 const NoteRangeToPlay = () => {

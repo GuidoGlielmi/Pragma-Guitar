@@ -1,8 +1,8 @@
 import {useEffect, useContext} from 'react';
-import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
-import useTranslation from '../../../../hooks/useTranslation';
-import NoteWithOctaveSelect from '../../../common/ReactSelect/NoteWithOctaveSelect';
-import {MAX_PITCH_INDEX} from '../../../../constants/notes';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
+import useTranslation from '@/hooks/useTranslation';
+import NoteWithOctaveSelect from '@/components/common/ReactSelect/NoteWithOctaveSelect';
+import {MAX_PITCH_INDEX} from '@/constants/notes';
 
 const CustomNoteRange = () => {
   const {

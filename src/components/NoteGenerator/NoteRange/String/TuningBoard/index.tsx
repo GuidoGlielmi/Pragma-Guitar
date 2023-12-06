@@ -2,7 +2,7 @@ import {useContext, forwardRef} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
-} from '../../../../../contexts/NoteGeneratorTuningContext';
+} from '@/contexts/NoteGeneratorTuningContext';
 import {AnimatePresence, motion} from 'framer-motion';
 import StringDisplay from './StringDisplay';
 import StringGroupModifier from './StringGroupModifier';

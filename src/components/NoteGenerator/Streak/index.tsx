@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {AnimatePresence, motion} from 'framer-motion';
-import Flame from '../../../icons/Flame';
+import Flame from '@/icons/Flame';
 import './Streak.css';
 
 const Streak = ({multiplier}: {multiplier: number}) => {

@@ -1,5 +1,5 @@
 import {useEffect, useContext} from 'react';
-import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
 
 const Free = () => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;

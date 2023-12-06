@@ -7,5 +7,6 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  resolve: {alias: [{find: '@', replacement: '/src'}]},
   // base: '/Pragma-Guitar/',
 });

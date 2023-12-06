@@ -2,10 +2,10 @@ import {useContext} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
-} from '../../../../../contexts/NoteGeneratorTuningContext';
+} from '@/contexts/NoteGeneratorTuningContext';
 
 import S from './FretModifier.module.css';
-import useTranslation from '../../../../../hooks/useTranslation';
+import useTranslation from '@/hooks/useTranslation';
 
 const FretModifier = () => {
   const {fretsAmount, decrementFretsAmount, incrementFretsAmount} = useContext(

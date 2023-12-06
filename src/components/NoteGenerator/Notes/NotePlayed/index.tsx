@@ -1,8 +1,8 @@
-import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
 import {useContext} from 'react';
 import './NotePlayed.css';
-import {centsOffFromPitch, closestPitchFromFrequency} from '../../../../libs/Helpers';
-import {LanguageContext, LanguageProps} from '../../../../contexts/LanguageContext';
+import {centsOffFromPitch, closestPitchFromFrequency} from '@/libs/Helpers';
+import {LanguageContext, LanguageProps} from '@/contexts/LanguageContext';
 
 const MAX_SHADOW_Y_POSITION = 8;
 

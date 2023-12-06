@@ -1,9 +1,9 @@
-import {AudioContext, AudioProps} from '../../../../contexts/AudioContext';
-import {getFrecuencyFromPitch, getMiddleOctavePitch} from '../../../../helpers/pitch';
+import {AudioContext, AudioProps} from '@/contexts/AudioContext';
+import {getFrecuencyFromPitch, getMiddleOctavePitch} from '@/helpers/pitch';
 import {useContext} from 'react';
 import './NoteToPlay.css';
-import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
-import {LanguageContext, LanguageProps} from '../../../../contexts/LanguageContext';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
+import {LanguageContext, LanguageProps} from '@/contexts/LanguageContext';
 
 const NoteToPlay = () => {
   const {getNoteWithOctave} = useContext(LanguageContext) as LanguageProps;

@@ -1,10 +1,10 @@
 import {useContext} from 'react';
-import ChevronDown from '../../../../../../icons/ChevronDown';
-import Reset from '../../../../../../icons/Reset';
+import ChevronDown from '@/icons/ChevronDown';
+import Reset from '@/icons/Reset';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
-} from '../../../../../../contexts/NoteGeneratorTuningContext';
+} from '@/contexts/NoteGeneratorTuningContext';
 import S from './StringGroupModifier.module.css';
 
 const StringGroupModifier = () => {

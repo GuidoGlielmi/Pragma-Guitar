@@ -4,10 +4,10 @@ import StringNoteRange from './String';
 import CustomNoteRange from './Custom';
 import './NoteRange.css';
 import Free from './Free';
-import NoteGeneratorTuningProvider from '../../../contexts/NoteGeneratorTuningContext';
-import useTranslation from '../../../hooks/useTranslation';
+import NoteGeneratorTuningProvider from '@/contexts/NoteGeneratorTuningContext';
+import useTranslation from '@/hooks/useTranslation';
 import NoteRangeToPlay from '../common/NoteRangeToPlay';
-import {Translation} from '../../../helpers/translations';
+import {Translation} from '@/helpers/translations';
 
 type TSection = {
   [key in keyof Translation]: {

@@ -1,6 +1,6 @@
 import {AnimatePresence, motion} from 'framer-motion';
-import ArrowRight from '../../../icons/ArrowRight';
-import Tick from '../../../icons/Tick';
+import ArrowRight from '@/icons/ArrowRight';
+import Tick from '@/icons/Tick';
 import Ellipsis from '../../common/Ellipsis';
 import Streak from '../Streak';
 import NoteToPlay from './NoteToPlay';

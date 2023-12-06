@@ -3,7 +3,7 @@ import {OptionProps, components} from 'react-select';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
-} from '../../../../contexts/NoteGeneratorTuningContext';
+} from '@/contexts/NoteGeneratorTuningContext';
 
 export const TuningOptionWithButton = (props: OptionProps<Tuning, false>) => {
   const {deleteTuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;

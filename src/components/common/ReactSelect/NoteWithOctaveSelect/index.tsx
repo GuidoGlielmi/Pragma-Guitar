@@ -2,8 +2,8 @@ import {Props} from 'react-select';
 import Select, {GroupBase} from 'react-select';
 import {OptionWithNoteWithOctave} from '../OptionWithNoteWithOctave';
 import SingleValueWithNoteWithOctave from '../SingleValueWithNoteWithOctave';
-import {customStyles} from '../../../../constants/reactSelectStyles';
-import {MAX_PITCH_INDEX} from '../../../../constants/notes';
+import {customStyles} from '@/constants/reactSelectStyles';
+import {MAX_PITCH_INDEX} from '@/constants/notes';
 
 const pitches = Array(MAX_PITCH_INDEX + 1)
   .fill(null)

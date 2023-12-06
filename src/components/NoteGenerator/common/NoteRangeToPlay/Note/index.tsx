@@ -1,7 +1,7 @@
 import {useEffect, useRef} from 'react';
 
 import {AnimatePresence, motion} from 'framer-motion';
-import NoteWithOctave from '../../../../common/NoteWithOctave';
+import NoteWithOctave from '@/components/common/NoteWithOctave';
 
 const Note = ({pitch}: {pitch: number}) => {
   const prevPitchRef = useRef(pitch);

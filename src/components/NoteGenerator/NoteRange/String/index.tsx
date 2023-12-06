@@ -1,19 +1,17 @@
-import {useContext, useEffect, useRef} from 'react';
+import {useContext, useRef} from 'react';
 import Select from 'react-select';
-import {customStylesMaxContent} from '../../../../constants/reactSelectStyles';
+import {customStylesMaxContent} from '@/constants/reactSelectStyles';
 import S from './String.module.css';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
-} from '../../../../contexts/NoteGeneratorTuningContext';
+} from '@/contexts/NoteGeneratorTuningContext';
 import TuningBoard from './TuningBoard';
-import {TuningOptionWithButton} from '../../../common/ReactSelect/TuningOptionWithButton';
-import {convertStateToTuning} from '../../../../constants/notes';
+import {TuningOptionWithButton} from '@/components/common/ReactSelect/TuningOptionWithButton';
+import {convertStateToTuning} from '@/constants/notes';
 import FretModifier from './FretModifier';
 import TuningSaver from './TuningSaver';
-import useTranslation from '../../../../hooks/useTranslation';
-import {NoteGeneratorContext, NoteGeneratorProps} from '../../../../contexts/NodeGeneratorContext';
-import {getHighestPitch, getLowestPitch} from '../../../../helpers/tuning';
+import useTranslation from '@/hooks/useTranslation';
 
 enum AddStringMessages {
   Upper = 'Add Upper string',

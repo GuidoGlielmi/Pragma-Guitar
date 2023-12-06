@@ -1,5 +1,5 @@
 import Select from 'react-select';
-import {metronomeStyles} from '../../../constants/reactSelectStyles';
+import {metronomeStyles} from '@/constants/reactSelectStyles';
 import S from './Bar.module.css';
 
 const numeratorOptions = Array(16)

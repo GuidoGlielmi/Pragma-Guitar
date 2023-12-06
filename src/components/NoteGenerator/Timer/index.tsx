@@ -1,12 +1,12 @@
 import {useContext, useEffect, useState} from 'react';
-import Minus from '../../../icons/Minus';
-import Plus from '../../../icons/Plus';
-import ProgressRing from '../../../icons/ProgressRing';
-import {AudioContext, AudioProps} from '../../../contexts/AudioContext';
-import {NoteGeneratorContext, NoteGeneratorProps} from '../../../contexts/NodeGeneratorContext';
-import {pollRemainingTime} from '../../../helpers/timer';
+import Minus from '@/icons/Minus';
+import Plus from '@/icons/Plus';
+import ProgressRing from '@/icons/ProgressRing';
+import {AudioContext, AudioProps} from '@/contexts/AudioContext';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
+import {pollRemainingTime} from '@/helpers/timer';
 import S from './Timer.module.css';
-import useTranslation from '../../../hooks/useTranslation';
+import useTranslation from '@/hooks/useTranslation';
 
 const Timer = () => {
   const {started} = useContext(AudioContext) as AudioProps;
