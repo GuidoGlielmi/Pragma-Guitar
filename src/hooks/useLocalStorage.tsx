@@ -1,18 +1,25 @@
 import {useState, useEffect} from 'react';
 
-const useLocalStorage = <T, TPersistable = any>(
-  initialValue: T,
-  storageKey: string,
-  {
-    getter,
-    setter = (t: T) => t as any,
-  }: {
-    getter?: (t: TPersistable) => T;
-    setter?: (t: T) => TPersistable;
-  } = {
-    setter: (t: T) => t as any,
-  },
-) => {
+type TUseLocalStorage<T, TPersistable> =
+  | {
+      initialValue?: T;
+      storageKey: string;
+      getter: (t: TPersistable) => T;
+      setter: (t: T) => TPersistable;
+    }
+  | {
+      initialValue: T;
+      storageKey: string;
+      getter?: (t: TPersistable) => T;
+      setter?: (t: T) => TPersistable;
+    };
+
+const useLocalStorage = <T, TPersistable = any>({
+  initialValue,
+  storageKey,
+  getter,
+  setter = (t: T) => t as any,
+}: TUseLocalStorage<T, TPersistable>) => {
   const getInitialValue = () => {
     const storedValue = JSON.parse(localStorage.getItem(storageKey)!);
     // JSON can't directly parse strings, they should begin with quotes
@@ -26,7 +33,10 @@ const useLocalStorage = <T, TPersistable = any>(
   }, [state]);
 
   useEffect(() => {
-    setState(getInitialValue());
+    setState(ps => {
+      if (JSON.stringify(setter(ps)) !== localStorage.getItem(storageKey)) return getInitialValue();
+      return ps;
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageKey]);
 

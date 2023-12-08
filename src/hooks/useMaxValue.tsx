@@ -2,7 +2,7 @@ import {useRef, useEffect} from 'react';
 import useLocalStorage from './useLocalStorage';
 
 const useMaxValue = (currentValue: number, storageKey: string) => {
-  const [maxValue, setMaxValue] = useLocalStorage(0, storageKey);
+  const [maxValue, setMaxValue] = useLocalStorage({initialValue: 0, storageKey});
   const prevStorageKeyRef = useRef(storageKey);
 
   useEffect(() => {

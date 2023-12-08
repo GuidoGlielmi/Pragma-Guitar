@@ -42,10 +42,10 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
   const {setMessage} = useContext(ToastContext) as ToastProps;
 
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useLocalStorage(
-    '',
-    DEFAULT_DEVICE_ID_STORAGE_NAME,
-  );
+  const [selectedDeviceId, setSelectedDeviceId] = useLocalStorage({
+    initialValue: '',
+    storageKey: DEFAULT_DEVICE_ID_STORAGE_NAME,
+  });
 
   const [notification, setNotification] = useState<keyof NotificationTranslation | ''>('');
   const [debouncedNotification] = useDebouncedChange(notification, 10_000, {['']: 500});
