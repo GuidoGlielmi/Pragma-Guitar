@@ -9,7 +9,7 @@ import {
 } from 'react';
 import {
   pitchRangeLimits,
-  tunings,
+  staticTunings,
   convertTuningToState,
   createString,
   createTuning,
@@ -19,9 +19,11 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../NodeGeneratorContext';
 import {getHighestPitch, getLowestPitch} from '../../helpers/tuning';
 
+const tunings = staticTunings.map(t => ({...t, deletable: false}));
+
 export interface NoteGeneratorTuningProps {
-  tuning: TuningState;
-  setTuning: (i: number) => void;
+  tuning: ITuningState;
+  setTuning: (label: string) => void;
   reset: () => void;
   fretsAmount: number;
   selectedStringId: number | null;
@@ -31,7 +33,7 @@ export interface NoteGeneratorTuningProps {
   removeString: (id: number) => void;
   addString: (higher: boolean) => void;
   saveTuning: (label: string) => boolean;
-  tunings: Tuning[];
+  tunings: ITuning[];
   stringModifiedChecker: (i: number) => boolean | null;
   deleteTuning: (label: string) => void;
   incrementPitch: (i?: number) => void;
@@ -53,29 +55,28 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
 }) => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
-  const [persistedTunings, setPersistedTunings] = useLocalStorage<Tuning[], PersistableTuning[]>(
-    [],
-    PERSISTED_TUNINGS_VARIABLE_NAME,
-    {setter: tunings => tunings.map(t => ({...t, deletable: undefined}))},
-  );
+  const [persistedTunings, setPersistedTunings] = useLocalStorage<ITuning[], IPersistedTuning[]>({
+    storageKey: PERSISTED_TUNINGS_VARIABLE_NAME,
+    initialValue: [],
+    getter: t => t.map(t => ({...t, deletable: true})),
+    setter: t => t.map(t => ({...t, deletable: undefined})),
+  });
 
-  const [fretsAmount, setFretsAmount] = useLocalStorage(
-    DEFAULT_FRETS_AMOUNT,
-    PERSISTED_FRET_AMOUNT_VARIABLE_NAME,
-  );
+  const [fretsAmount, setFretsAmount] = useLocalStorage({
+    initialValue: DEFAULT_FRETS_AMOUNT,
+    storageKey: PERSISTED_FRET_AMOUNT_VARIABLE_NAME,
+  });
 
   const [selectedStringId, setSelectedStringId] = useState<number | null>(null);
 
   const getAllTunings = () => [...persistedTunings, ...tunings];
 
-  const [tuning, setTuning] = useLocalStorage<TuningState, string>(
-    convertTuningToState(getAllTunings()[0]),
-    PERSISTED_PREFERRED_TUNING_VARIABLE_NAME,
-    {
-      getter: label => convertTuningToState(getAllTunings().find(t => t.label === label)!),
-      setter: t => t.label,
-    },
-  );
+  const [tuning, setTuning] = useLocalStorage<ITuningState, string>({
+    storageKey: PERSISTED_PREFERRED_TUNING_VARIABLE_NAME,
+    getter: label =>
+      convertTuningToState(getAllTunings().find(t => t.label === label) ?? getAllTunings()[0]),
+    setter: t => t.label,
+  });
 
   const changeFretsAmount = (n: number) => {
     setFretsAmount(setterRangeLimiter(n, {min: 0, max: MAX_FRETS_AMOUNT}));
@@ -84,7 +85,8 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   const incrementFretsAmount = () => changeFretsAmount(1);
   const decrementFretsAmount = () => changeFretsAmount(-1);
 
-  const setTuningHandler = (i: number) => setTuning(convertTuningToState(getAllTunings()[i]));
+  const setTuningHandler = (label: string) =>
+    setTuning(convertTuningToState(getAllTunings().find(t => t.label === label)!));
 
   const reset = () => {
     setTuning(ps => convertTuningToState(getAllTunings().find(t => t.label === ps.label)!));
@@ -131,11 +133,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     if (tunings.some(t => t.label === label)) return false;
     const newTuning = createTuning(label, tuning.strings);
     setPersistedTunings(ps => [newTuning, ...ps.filter(t => t.label !== label)]);
-    setTuning(ps => ({
-      label,
-      deletable: true,
-      strings: ps.strings.map((p, i) => ({...p, originalPitch: p.pitch, originalIndex: i})),
-    }));
+    setTuning(convertTuningToState(newTuning));
     return true;
   };
 
@@ -179,10 +177,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       saveTuning,
       selectedStringId,
       setSelectedStringId: setSelectedStringIdHandler,
-      tunings: [
-        ...persistedTunings.map(t => ({...t, deletable: true})),
-        ...tunings.map(t => ({...t, deletable: false})),
-      ],
+      tunings: getAllTunings(),
       stringModifiedChecker,
       deleteTuning,
     }),
