@@ -2,7 +2,7 @@ import {AnimatePresence, motion} from 'framer-motion';
 import Cancel from '@/icons/Cancel';
 import TickButton from '@/icons/TickButton';
 import S from './TuningSaver.module.css';
-import {useState, useContext} from 'react';
+import {useState, useContext, useEffect} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
@@ -13,7 +13,8 @@ const TuningSaver = () => {
   const {saveTuning, tuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   const [showTuningToSave, setShowTuningToSave] = useState(false);
-  const [tuningToSaveName, setTuningToSaveName] = useState(tuning.label);
+
+  const [tuningToSaveName, setTuningToSaveName] = useState(tuning.deletable ? tuning.label : '');
   const [nameUnavailable, setNameUnavailable] = useState(false);
 
   const [saveTuningString, nameString, nameInUseString, saveString, cancelString] = useTranslation([
@@ -23,6 +24,10 @@ const TuningSaver = () => {
     'Save',
     'Cancel',
   ]);
+
+  useEffect(() => {
+    setTuningToSaveName(tuning.deletable ? tuning.label : '');
+  }, [tuning]);
 
   const saveTuningHandler = () => {
     const saved = saveTuning(tuningToSaveName);
