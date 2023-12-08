@@ -25,12 +25,14 @@ export const customStylesMaxContent = {
     width: 'max-content',
     margin: 'auto',
   }),
-  option: (provided: any, state: any) => ({
-    ...provided,
-    color: '#464646',
-    cursor: 'pointer',
-    background: state.isFocused ? '#d7d7d7' : '#f7f7f7',
-  }),
+  option: (provided: any, state: any) => {
+    return {
+      ...provided,
+      color: '#464646',
+      cursor: 'pointer',
+      background: state.isSelected ? '#646cff' : state.isFocused ? '#d7d7d7' : '#f7f7f7',
+    };
+  },
 };
 
 export const metronomeStyles = {
