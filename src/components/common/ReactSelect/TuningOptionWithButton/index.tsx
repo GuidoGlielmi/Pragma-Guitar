@@ -5,7 +5,7 @@ import {
   NoteGeneratorTuningProps,
 } from '@/contexts/NoteGeneratorTuningContext';
 
-export const TuningOptionWithButton = (props: OptionProps<Tuning, false>) => {
+export const TuningOptionWithButton = (props: OptionProps<ISelectableTuning, false>) => {
   const {deleteTuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   return (

@@ -8,7 +8,6 @@ import {
 } from '@/contexts/NoteGeneratorTuningContext';
 import TuningBoard from './TuningBoard';
 import {TuningOptionWithButton} from '@/components/common/ReactSelect/TuningOptionWithButton';
-import {convertStateToTuning} from '@/constants/notes';
 import FretModifier from './FretModifier';
 import TuningSaver from './TuningSaver';
 import useTranslation from '@/hooks/useTranslation';
@@ -52,12 +51,15 @@ const StringNoteRange = () => {
         <Select
           components={{Option: TuningOptionWithButton}}
           isSearchable={false}
+          isOptionSelected={(t1, t2) => {
+            return t1.label === t2[0].label;
+          }}
           styles={customStylesMaxContent}
-          options={tunings}
+          options={tunings as ISelectableTuning[]}
           // menuIsOpen={true}
-          value={convertStateToTuning(tuning)}
+          value={tuning as ISelectableTuning}
           onChange={e => {
-            setTuning(tunings.indexOf(e as Tuning));
+            setTuning(e!.label);
           }}
           placeholder={tuningString}
         />
