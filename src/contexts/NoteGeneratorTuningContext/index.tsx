@@ -73,8 +73,8 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
 
   const [tuning, setTuning] = useLocalStorage<ITuningState, string>({
     storageKey: PERSISTED_PREFERRED_TUNING_VARIABLE_NAME,
-    getter: label =>
-      convertTuningToState(getAllTunings().find(t => t.label === label) ?? getAllTunings()[0]),
+    initialValue: convertTuningToState(getAllTunings()[0]),
+    getter: label => convertTuningToState(getAllTunings().find(t => t.label === label)!),
     setter: t => t.label,
   });
 
@@ -133,7 +133,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     if (tunings.some(t => t.label === label)) return false;
     const newTuning = createTuning(label, tuning.strings);
     setPersistedTunings(ps => [newTuning, ...ps.filter(t => t.label !== label)]);
-    setTuning(convertTuningToState(newTuning));
+    setTuning(ps => ({...ps, label}));
     return true;
   };
 
@@ -145,9 +145,9 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
 
   const stringModifiedChecker = (id: number) => {
     const string = tuning.strings.find(p => p.id === id);
-    if (!string || string.originalPitch === null || string.pitch === string.originalPitch)
-      return null;
-    return string.pitch > string.originalPitch;
+    return !string || string.originalPitch === null || string.pitch === string.originalPitch
+      ? null
+      : string.pitch > string.originalPitch;
   };
 
   const setSelectedStringIdHandler = (id: number | null) =>

@@ -1,46 +1,64 @@
 import {useState, useEffect} from 'react';
 
-type TUseLocalStorage<T, TPersistable> =
-  | {
-      initialValue?: T;
-      storageKey: string;
-      getter: (t: TPersistable) => T;
-      setter: (t: T) => TPersistable;
-    }
-  | {
-      initialValue: T;
-      storageKey: string;
-      getter?: (t: TPersistable) => T;
-      setter?: (t: T) => TPersistable;
-    };
+type TUseLocalStorageWithInitialValue<T, TPersistable> = {
+  initialValue: T;
+  storageKey: string;
+  getter?: (t: TPersistable) => T;
+  setter?: (t: T) => TPersistable;
+};
 
-const useLocalStorage = <T, TPersistable = any>({
+type TUseLocalStorage<T, TPersistable> = {
+  initialValue?: T | undefined;
+  storageKey: string;
+  getter?: (t?: TPersistable) => T;
+  setter?: (t?: T) => TPersistable;
+};
+
+function useLocalStorage<T, TPersistable = T>({
   initialValue,
   storageKey,
   getter,
   setter = (t: T) => t as any,
-}: TUseLocalStorage<T, TPersistable>) => {
-  const getInitialValue = () => {
+}: TUseLocalStorageWithInitialValue<T, TPersistable>): [T, React.Dispatch<React.SetStateAction<T>>];
+
+function useLocalStorage<T, TPersistable = T>({
+  initialValue,
+  storageKey,
+  getter,
+  setter = (t?: T) => t as any,
+}: TUseLocalStorage<T, TPersistable>): [
+  T | undefined,
+  React.Dispatch<React.SetStateAction<T | undefined>>,
+];
+
+function useLocalStorage<T, TPersistable = T>({
+  initialValue,
+  storageKey,
+  getter,
+  setter = (t: T) => t as any,
+}: TUseLocalStorageWithInitialValue<T, TPersistable> | TUseLocalStorage<T, TPersistable>) {
+  const getInitialValue = (): T | undefined => {
     const storedValue = JSON.parse(localStorage.getItem(storageKey)!);
     // JSON can't directly parse strings, they should begin with quotes
-    return storedValue !== null ? (getter ? getter(storedValue) : storedValue) : initialValue;
+    return getter ? getter(storedValue ?? initialValue) : storedValue ?? initialValue;
   };
-  const [state, setState] = useState<T>(getInitialValue());
+  const [state, setState] = useState(() => getInitialValue());
 
   useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(setter(state)));
+    if (state !== undefined) localStorage.setItem(storageKey, JSON.stringify(setter(state)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   useEffect(() => {
     setState(ps => {
-      if (JSON.stringify(setter(ps)) !== localStorage.getItem(storageKey)) return getInitialValue();
-      return ps;
+      return ps !== undefined && JSON.stringify(setter(ps)) !== localStorage.getItem(storageKey)
+        ? getInitialValue()
+        : ps;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageKey]);
 
-  return [state, setState] as [T, React.Dispatch<React.SetStateAction<T>>];
-};
+  return [state, setState];
+}
 
 export default useLocalStorage;
