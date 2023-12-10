@@ -77,6 +77,11 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
     });
   };
 
+  useEffect(() => {
+    generatePitch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countdownInitialValue]);
+
   const setCountdownInitialValueHandler = (n: SetStateAction<number>) => {
     setCountdownInitialValue(ps =>
       rangeLimiter(n instanceof Function ? n(ps) : n, MIN_COUNTDOWN_VALUE, MAX_COUNTDOWN_VALUE),
