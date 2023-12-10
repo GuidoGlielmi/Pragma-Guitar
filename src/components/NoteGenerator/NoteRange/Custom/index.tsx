@@ -24,7 +24,7 @@ const CustomNoteRange = () => {
         <NoteWithOctaveSelect
           id='from'
           value={{value: from ?? 0}}
-          onChange={e => changePitchRange([e?.value!, undefined])} // value is index
+          onChange={e => changePitchRange(ps => [e!.value, ps[1] ?? MAX_PITCH_INDEX])}
           isOptionDisabled={e => e.value > to!}
         />
       </div>
@@ -33,7 +33,7 @@ const CustomNoteRange = () => {
         <NoteWithOctaveSelect
           id='to'
           value={{value: to ?? MAX_PITCH_INDEX}}
-          onChange={e => changePitchRange([undefined, e?.value!])} // value is index
+          onChange={e => changePitchRange(ps => [ps[0] ?? 0, e!.value])}
           isOptionDisabled={e => e.value < from!}
         />
       </div>

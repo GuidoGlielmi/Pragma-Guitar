@@ -8,6 +8,7 @@ import NoteWithOctave from '@/components/common/NoteWithOctave';
 import S from './StringDisplay.module.css';
 import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
 import {AnimatePresence, motion} from 'framer-motion';
+import {MAX_PITCH_INDEX} from '@/constants/notes';
 
 interface StringDisplayProps {
   height: number;
@@ -32,7 +33,7 @@ const StringDisplay = ({
   const modifyTuningHandler = (n: number) => {
     if (n > 0) incrementPitch(index);
     else decrementPitch(index);
-    if (selected) changePitchRange(ps => [ps[0], ps[1]! + n]);
+    if (selected) changePitchRange(ps => [ps[0] ?? 0, (ps[1] ?? MAX_PITCH_INDEX) + n]);
   };
 
   return (

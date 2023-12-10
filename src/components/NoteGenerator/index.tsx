@@ -67,7 +67,10 @@ const Note = () => {
   useEffect(() => {
     setMaxStreaks(ps => {
       const newStreaks = [...ps];
-      newStreaks[countdownInitialValue - 1] = Math.max(ps[countdownInitialValue - 1], currStreak);
+      newStreaks[countdownInitialValue - 1] = Math.max(
+        ps[countdownInitialValue - 1] || 0,
+        currStreak,
+      );
       return newStreaks;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,7 +99,7 @@ const Note = () => {
         {started && <Notes frecuency={frecuency} correct={correct} currStreak={currStreak} />}
       </AnimatePresence>
       <div className='painterFont'>
-        {bestStreakString}: {maxStreaks[countdownInitialValue - 1] ?? 0}
+        {bestStreakString}: {maxStreaks[countdownInitialValue - 1] || 0}
       </div>
     </div>
   );

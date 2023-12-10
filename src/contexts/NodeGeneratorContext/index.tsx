@@ -22,8 +22,8 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 
 const DEFAULT_COUNTDOWN_INITIAL_VALUE = 5;
 
-type TPitchToPlay = number | null;
-type TPitchRange = [TPitchToPlay, TPitchToPlay];
+type TPitchRangeSetter = (range: TPitchRange | ((range: TPitchRange) => TPitchRange)) => void;
+
 export interface NoteGeneratorProps {
   generatePitch: () => void;
   pitchRange: TPitchRange;
@@ -31,8 +31,10 @@ export interface NoteGeneratorProps {
   setPitchToPlay: Dispatch<SetStateAction<TPitchToPlay>>;
   countdownInitialValue: number;
   setCountdownInitialValue: Dispatch<SetStateAction<number>>;
-  changePitchRange: PitchRangeSetter;
+  /** Pass both tuple values as `null` for free mode */
+  changePitchRange: TPitchRangeSetter;
 }
+
 export const NoteGeneratorContext = createContext<NoteGeneratorProps | null>(null);
 
 const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
@@ -49,9 +51,9 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
 
   const generatePitch = () =>
     setPitchToPlay(ps => {
-      const generate = () => generateRandomIndex(from ?? 0, to ?? MAX_PITCH_INDEX);
+      // can generate different octaves
       let newValue;
-      do newValue = generate();
+      do newValue = generateRandomIndex(from ?? 0, to ?? MAX_PITCH_INDEX);
       while (newValue == ps);
       return newValue;
     });
@@ -62,30 +64,23 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started, pitchRange]);
 
-  const changePitchRange: PitchRangeSetter = e => {
+  const changePitchRange: TPitchRangeSetter = e => {
     setPitchRange(ps => {
-      let newRange: PitchRange;
-      if (e instanceof Function) {
-        newRange = e([ps[0] || 0, ps[1] || MAX_PITCH_INDEX]);
-      } else if (e[0] === null || e[1] === null) return [null, null];
-      else newRange = e;
+      const newRange: TPitchRange = e instanceof Function ? e(ps) : e;
+      if (newRange[0] === null || newRange[1] === null) return [null, null];
       if (newRange[0] === ps[0] && newRange[1] === ps[1]) return ps;
       return [
-        newRange[0] === undefined ? ps[0] : rangeLimiter(newRange[0]!, ...pitchRangeLimits),
-        newRange[1] === undefined ? ps[1] : rangeLimiter(newRange[1]!, ...pitchRangeLimits),
+        rangeLimiter(newRange[0], ...pitchRangeLimits),
+        rangeLimiter(newRange[1], ...pitchRangeLimits),
       ];
     });
   };
-
-  useEffect(() => {
-    generatePitch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countdownInitialValue]);
 
   const setCountdownInitialValueHandler = (n: SetStateAction<number>) => {
     setCountdownInitialValue(ps =>
       rangeLimiter(n instanceof Function ? n(ps) : n, MIN_COUNTDOWN_VALUE, MAX_COUNTDOWN_VALUE),
     );
+    generatePitch();
   };
 
   const contextValue = useMemo(

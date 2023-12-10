@@ -3,6 +3,9 @@ import {Step} from 'intro.js';
 import {Note, NoteEs} from '../main';
 
 declare global {
+  type TPitchToPlay = number | null;
+  type TPitchRange = [from: number, to: number] | [from: null, to: null];
+
   type StepWithActionAndTranslation = Omit<Step, 'intro'> & {
     intro: {es: string; en: string};
     click?: boolean;
