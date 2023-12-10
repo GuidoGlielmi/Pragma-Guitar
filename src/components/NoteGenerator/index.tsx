@@ -15,8 +15,8 @@ import Timer from './Timer';
 import './NoteGenerator.css';
 import useTranslation from '../../hooks/useTranslation';
 import useStreak from '../../hooks/useStreak';
-import useMaxValue from '../../hooks/useMaxValue';
 import {areSameNote} from '../../libs/Helpers';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 const MAX_ACCEPTABLE_DETUNE = 15;
 
@@ -50,15 +50,33 @@ const Note = () => {
       if (detune > MAX_ACCEPTABLE_DETUNE || pitchToPlay === null) return false;
       return from !== null && to !== null ? pitch === pitchToPlay : areSameNote(pitch, pitchToPlay);
     },
-    [pitchToPlay, from, to],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pitchToPlay, from, to, countdownInitialValue],
   );
 
   const {correct, frecuency} = useCorrectPitch({condition});
 
   const [currStreak, setCurrStreak] = useStreak(correct);
-  const maxStreak = useMaxValue(currStreak, `maxStreakFor${countdownInitialValue}Seconds`);
+  const [maxStreaks, setMaxStreaks] = useLocalStorage<number[]>({
+    storageKey: 'maxStreaks',
+    initialValue: [],
+  });
 
   const [bestStreakString] = useTranslation(['Best Streak']);
+
+  useEffect(() => {
+    setMaxStreaks(ps => {
+      const newStreaks = [...ps];
+      newStreaks[countdownInitialValue - 1] = Math.max(ps[countdownInitialValue - 1], currStreak);
+      return newStreaks;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currStreak]);
+
+  useEffect(() => {
+    setCurrStreak(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [countdownInitialValue]);
 
   useEffect(() => {
     if (!correct) setCurrStreak(0);
@@ -78,7 +96,7 @@ const Note = () => {
         {started && <Notes frecuency={frecuency} correct={correct} currStreak={currStreak} />}
       </AnimatePresence>
       <div className='painterFont'>
-        {bestStreakString}: {maxStreak}
+        {bestStreakString}: {maxStreaks[countdownInitialValue - 1] ?? 0}
       </div>
     </div>
   );
