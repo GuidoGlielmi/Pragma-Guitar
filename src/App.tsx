@@ -9,6 +9,7 @@ import useTranslation from './hooks/useTranslation';
 import Languages from './components/Language';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import EmailButton from './components/Email';
 
 function App() {
   const location = useLocation();
@@ -25,6 +26,7 @@ function App() {
       <DeviceList />
       <NavBar />
       <StartButton />
+      <EmailButton />
       <Sections />
     </main>
   );

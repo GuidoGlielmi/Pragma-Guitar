@@ -29,7 +29,7 @@ export const getPitch = (
 ) => {
   audioEcosystem.analyserNode.getFloatTimeDomainData(buf);
   const [frecuency, clarity] = pitchDetector.findPitch(buf, audioEcosystem.sampleRate);
-  // console.log(frecuency, clarity);
+  // console.log({frecuency, clarity});
   if (frecuency < minFrecuency || frecuency > maxFrecuency || clarity < 0.5) return -1;
   if (clarity < 0.9) return;
   return frecuency;
