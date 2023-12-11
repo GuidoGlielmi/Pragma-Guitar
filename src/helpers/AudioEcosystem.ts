@@ -6,7 +6,7 @@ export class AudioEcosystem extends AudioContext {
   gainNode?: GainNode;
 
   micStream?: MediaStream; // .stop() renders the stream unusable
-  micNode?: MediaStreamAudioSourceNode; // a node is the main required element of an AudioContext
+  micSource?: MediaStreamAudioSourceNode; // a node is the main required element of an AudioContext
 
   constructor() {
     super();
@@ -35,7 +35,20 @@ export class AudioEcosystem extends AudioContext {
     return device.getAudioTracks()[0].getSettings().deviceId;
   }
 
+  startAudioNode(
+    newAudioNode?: AudioScheduledSourceNode,
+    lastNode: AudioNode = newAudioNode as AudioNode,
+  ) {
+    this.pauseMic();
+    // creating another node without stopping the other can cause it to resume when the context does
+    this.stopAudio();
+    this.audioNode = newAudioNode;
+    lastNode?.connect(this.destination);
+    newAudioNode?.start();
+  }
+
   async getMicInputStream(deviceId?: string) {
+    // directly return MediaStream if already given permission
     return navigator.mediaDevices.getUserMedia({
       audio: {
         deviceId,
@@ -46,36 +59,19 @@ export class AudioEcosystem extends AudioContext {
     });
   }
 
-  async setMicInputStreamHandler(deviceId?: string) {
+  async startMic(deviceId?: string) {
     this.stopAudio();
     this.micStream = await this.getMicInputStream(deviceId);
-    this.#startMic();
+    this.micStream.getAudioTracks()?.forEach(at => (at.enabled = true));
+    this.micSource = this.createMediaStreamSource(this.micStream);
+    this.micSource.connect(this.analyserNode);
     return this.micStream.getAudioTracks()[0].getSettings().deviceId;
   }
 
-  startAudioNode(
-    newAudioNode?: AudioScheduledSourceNode,
-    lastNode: AudioNode = newAudioNode as AudioNode,
-  ) {
-    this.#pauseMic();
-    // creating another node without stopping the other can cause it to resume when the context does
-    this.stopAudio();
-    this.audioNode = newAudioNode;
-    lastNode?.connect(this.destination);
-    newAudioNode?.start();
-  }
-
-  #startMic() {
-    if (!this.micStream) return;
-    this.micStream.getAudioTracks()?.forEach(at => (at.enabled = true));
-    this.micNode = this.createMediaStreamSource(this.micStream);
-    this.micNode.connect(this.analyserNode);
-  }
-
-  #pauseMic() {
+  pauseMic() {
     this.micStream?.getAudioTracks()?.forEach(at => (at.enabled = false));
-    this.micNode?.disconnect();
-    this.micNode = undefined;
+    this.micSource?.disconnect();
+    this.micSource = undefined;
   }
 
   stopAudio() {
@@ -93,7 +89,7 @@ export class AudioEcosystem extends AudioContext {
       this.gainNode = gainNode;
     } else {
       this.stopAudio();
-      if (!this.micNode) this.#startMic();
+      if (!this.micSource) this.startMic();
     }
   }
 
