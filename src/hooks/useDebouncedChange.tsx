@@ -1,30 +1,26 @@
 import {useState, useEffect, useRef} from 'react';
 
-const useDebouncedChange = <T,>(
-  value: T,
-  defaultTimeWindow: number,
-  timeWindows?: {[key: string | number]: number},
-) => {
-  const [changedValue, setChangedValue] = useState<T>(value);
-  const prevValueRef = useRef<T>(value);
+const useDebouncedChange = <T,>(newValue: T, timeWindow: number) => {
+  const [changedValue, setChangedValue] = useState<T>(newValue);
+  const prevValueRef = useRef<T>(newValue);
   const timeoutRef = useRef<number>();
 
   useEffect(() => {
-    if (value !== prevValueRef.current) {
+    if (newValue !== prevValueRef.current) {
       // console.log(`change intention from "${prevValueRef.current} to "${value}"`);
       clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => {
-        prevValueRef.current = value;
-        setChangedValue(value);
+        prevValueRef.current = newValue;
+        setChangedValue(newValue);
         timeoutRef.current = undefined;
-      }, timeWindows?.[`${value}`] || defaultTimeWindow);
+      }, timeWindow);
     } else {
       // console.log('change intention withdrawn');
       clearTimeout(timeoutRef.current);
       timeoutRef.current = undefined;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
+  }, [newValue]);
 
   return [changedValue, setChangedValue] as [T, React.Dispatch<React.SetStateAction<T>>];
 };
