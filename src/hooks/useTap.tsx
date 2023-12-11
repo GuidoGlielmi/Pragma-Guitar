@@ -2,7 +2,7 @@ import {useState, useRef} from 'react';
 import useTranslation from './useTranslation';
 
 const useTap = (snapValue = 5) => {
-  const [tapString] = useTranslation('Tap');
+  const [tapString] = useTranslation('tap');
 
   const [bpm, setBpm] = useState(0);
   const prevTime = useRef(0);

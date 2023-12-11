@@ -17,9 +17,9 @@ type TSection = {
 };
 
 const options = {
-  ['Free Mode']: {element: <Free />, height: 0},
-  ['In Note Range']: {element: <CustomNoteRange />, height: 60},
-  ['In String']: {
+  ['freeMode']: {element: <Free />, height: 0},
+  ['inNoteRange']: {element: <CustomNoteRange />, height: 60},
+  ['inString']: {
     element: (
       <NoteGeneratorTuningProvider>
         <StringNoteRange />
@@ -36,7 +36,7 @@ const RangeSelector = () => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const prevIndex = useRef(selectedIndex);
 
-  const [playNoteString] = useTranslation('Play Note');
+  const [playNoteString] = useTranslation('playNote');
 
   const sectionSelectionHandler = (i: number) => {
     setOverflowHidden(true);

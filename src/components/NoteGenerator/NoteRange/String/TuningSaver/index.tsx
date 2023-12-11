@@ -18,11 +18,11 @@ const TuningSaver = () => {
   const [nameUnavailable, setNameUnavailable] = useState(false);
 
   const [saveTuningString, nameString, nameInUseString, saveString, cancelString] = useTranslation([
-    'Save Tuning',
-    'Name',
-    'Name already in use!',
-    'Save',
-    'Cancel',
+    'saveTuning',
+    'name',
+    'nameAlreadyUsed',
+    'save',
+    'cancel',
   ]);
 
   useEffect(() => {

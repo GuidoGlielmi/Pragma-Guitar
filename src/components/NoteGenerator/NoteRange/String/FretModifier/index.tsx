@@ -12,7 +12,7 @@ const FretModifier = () => {
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
-  const [fretsString] = useTranslation('Frets');
+  const [fretsString] = useTranslation('frets');
 
   return (
     <div className={S.fretsContainer}>

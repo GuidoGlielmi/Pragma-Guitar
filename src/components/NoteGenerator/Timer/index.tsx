@@ -16,7 +16,7 @@ const Timer = () => {
 
   const [remainingMs, setRemainingMS] = useState(countdownInitialValue * 1000);
 
-  const [countdownString] = useTranslation('Countdown');
+  const [countdownString] = useTranslation('countdown');
 
   useEffect(() => {
     setRemainingMS(countdownInitialValue * 1000);

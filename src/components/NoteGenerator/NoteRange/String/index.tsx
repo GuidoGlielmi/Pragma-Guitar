@@ -25,9 +25,9 @@ const StringNoteRange = () => {
   const boardRef = useRef<HTMLDivElement>(null);
 
   const [tuningString, addLowerString, addUpperString] = useTranslation([
-    'Tuning',
-    'Add Lower String',
-    'Add Upper String',
+    'tuning',
+    'addLowerString',
+    'addUpperString',
   ]);
 
   const addStringHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

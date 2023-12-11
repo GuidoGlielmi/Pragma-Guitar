@@ -62,7 +62,7 @@ const Note = () => {
     initialValue: [],
   });
 
-  const [bestStreakString] = useTranslation(['Best Streak']);
+  const [bestStreakString] = useTranslation(['bestStreak']);
 
   useEffect(() => {
     setMaxStreaks(ps => {

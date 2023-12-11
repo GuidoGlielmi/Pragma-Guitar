@@ -51,7 +51,7 @@ const Sections = () => {
 const StartButton = () => {
   const {start, stop, started} = useContext(AudioContext) as AudioProps;
 
-  const [startString, stopString] = useTranslation(['Start', 'Stop']);
+  const [startString, stopString] = useTranslation(['start', 'stop']);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => e.key === 'Enter' && (started ? stop : start)();

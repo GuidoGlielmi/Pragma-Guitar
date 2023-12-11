@@ -1,7 +1,7 @@
 import useTranslation from '@/hooks/useTranslation';
 
 const Header = ({input, tapButton}: {input: JSX.Element; tapButton: JSX.Element}) => {
-  const [beatString] = useTranslation('Beat');
+  const [beatString] = useTranslation('beat');
 
   return (
     <div>

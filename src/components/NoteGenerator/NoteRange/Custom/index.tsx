@@ -10,7 +10,7 @@ const CustomNoteRange = () => {
     pitchRange: [from, to],
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
-  const [fromString, toString] = useTranslation(['From', 'To']);
+  const [fromString, toString] = useTranslation(['from', 'to']);
 
   useEffect(() => {
     changePitchRange([0, MAX_PITCH_INDEX]);
