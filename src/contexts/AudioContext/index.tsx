@@ -6,92 +6,52 @@ import {
   useState,
   FC,
   PropsWithChildren,
-  Dispatch,
-  SetStateAction,
   useEffect,
 } from 'react';
 import {AudioEcosystem} from '../../helpers/AudioEcosystem';
-import useDebouncedChange from '../../hooks/useDebouncedChange';
 import {ToastContext, ToastProps} from '../ToastContext';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import {NotificationTranslation} from '../../helpers/translations';
+import useTranslation from '@/hooks/useTranslation';
 
 export interface AudioProps {
   started: boolean | null;
   start: () => Promise<void>;
   stop: () => Promise<void>;
-  notification: keyof NotificationTranslation | '';
-  setNotification: Dispatch<SetStateAction<keyof NotificationTranslation | ''>>;
   startOscillator: (frec: number) => void;
   stopOscillator: () => void;
-  getMicInputStream: () => Promise<void>;
+  startMic: () => Promise<boolean>;
+  stopMic: () => void;
   devices: MediaDeviceInfo[];
-  askDevicesInfoPermission: () => Promise<boolean>;
-  setDevicesHandler: () => void;
+  setDevices: () => Promise<boolean>;
   selectedDeviceId: string | undefined;
-  setSelectedDeviceId: (deviceId: string) => void;
+  setSelectedDeviceId: (deviceId: string) => Promise<boolean>;
 }
 
-const DEFAULT_DEVICE_ID_STORAGE_NAME = 'defaultDeviceId';
+const DEFAULT_DEVICE_ID_STORAGE_KEY = 'defaultDeviceId';
 
 export const audioEcosystem = new AudioEcosystem();
 
 export const AudioContext = createContext<AudioProps | null>(null);
 
 const AudioProvider: FC<PropsWithChildren> = ({children}) => {
-  const {setMessage} = useContext(ToastContext) as ToastProps;
+  const {setToastOptions, close} = useContext(ToastContext) as ToastProps;
 
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedDeviceId, setSelectedDeviceId] = useLocalStorage({
     initialValue: '',
-    storageKey: DEFAULT_DEVICE_ID_STORAGE_NAME,
+    storageKey: DEFAULT_DEVICE_ID_STORAGE_KEY,
   });
 
-  const [notification, setNotification] = useState<keyof NotificationTranslation | ''>('');
-  const [debouncedNotification] = useDebouncedChange(notification, 10_000, {['']: 500});
+  const [microphoneAccessString] = useTranslation(['microphoneAccess']);
 
   const [started, setStarted] = useState<boolean | null>(null);
 
   useEffect(() => {
-    setMessage([debouncedNotification as string, -1]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedNotification]);
-
-  useEffect(() => {
     audioEcosystem.onstatechange = function () {
       setStarted(this.state === 'running');
-      if (this.state !== 'running') setNotification('');
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const setSelectedDeviceIdHandler = async (requestedDeviceId: string) => {
-    try {
-      const permittedDevice = await audioEcosystem.getMicInputStream(requestedDeviceId);
-      const permittedDeviceId = audioEcosystem.getDeviceId(permittedDevice);
-      if (permittedDeviceId) setSelectedDeviceId(permittedDeviceId);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const askDevicesInfoPermission = async () => {
-    // navigator.mediaDevices.enumerateDevices() will return an empty label attribute value if the permission for accessing the mediadevice is not given.
-    try {
-      const permittedDevice = await audioEcosystem.getMicInputStream(selectedDeviceId);
-      setDevicesHandler(audioEcosystem.getDeviceId(permittedDevice));
-      return true;
-    } catch (err) {
-      setSelectedDeviceId('');
-      return false;
-    }
-  };
-
-  const setDevicesHandler = async (permittedDeviceId = selectedDeviceId) => {
-    const devices = await audioEcosystem.getInputDevices();
-    setSelectedDeviceId(permittedDeviceId);
-    setDevices(devices);
-  };
 
   const start = async () => {
     await audioEcosystem.resume();
@@ -101,30 +61,71 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
     await audioEcosystem.suspend();
   };
 
-  const getMicInputStream = async () => {
-    const permittedDeviceId = await audioEcosystem.setMicInputStreamHandler(selectedDeviceId);
-    setSelectedDeviceId(permittedDeviceId || '');
-    console.log(audioEcosystem.micStream?.getAudioTracks()[0].label);
+  const askDevicePermission = async (requestedDeviceId?: string) => {
+    try {
+      const authorizedDevice = await audioEcosystem.getMicInputStream(requestedDeviceId);
+      close((message: string) => message === microphoneAccessString);
+
+      const authorizedDeviceId = audioEcosystem.getDeviceId(authorizedDevice);
+      if (!authorizedDeviceId) throw new Error();
+      setSelectedDeviceId(authorizedDeviceId);
+
+      return authorizedDevice;
+    } catch (err: any) {
+      if (err?.name === 'NotAllowedError') {
+        setToastOptions({message: microphoneAccessString, duration: -1});
+      }
+      throw err;
+    }
   };
+
+  const setSelectedDeviceIdHandler = async (requestedDeviceId: string) => {
+    return askDevicePermission(requestedDeviceId)
+      .then(() => true)
+      .catch(() => false);
+  };
+
+  const setDevicesHandler = async () => {
+    // navigator.mediaDevices.enumerateDevices() will return an empty label attribute value if the permission for accessing the mediadevice is not given.
+    const allowed = await setSelectedDeviceIdHandler(selectedDeviceId);
+    if (!allowed) return false;
+    setDevices(await audioEcosystem.getInputDevices());
+    return true;
+  };
+
+  const startMic = async () => {
+    return audioEcosystem
+      .startMic(selectedDeviceId)
+      .then(authorizedDeviceId => {
+        setSelectedDeviceId(authorizedDeviceId || '');
+        return true;
+      })
+      .catch(() => false);
+  };
+
+  const stopMic = async () => {
+    audioEcosystem.pauseMic();
+  };
+
+  const startOscillator = (frec: number) => audioEcosystem.setOscillatorFrecuency(frec);
+  const stopOscillator = () => audioEcosystem.setOscillatorFrecuency(0);
 
   const contextValue = useMemo(
     () => ({
       started,
       start,
       stop,
-      notification,
-      setNotification,
-      startOscillator: (frec: number) => audioEcosystem.setOscillatorFrecuency(frec),
-      stopOscillator: () => audioEcosystem.setOscillatorFrecuency(0),
-      getMicInputStream,
+      startOscillator,
+      stopOscillator,
+      startMic,
+      stopMic,
       devices,
-      setDevicesHandler,
-      askDevicesInfoPermission,
+      setDevices: setDevicesHandler,
       selectedDeviceId,
       setSelectedDeviceId: setSelectedDeviceIdHandler,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [notification, devices, selectedDeviceId, started],
+    [devices, selectedDeviceId, started],
   );
 
   return <AudioContext.Provider value={contextValue}>{children}</AudioContext.Provider>;

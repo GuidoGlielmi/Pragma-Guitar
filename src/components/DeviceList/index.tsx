@@ -7,22 +7,18 @@ import useTranslation from '../../hooks/useTranslation';
 import OutsideClickCloser from '../common/OutsideClickCloser';
 
 const DeviceList = () => {
-  const {
-    devices,
-    askDevicesInfoPermission,
-    setDevicesHandler,
-    selectedDeviceId,
-    setSelectedDeviceId,
-  } = useContext(AudioContext) as AudioProps;
+  const {devices, setDevices, selectedDeviceId, setSelectedDeviceId} = useContext(
+    AudioContext,
+  ) as AudioProps;
 
-  const [devicesString] = useTranslation('Devices');
+  const [devicesString] = useTranslation('devices');
 
   const [devicesShown, setDevicesShown] = useState(false);
 
   const showDevices = async () => {
     if (devicesShown) return setDevicesShown(false);
-    const granted = await askDevicesInfoPermission();
-    if (granted) setDevicesShown(true);
+    const allowed = await setDevices();
+    if (allowed) setDevicesShown(true);
   };
 
   return (
@@ -39,7 +35,7 @@ const DeviceList = () => {
               <ChevronDown />
             </button>
           </div>
-          <button onClick={() => setDevicesHandler()} className={devicesShown ? S.floatRight : ''}>
+          <button onClick={setDevices} className={devicesShown ? S.floatRight : ''}>
             <Refresh />
           </button>
         </div>
