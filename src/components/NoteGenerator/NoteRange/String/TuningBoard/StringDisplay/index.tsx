@@ -33,7 +33,7 @@ const StringDisplay = ({
   const modifyTuningHandler = (n: number) => {
     if (n > 0) incrementPitch(index);
     else decrementPitch(index);
-    if (selected) changePitchRange(ps => [ps[0] ?? 0, (ps[1] ?? MAX_PITCH_INDEX) + n]);
+    if (selected) changePitchRange(ps => [ps[0], ps[1] + n]);
   };
 
   return (

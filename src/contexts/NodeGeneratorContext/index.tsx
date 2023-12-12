@@ -22,7 +22,7 @@ import useLocalStorage from '../../hooks/useLocalStorage';
 
 const DEFAULT_COUNTDOWN_INITIAL_VALUE = 5;
 
-type TPitchRangeSetter = (range: TPitchRange | ((range: TPitchRange) => TPitchRange)) => void;
+type TPitchRangeSetter = (range: TPitchRange | ((range: [number, number]) => TPitchRange)) => void;
 
 export interface NoteGeneratorProps {
   generatePitch: () => void;
@@ -41,7 +41,7 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
   const {started} = useContext(AudioContext) as AudioProps;
 
   const [pitchRange, setPitchRange] = useState<TPitchRange>([null, null]);
-  const [pitchToPlay, setPitchToPlay] = useState<number | null>(null);
+  const [pitchToPlay, setPitchToPlay] = useState<TPitchToPlay>(null);
 
   const [countdownInitialValue, setCountdownInitialValue] = useLocalStorage({
     initialValue: DEFAULT_COUNTDOWN_INITIAL_VALUE,
@@ -66,7 +66,8 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
 
   const changePitchRange: TPitchRangeSetter = e => {
     setPitchRange(ps => {
-      const newRange: TPitchRange = e instanceof Function ? e(ps) : e;
+      const newRange: TPitchRange =
+        e instanceof Function ? e([ps[0] ?? 0, ps[1] ?? MAX_PITCH_INDEX]) : e;
       if (newRange[0] === null || newRange[1] === null) return [null, null];
       if (newRange[0] === ps[0] && newRange[1] === ps[1]) return ps;
       return [

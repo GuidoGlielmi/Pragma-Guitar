@@ -12,13 +12,13 @@ const NoteRangeToPlay = ({canWheel}: {canWheel?: boolean}) => {
   return (
     <div className='rangeToPlayContainer'>
       <div
-        onWheel={e => canWheel && changePitchRange(ps => [ps[0] + (e.deltaY < 0 ? 1 : -1), ps[1]])}
+        onWheel={e => canWheel && changePitchRange(ps => [ps[0] + (e.deltaY > 0 ? 1 : -1), ps[1]])}
       >
         <Note pitch={from ?? 0} />
       </div>
       -
       <div
-        onWheel={e => canWheel && changePitchRange(ps => [ps[0], ps[1] + (e.deltaY < 0 ? 1 : -1)])}
+        onWheel={e => canWheel && changePitchRange(ps => [ps[0], ps[1] + (e.deltaY > 0 ? 1 : -1)])}
       >
         <Note pitch={to ?? MAX_PITCH_INDEX} />
       </div>
