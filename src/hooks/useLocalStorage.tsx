@@ -18,14 +18,14 @@ function useLocalStorage<T, TPersistable = T>({
   initialValue,
   storageKey,
   getter,
-  setter = (t: T) => t as any,
+  setter,
 }: TUseLocalStorageWithInitialValue<T, TPersistable>): [T, React.Dispatch<React.SetStateAction<T>>];
 
 function useLocalStorage<T, TPersistable = T>({
   initialValue,
   storageKey,
   getter,
-  setter = (t?: T) => t as any,
+  setter,
 }: TUseLocalStorage<T, TPersistable>): [
   T | undefined,
   React.Dispatch<React.SetStateAction<T | undefined>>,
@@ -35,23 +35,25 @@ function useLocalStorage<T, TPersistable = T>({
   initialValue,
   storageKey,
   getter,
-  setter = (t: T) => t as any,
+  setter,
 }: TUseLocalStorageWithInitialValue<T, TPersistable> | TUseLocalStorage<T, TPersistable>) {
   const getInitialValue = (): T | undefined => {
     const storedValue = JSON.parse(localStorage.getItem(storageKey)!);
     // JSON can't directly parse strings, they should begin with quotes
-    return getter ? getter(storedValue ?? initialValue) : storedValue ?? initialValue;
+    return storedValue ? (getter ? getter(storedValue) : storedValue) : initialValue;
   };
   const [state, setState] = useState(() => getInitialValue());
 
   useEffect(() => {
-    if (state !== undefined) localStorage.setItem(storageKey, JSON.stringify(setter(state)));
+    if (state !== undefined)
+      localStorage.setItem(storageKey, JSON.stringify(setter ? setter(state) : state));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   useEffect(() => {
     setState(ps => {
-      return ps !== undefined && JSON.stringify(setter(ps)) !== localStorage.getItem(storageKey)
+      return ps !== undefined &&
+        JSON.stringify(setter ? setter(ps) : ps) !== localStorage.getItem(storageKey)
         ? getInitialValue()
         : ps;
     });
