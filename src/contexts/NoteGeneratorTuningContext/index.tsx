@@ -26,8 +26,8 @@ export interface NoteGeneratorTuningProps {
   setTuning: (label: string) => void;
   reset: () => void;
   fretsAmount: number;
-  selectedStringId: number | null;
-  setSelectedStringId: (id: number | null) => void;
+  selectedStringId: TPitchToPlay;
+  setSelectedStringId: (id: TPitchToPlay) => void;
   decrementFretsAmount: () => void;
   incrementFretsAmount: () => void;
   removeString: (id: number) => void;
@@ -67,7 +67,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     storageKey: PERSISTED_FRET_AMOUNT_VARIABLE_NAME,
   });
 
-  const [selectedStringId, setSelectedStringId] = useState<number | null>(null);
+  const [selectedStringId, setSelectedStringId] = useState<TPitchToPlay>(null);
 
   const getAllTunings = () => [...persistedTunings, ...tunings];
 
@@ -150,7 +150,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
       : string.pitch > string.originalPitch;
   };
 
-  const setSelectedStringIdHandler = (id: number | null) =>
+  const setSelectedStringIdHandler = (id: TPitchToPlay) =>
     setSelectedStringId(ps => (ps === id ? null : id));
 
   useEffect(() => {

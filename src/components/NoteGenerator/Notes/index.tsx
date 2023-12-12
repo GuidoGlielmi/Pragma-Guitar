@@ -8,7 +8,7 @@ import NotePlayed from './NotePlayed';
 import './Notes.css';
 
 interface NotesProps {
-  frecuency: number | null;
+  frecuency: TPitchToPlay;
   correct: boolean;
   currStreak: number;
 }

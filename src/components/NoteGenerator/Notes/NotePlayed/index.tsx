@@ -6,7 +6,7 @@ import {LanguageContext, LanguageProps} from '@/contexts/LanguageContext';
 
 const MAX_SHADOW_Y_POSITION = 8;
 
-const NotePlayed = ({frecuency}: {frecuency: number | null}) => {
+const NotePlayed = ({frecuency}: {frecuency: TPitchToPlay}) => {
   const {getNoteWithOctave} = useContext(LanguageContext) as LanguageProps;
   const {
     pitchRange: [from, to],

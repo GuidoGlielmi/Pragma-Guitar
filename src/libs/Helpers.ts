@@ -4,20 +4,20 @@ const SEMITONE_OFFSET = 69;
 const CENTS_IN_WHOLE_TONE = 100;
 const CENTS_IN_OCTAVE = NOTES_IN_OCTAVE_AMOUNT * CENTS_IN_WHOLE_TONE;
 
-export const closestPitchFromFrequency = (frequency: number | null) => {
+export const closestPitchFromFrequency = (frequency: TPitchToPlay) => {
   if (frequency === null) return null;
   const noteNum =
     NOTES_IN_OCTAVE_AMOUNT * (Math.log(frequency / REFERENCE_FREQUENCY) / Math.log(2));
   return Math.round(noteNum) + SEMITONE_OFFSET;
 };
 
-export const centsOffFromClosestPitch = (frequency: number | null) => {
+export const centsOffFromClosestPitch = (frequency: TPitchToPlay) => {
   if (frequency === null) return null;
   const pitch = closestPitchFromFrequency(frequency) as number;
   return centsOffFromPitch(frequency, pitch);
 };
 
-export const centsOffFromPitch = (frequency: number | null, pitch: number | null) => {
+export const centsOffFromPitch = (frequency: TPitchToPlay, pitch: TPitchToPlay) => {
   if (!frequency || !pitch) return null;
   return Math.floor(
     (CENTS_IN_OCTAVE * Math.log(frequency / frequencyFromPitch(pitch))) / Math.log(2),

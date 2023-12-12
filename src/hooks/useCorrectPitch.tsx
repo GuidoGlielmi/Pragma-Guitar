@@ -8,15 +8,15 @@ type ConditionFn = (pitch: number, detune: number) => boolean;
 
 type Condition =
   | {
-      target?: number | null;
+      target?: TPitchToPlay;
       condition: ConditionFn;
     }
   | {
-      target: number | null;
+      target: TPitchToPlay;
       condition?: ConditionFn;
     };
 
-type UseCorrectPitch = {frecuency: number | null; correct: boolean};
+type UseCorrectPitch = {frecuency: TPitchToPlay; correct: boolean};
 
 const MS_TO_CONSIDER_PITCH_READING_TO_BE_ACCURATE = 1000 / 12;
 

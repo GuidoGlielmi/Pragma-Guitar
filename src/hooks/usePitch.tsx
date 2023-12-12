@@ -12,7 +12,7 @@ const buf = new Float32Array(buflen);
 const usePitch = ({interval = 50, minFrecuency = 60, maxFrecuency = 10000} = {}) => {
   const {started, startMic, stopMic} = useContext(AudioContext) as AudioProps;
 
-  const [frecuency, setFrecuency] = useState<number | null>(null);
+  const [frecuency, setFrecuency] = useState<TPitchToPlay>(null);
 
   useEffect(() => {
     if (!started) return;

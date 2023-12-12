@@ -6,7 +6,7 @@ const NoteWithOctave = ({
   pitch,
   withShadow = true,
 }: {
-  pitch: number | null;
+  pitch: TPitchToPlay;
   withShadow?: boolean;
 }) => {
   const {getNoteWithOctave} = useContext(LanguageContext) as LanguageProps;

@@ -7,7 +7,7 @@ export interface LanguageProps {
   setEng: Dispatch<SetStateAction<Language>>;
   eng: Language;
   notes: Notes;
-  getNoteWithOctave: (pitch: number | null) => [string, string];
+  getNoteWithOctave: (pitch: TPitchToPlay) => [string, string];
 }
 
 export const LanguageContext = createContext<LanguageProps | null>(null);
@@ -21,7 +21,7 @@ const LanguageProvider: FC<PropsWithChildren> = ({children}) => {
     storageKey: LANGUAGE_STORAGE_NAME,
   });
 
-  const getNoteWithOctave = (pitch: number | null): [string, string] => {
+  const getNoteWithOctave = (pitch: TPitchToPlay): [string, string] => {
     if (pitch === null) return ['', ''];
     const octave = ~~(pitch / OCTAVE_NOTES_AMOUNT) + LOWER_OCTAVE_INDEX;
     const note = Object.values(notes[eng])[pitch % OCTAVE_NOTES_AMOUNT];

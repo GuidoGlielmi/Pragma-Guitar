@@ -4,8 +4,8 @@ import {motion} from 'framer-motion';
 import {useEffect, useRef} from 'react';
 
 type BoardProps = {
-  pitch: number | null;
-  detune: number | null;
+  pitch: TPitchToPlay;
+  detune: TPitchToPlay;
 };
 
 const third = 33;
@@ -58,7 +58,7 @@ const Board = ({detune, pitch}: BoardProps) => {
 };
 
 type BandProps = {
-  pitch: number | null;
+  pitch: TPitchToPlay;
   percentage: number;
 };
 

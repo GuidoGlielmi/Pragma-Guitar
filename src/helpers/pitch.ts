@@ -17,7 +17,7 @@ export const getFrecuencyFromPitch = (pitch: number) => {
   return 440 * 2 ** ((pitch - middlePitch) / 12);
 };
 
-export const getOctave = (pitch: number | null) => {
+export const getOctave = (pitch: TPitchToPlay) => {
   return pitch !== null ? Math.floor(pitch / 12) - 1 : null;
 };
 

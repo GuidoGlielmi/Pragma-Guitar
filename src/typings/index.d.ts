@@ -15,7 +15,7 @@ declare global {
 
   type StringStateValue = {
     id: number;
-    originalPitch: number | null;
+    originalPitch: TPitchToPlay;
     pitch: number;
   };
 
