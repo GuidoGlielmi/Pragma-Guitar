@@ -10,10 +10,8 @@ import NoteRangeToPlay from '../common/NoteRangeToPlay';
 import {Translation} from '@/helpers/translations';
 
 type TSection = {
-  [key in keyof Translation]: {
-    element: JSX.Element;
-    height: number;
-  };
+  element: JSX.Element;
+  height: number;
 };
 
 const options = {
@@ -27,9 +25,9 @@ const options = {
     ),
     height: 445,
   },
-} as TSection;
+};
 
-const optionsEntries = Object.entries(options);
+const optionsEntries = Object.entries(options) as [keyof typeof options, TSection][];
 
 const RangeSelector = () => {
   const [overflowHidden, setOverflowHidden] = useState(false);
@@ -70,9 +68,7 @@ type RangeOptionsProps = {
 };
 
 const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
-  const rangeOptionsTitles = useTranslation(
-    optionsEntries.map(([k]) => k) as (keyof Translation)[],
-  );
+  const rangeOptionsTitles = useTranslation(optionsEntries.map(([k]) => k));
 
   return (
     <>
@@ -90,7 +86,7 @@ const RangeOptions: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
           </button>
         ))}
       </div>
-      <NoteRangeToPlay />
+      <NoteRangeToPlay canWheel={optionsEntries[selectedIndex][0] === 'inNoteRange'} />
     </>
   );
 };

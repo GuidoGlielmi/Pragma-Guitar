@@ -3,18 +3,23 @@ import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGenerator
 import {MAX_PITCH_INDEX} from '@/constants/notes';
 import Note from './Note';
 
-const NoteRangeToPlay = () => {
+const NoteRangeToPlay = ({canWheel}: {canWheel?: boolean}) => {
   const {
+    changePitchRange,
     pitchRange: [from, to],
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   return (
     <div className='rangeToPlayContainer'>
-      <div>
+      <div
+        onWheel={e => canWheel && changePitchRange(ps => [ps[0] + (e.deltaY < 0 ? 1 : -1), ps[1]])}
+      >
         <Note pitch={from ?? 0} />
       </div>
       -
-      <div>
+      <div
+        onWheel={e => canWheel && changePitchRange(ps => [ps[0], ps[1] + (e.deltaY < 0 ? 1 : -1)])}
+      >
         <Note pitch={to ?? MAX_PITCH_INDEX} />
       </div>
     </div>
