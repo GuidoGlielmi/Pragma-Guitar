@@ -43,10 +43,10 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
   const [pitchRange, setPitchRange] = useState<TPitchRange>([null, null]);
   const [pitchToPlay, setPitchToPlay] = useState<TPitchToPlay>(null);
 
-  const [countdownInitialValue, setCountdownInitialValue] = useLocalStorage({
-    initialValue: DEFAULT_COUNTDOWN_INITIAL_VALUE,
-    storageKey: 'countdownInitialValue',
-  });
+  const [countdownInitialValue, setCountdownInitialValue] = useLocalStorage(
+    'countdownInitialValue',
+    DEFAULT_COUNTDOWN_INITIAL_VALUE,
+  );
   const [from, to] = pitchRange;
 
   const generatePitch = () =>

@@ -12,6 +12,7 @@ const NoteRangeToPlay = ({canWheel}: {canWheel?: boolean}) => {
   return (
     <div className='rangeToPlayContainer'>
       <div
+        // like a x-axis spinning wheel, when scrolling in a certain direction, the value goes in the other
         onWheel={e => canWheel && changePitchRange(ps => [ps[0] + (e.deltaY > 0 ? 1 : -1), ps[1]])}
       >
         <Note pitch={from ?? 0} />

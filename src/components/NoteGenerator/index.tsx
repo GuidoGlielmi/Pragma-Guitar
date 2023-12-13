@@ -57,10 +57,7 @@ const Note = () => {
   const {correct, frecuency} = useCorrectPitch({condition});
 
   const [currStreak, setCurrStreak] = useStreak(correct);
-  const [maxStreaks, setMaxStreaks] = useLocalStorage<number[]>({
-    storageKey: 'maxStreaks',
-    initialValue: [],
-  });
+  const [maxStreaks, setMaxStreaks] = useLocalStorage<number[]>('maxStreaks', []);
 
   const [bestStreakString] = useTranslation(['bestStreak']);
 

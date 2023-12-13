@@ -37,10 +37,10 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
   const {setToastOptions, close} = useContext(ToastContext) as ToastProps;
 
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useLocalStorage({
-    initialValue: '',
-    storageKey: DEFAULT_DEVICE_ID_STORAGE_KEY,
-  });
+  const [selectedDeviceId, setSelectedDeviceId] = useLocalStorage(
+    DEFAULT_DEVICE_ID_STORAGE_KEY,
+    '',
+  );
 
   const [microphoneAccessString] = useTranslation(['microphoneAccess']);
 
