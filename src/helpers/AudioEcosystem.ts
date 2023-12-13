@@ -1,23 +1,31 @@
 export class AudioEcosystem extends AudioContext {
   // the audio context is, among other things, a NODES factory.
   // each possible NODE represents a media processor of some kind
-  audioNode?: AudioScheduledSourceNode;
-  analyserNode: AnalyserNode;
-  gainNode?: GainNode;
+
+  audio?: AudioScheduledSourceNode;
+  analyser: AnalyserNode;
+  gain?: GainNode;
 
   micStream?: MediaStream; // .stop() renders the stream unusable
   micSource?: MediaStreamAudioSourceNode; // a node is the main required element of an AudioContext
 
   constructor() {
     super();
-    this.analyserNode = this.createAnalyser();
-    this.analyserNode.fftSize = 2048;
+    this.analyser = this.createAnalyser();
+    this.analyser.fftSize = 2048;
     this.suspend();
   }
 
   async resume() {
     this.stopAudio();
     super.resume();
+  }
+
+  async suspend() {
+    // a connected node resumes playback when resuming the AudioContext
+    this.pauseMic();
+    this.audio?.disconnect();
+    return super.suspend();
   }
 
   async getInputDevices() {
@@ -42,7 +50,7 @@ export class AudioEcosystem extends AudioContext {
     this.pauseMic();
     // creating another node without stopping the other can cause it to resume when the context does
     this.stopAudio();
-    this.audioNode = newAudioNode;
+    this.audio = newAudioNode;
     lastNode?.connect(this.destination);
     newAudioNode?.start();
   }
@@ -64,7 +72,7 @@ export class AudioEcosystem extends AudioContext {
     this.micStream = await this.getMicInputStream(deviceId);
     this.micStream.getAudioTracks()?.forEach(at => (at.enabled = true));
     this.micSource = this.createMediaStreamSource(this.micStream);
-    this.micSource.connect(this.analyserNode);
+    this.micSource.connect(this.analyser);
     return this.micStream.getAudioTracks()[0].getSettings().deviceId;
   }
 
@@ -76,8 +84,8 @@ export class AudioEcosystem extends AudioContext {
 
   stopAudio() {
     this.#fadeOutGainNode();
-    this.audioNode?.stop(this.#fadeStopTime);
-    this.audioNode = undefined;
+    this.audio?.stop(this.#fadeStopTime);
+    this.audio = undefined;
     // when an AudioNode get stopped and no references are left it will disconnect itself and it is thus not needed to explicitly call disconnect() after stop().
   }
 
@@ -86,7 +94,7 @@ export class AudioEcosystem extends AudioContext {
       const osc = this.buildOscillator(frecuency);
       const gainNode = this.#connectFadeInGainNode(osc); // changing a gain node value while live create a pop
       this.startAudioNode(osc, gainNode);
-      this.gainNode = gainNode;
+      this.gain = gainNode;
     } else {
       this.stopAudio();
       if (!this.micSource) this.startMic();
@@ -107,7 +115,7 @@ export class AudioEcosystem extends AudioContext {
     return gainNode;
   }
 
-  #fadeOutGainNode(gainNode = this.gainNode) {
+  #fadeOutGainNode(gainNode = this.gain) {
     gainNode?.gain.setValueAtTime(gainNode?.gain.value, this.currentTime);
     gainNode?.gain?.linearRampToValueAtTime(0.0001, this.#fadeStopTime);
   }
@@ -118,6 +126,7 @@ export class AudioEcosystem extends AudioContext {
 
   playBuffer(buffer: AudioBuffer) {
     const audioNode = this.#createBufferSourceNode(buffer);
+    this.audio = audioNode;
     audioNode.connect(this.destination);
     audioNode.start();
   }
