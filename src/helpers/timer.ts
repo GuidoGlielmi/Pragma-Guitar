@@ -36,22 +36,24 @@ export const throttle = <T extends any[]>(fn: Task<T>, delay = 50): Task<T> => {
   };
 };
 
-export function pollTask(msInterval: number, task: () => void) {
-  let interval: number;
+const HOLD_TIME = 25;
+
+export function setPreciseInterval(task: () => void, msInterval: number = 0) {
+  if (~~msInterval <= 9) throw new Error('msInterval should be more than 10ms');
+  const interval: {id?: number} = {};
   task();
   let targetTime = performance.now() + msInterval;
   const poll = () => {
-    if (performance.now() < targetTime - 5) return;
-    clearInterval(interval);
-    while (performance.now() < targetTime - 2);
+    if (performance.now() < targetTime - HOLD_TIME) return;
+    clearInterval(interval.id);
+    while (performance.now() < targetTime);
+
     task();
-    targetTime += msInterval;
-    interval = setInterval(poll);
+    targetTime = performance.now() + msInterval;
+    interval.id = setInterval(poll);
   };
-  interval = setInterval(poll);
-  return () => {
-    clearInterval(interval);
-  };
+  interval.id = setInterval(poll);
+  return interval;
 }
 
 export function controlledPollTask<T extends any[]>(
