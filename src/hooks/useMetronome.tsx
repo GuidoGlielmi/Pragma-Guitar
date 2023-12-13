@@ -1,7 +1,7 @@
 /* eslint-disable no-empty */
 import {useState, useEffect, useContext, useRef} from 'react';
 import {AudioContext, AudioProps, audioEcosystem} from '../contexts/AudioContext';
-import {debounce, pollTask} from '../helpers/timer';
+import {setPreciseInterval} from '../helpers/timer';
 
 interface MetronomeProps {
   bpm: number;
@@ -25,27 +25,26 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
   const [position, setPosition] = useState(-1);
   const [bar, setBar] = useState<[number, number]>([initialNumerator, initialDenominator]);
 
-  const debouncedPollRef = useRef(
-    debounce((msInterval: number, numerator: number) => {
-      const task = () =>
-        setPosition(ps => {
-          const isLast = ps === numerator - 1 || ps === -1;
-          audioEcosystem.playBuffer(isLast ? firstClickAudioBuffer : clickAudioBuffer);
-          return isLast ? 0 : ps + 1;
-        });
-      return pollTask(msInterval, task);
-    }, 100),
-  );
+  const startMetronomeIntervalRef = useRef((msInterval: number, numerator: number) => {
+    const task = () => {
+      setPosition(ps => {
+        const nextShouldBeFirst = ps === numerator - 1 || ps === -1;
+        audioEcosystem.playBuffer(nextShouldBeFirst ? firstClickAudioBuffer : clickAudioBuffer);
+        return nextShouldBeFirst ? 0 : ps + 1;
+      });
+    };
+    return setPreciseInterval(task, msInterval);
+  });
 
   useEffect(() => {
     if (!started) return;
     const [numerator, denominator] = bar;
     const msInterval = bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
 
-    const stopPollingSchedule = debouncedPollRef.current(msInterval, numerator);
+    const interval = startMetronomeIntervalRef.current(msInterval, numerator);
 
     return () => {
-      stopPollingSchedule();
+      clearInterval(interval.id);
       setPosition(-1);
     };
   }, [started, bpm, bar]);
