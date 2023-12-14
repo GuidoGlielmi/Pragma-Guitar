@@ -11,7 +11,6 @@ import {
 import {AudioEcosystem} from '../../helpers/AudioEcosystem';
 import {ToastContext, ToastProps} from '../ToastContext';
 import useLocalStorage from '../../hooks/useLocalStorage';
-import useTranslation from '@/hooks/useTranslation';
 
 export interface AudioProps {
   started: boolean | null;
@@ -27,6 +26,7 @@ export interface AudioProps {
   setSelectedDeviceId: (deviceId: string) => Promise<boolean>;
 }
 
+const microphoneAccessMessage = 'microphoneAccess';
 const DEFAULT_DEVICE_ID_STORAGE_KEY = 'defaultDeviceId';
 
 export const audioEcosystem = new AudioEcosystem();
@@ -41,8 +41,6 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
     DEFAULT_DEVICE_ID_STORAGE_KEY,
     '',
   );
-
-  const [microphoneAccessString] = useTranslation(['microphoneAccess']);
 
   const [started, setStarted] = useState<boolean | null>(null);
 
@@ -61,19 +59,19 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
     await audioEcosystem.suspend();
   };
 
-  const askDevicePermission = async (requestedDeviceId?: string) => {
+  const askDevicePermission = async (requestedDeviceId: string) => {
     try {
       const authorizedDevice = await audioEcosystem.getMicInputStream(requestedDeviceId);
-      close((message: string) => message === microphoneAccessString);
+      close((message: string) => message === microphoneAccessMessage);
 
       const authorizedDeviceId = audioEcosystem.getDeviceId(authorizedDevice);
-      if (!authorizedDeviceId) throw new Error();
-      setSelectedDeviceId(authorizedDeviceId);
-
-      return authorizedDevice;
+      setSelectedDeviceId(authorizedDeviceId ?? requestedDeviceId);
     } catch (err: any) {
       if (err?.name === 'NotAllowedError') {
-        setToastOptions({message: microphoneAccessString, duration: -1});
+        setToastOptions({
+          message: microphoneAccessMessage,
+          duration: audioEcosystem.areStreamsEmpty ? 5000 : -1,
+        });
       }
       throw err;
     }
@@ -81,35 +79,35 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
 
   const setSelectedDeviceIdHandler = async (requestedDeviceId: string) => {
     return askDevicePermission(requestedDeviceId)
-      .then(() => true)
-      .catch(() => false);
-  };
-
-  const setDevicesHandler = async () => {
-    // navigator.mediaDevices.enumerateDevices() will return an empty label attribute value if the permission for accessing the mediadevice is not given.
-    const allowed = await setSelectedDeviceIdHandler(selectedDeviceId);
-    if (!allowed) return false;
-    setDevices(await audioEcosystem.getInputDevices());
-    return true;
-  };
-
-  const startMic = async () => {
-    return audioEcosystem
-      .startMic(selectedDeviceId)
-      .then(authorizedDeviceId => {
-        setSelectedDeviceId(authorizedDeviceId || '');
+      .then(() => {
+        audioEcosystem.stopMic();
         return true;
       })
       .catch(() => false);
   };
 
-  const stopMic = async () => {
-    audioEcosystem.pauseMic();
+  const setDevicesHandler = async () => {
+    try {
+      await askDevicePermission(selectedDeviceId);
+      setDevices(await audioEcosystem.getInputDevices());
+      audioEcosystem.stopMic();
+      return true;
+    } catch (err: any) {
+      return false;
+    }
+  };
+
+  const startMic = async () => {
+    return askDevicePermission(selectedDeviceId)
+      .then(() => {
+        audioEcosystem.startMic();
+        return true;
+      })
+      .catch(() => false);
   };
 
   const startOscillator = (frec: number) => audioEcosystem.setOscillatorFrecuency(frec);
   const stopOscillator = () => audioEcosystem.setOscillatorFrecuency(0);
-
   const contextValue = useMemo(
     () => ({
       started,
@@ -118,7 +116,7 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
       startOscillator,
       stopOscillator,
       startMic,
-      stopMic,
+      stopMic: () => audioEcosystem.stopMic(),
       devices,
       setDevices: setDevicesHandler,
       selectedDeviceId,

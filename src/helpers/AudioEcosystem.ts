@@ -81,7 +81,6 @@ export class AudioEcosystem extends AudioContext {
     this.stopAudio();
     this.micSource = this.createMediaStreamSource(this.micStream!);
     this.micSource.connect(this.analyser);
-    return this.micStream?.getAudioTracks()[0].getSettings().deviceId;
   }
 
   stopMic() {
