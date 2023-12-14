@@ -1,7 +1,7 @@
 import S from './Board.module.css';
-import NoteWithOctave from '../../common/NoteWithOctave';
-import {motion} from 'framer-motion';
+import NoteWithOctave from '../../../common/NoteWithOctave';
 import {useEffect, useRef} from 'react';
+import Band from './Band';
 
 type BoardProps = {
   pitch: TPitchToPlay;
@@ -54,24 +54,6 @@ const Board = ({detune, pitch}: BoardProps) => {
         <span className={S.value} />
       </div>
     </section>
-  );
-};
-
-type BandProps = {
-  pitch: TPitchToPlay;
-  percentage: number;
-};
-
-const Band = ({pitch, percentage}: BandProps) => {
-  return (
-    <motion.div
-      key={pitch}
-      exit={{opacity: 0}}
-      transition={{duration: 0.075}}
-      style={{left: `${percentage}%`}}
-    >
-      <NoteWithOctave pitch={pitch} />
-    </motion.div>
   );
 };
 

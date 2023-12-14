@@ -1,9 +1,9 @@
 import {useEffect} from 'react';
-import useMetronome from '../../hooks/useMetronome';
+import useMetronome from '../../../hooks/useMetronome';
 import S from './Metronome.module.css';
-import useNumberInput from '../../hooks/useNumberInput';
-import useTap from '../../hooks/useTap';
-import {maxBPS, minBPS} from '../../constants/notes';
+import useNumberInput from '../../../hooks/useNumberInput';
+import useTap from '../../../hooks/useTap';
+import {maxBPS, minBPS} from '../../../constants/notes';
 import BeatCircles from './BeatCircles';
 import Header from './Header';
 import Bar from './Bar';

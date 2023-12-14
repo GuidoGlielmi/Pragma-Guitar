@@ -1,7 +1,7 @@
-import usePitch from '../../hooks/usePitch';
+import usePitch from '../../../hooks/usePitch';
 import './Tuner.css';
 import Board from './Board';
-import {centsOffFromPitch, closestPitchFromFrequency} from '../../libs/Helpers';
+import {centsOffFromPitch, closestPitchFromFrequency} from '../../../libs/Helpers';
 
 const Tuner = () => {
   const frecuency = usePitch();

@@ -37,4 +37,9 @@ declare global {
   interface ITuningState extends ISelectableTuning {
     strings: StringStateValue[];
   }
+
+  type TSection = {
+    element: JSX.Element;
+    height: number;
+  };
 }

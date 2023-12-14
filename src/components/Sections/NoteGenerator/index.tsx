@@ -1,40 +1,21 @@
 import {useContext, useEffect, useCallback} from 'react';
 import {AnimatePresence} from 'framer-motion';
-import {AudioContext, AudioProps, audioEcosystem} from '../../contexts/AudioContext';
-import OnboardingWrapper from '../OnboardingWrapper';
-import {noteGenerator} from '../../constants/steps';
-import useCorrectPitch from '../../hooks/useCorrectPitch';
+import {AudioContext, AudioProps, audioEcosystem} from '@/contexts/AudioContext';
+import useCorrectPitch from '@/hooks/useCorrectPitch';
 import RangeSelector from './NoteRange';
 import Notes from './Notes';
-import useInitialBufferLoad from '../../hooks/useInitialBufferLoad';
-import NoteGeneratorProvider, {
-  NoteGeneratorContext,
-  NoteGeneratorProps,
-} from '../../contexts/NodeGeneratorContext';
+import useInitialBufferLoad from '@/hooks/useInitialBufferLoad';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
 import Timer from './Timer';
 import './NoteGenerator.css';
-import useTranslation from '../../hooks/useTranslation';
-import useStreak from '../../hooks/useStreak';
-import {areSameNote} from '../../libs/Helpers';
+import useTranslation from '@/hooks/useTranslation';
+import useStreak from '@/hooks/useStreak';
+import {areSameNote} from '@/libs/Helpers';
 import useLocalStorage from '@/hooks/useLocalStorage';
 
 const MAX_ACCEPTABLE_DETUNE = 15;
 
 const NoteGenerator = () => {
-  const {started} = useContext(AudioContext) as AudioProps;
-
-  return (
-    <OnboardingWrapper steps={noteGenerator} stepsToUpdate={started ? [12, 13] : undefined}>
-      <div className='container'>
-        <NoteGeneratorProvider>
-          <Note />
-        </NoteGeneratorProvider>
-      </div>
-    </OnboardingWrapper>
-  );
-};
-
-const Note = () => {
   const {started} = useContext(AudioContext) as AudioProps;
 
   const {

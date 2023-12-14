@@ -1,0 +1,66 @@
+import {AnimatePresence, motion} from 'framer-motion';
+import {options} from '@/constants/noteGeneratorOptions';
+
+const optionsEntries = Object.entries(options) as [keyof typeof options, TSection][];
+
+type TRangeProps = {
+  selectedIndex: number;
+  overflowHidden: boolean;
+  setOverflowHidden: (v: boolean) => void;
+  isNext: boolean;
+};
+
+const Range = ({selectedIndex, overflowHidden, setOverflowHidden, isNext}: TRangeProps) => {
+  return (
+    <div
+      style={{
+        height: optionsEntries[selectedIndex][1].height,
+        transition: 'height 0.2s ease',
+        overflow: overflowHidden ? 'hidden' : 'visible',
+      }}
+      className='rangeSelectorSection'
+    >
+      <AnimatePresence
+        initial={false}
+        onExitComplete={() => {
+          setOverflowHidden(false);
+        }}
+        custom={isNext}
+      >
+        <motion.div
+          style={{position: 'absolute', top: 0, width: '90%', height: '100%'}}
+          variants={variants}
+          custom={isNext}
+          transition={{type: 'spring', mass: 0.4, duration: 0.01}}
+          onAnimationStart={def => {
+            if (def === 'animate') setOverflowHidden(true);
+          }}
+          initial='initial'
+          animate='animate'
+          exit='exit'
+          key={selectedIndex}
+        >
+          {optionsEntries[selectedIndex][1].element}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const variants = {
+  initial(isNext: boolean) {
+    return {
+      x: isNext ? 200 : -200,
+      opacity: 0,
+    };
+  },
+  animate: {x: 0, opacity: 1},
+  exit(isNext: boolean) {
+    return {
+      x: isNext ? -200 : 200,
+      opacity: 0,
+    };
+  },
+};
+
+export default Range;

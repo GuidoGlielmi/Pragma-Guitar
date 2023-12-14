@@ -8,7 +8,6 @@ import NoteWithOctave from '@/components/common/NoteWithOctave';
 import S from './StringDisplay.module.css';
 import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
 import {AnimatePresence, motion} from 'framer-motion';
-import {MAX_PITCH_INDEX} from '@/constants/notes';
 
 interface StringDisplayProps {
   height: number;

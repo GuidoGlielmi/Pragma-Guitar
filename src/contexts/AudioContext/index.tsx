@@ -107,6 +107,7 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
 
   const startOscillator = (frec: number) => audioEcosystem.setOscillatorFrecuency(frec);
   const stopOscillator = () => audioEcosystem.setOscillatorFrecuency(0);
+
   const contextValue = useMemo(
     () => ({
       started,
