@@ -33,15 +33,8 @@ const StringNoteRange = () => {
   const addStringHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (e.currentTarget.title === AddStringMessages.Upper) {
       addString(true);
-      setTimeout(() => boardRef.current?.scrollTo({top: 0, behavior: 'smooth'}));
     } else if (e.currentTarget.title === AddStringMessages.Lower) {
       addString(false);
-      setTimeout(() =>
-        boardRef.current?.scrollTo({
-          top: boardRef.current?.scrollHeight,
-          behavior: 'smooth',
-        }),
-      );
     }
   };
 

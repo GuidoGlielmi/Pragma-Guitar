@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import {useContext, useRef, useEffect} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
@@ -19,7 +19,7 @@ interface StringDisplayProps {
 
 const StringDisplay = ({
   height,
-  pitch: {id, pitch},
+  pitch: {id, pitch, originalPitch},
   index,
   selected,
   select,
@@ -29,6 +29,15 @@ const StringDisplay = ({
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
+  const stringRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!originalPitch) {
+      stringRef.current?.scrollIntoView({behavior: 'smooth', block: 'nearest', inline: 'nearest'});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const modifyTuningHandler = (n: number) => {
     if (n > 0) incrementPitch(index);
     else decrementPitch(index);
@@ -36,7 +45,7 @@ const StringDisplay = ({
   };
 
   return (
-    <div className={S.stringContainer}>
+    <div className={S.stringContainer} ref={stringRef}>
       <div>
         <input type='checkbox' name='string' checked={selected} onChange={() => select(id)} />
         <Note pitch={pitch} />
