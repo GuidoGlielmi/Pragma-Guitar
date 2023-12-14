@@ -1,11 +1,13 @@
 import {createContext, useMemo, useState, PropsWithChildren, useRef} from 'react';
 import Toast from '../../components/common/Toast';
 import {motion} from 'framer-motion';
+import {Translation} from '@/helpers/translations';
+import useTranslation from '@/hooks/useTranslation';
 
-type TToastOptions = {message: string; duration?: number};
+type TToastOptions = {message: keyof Translation | ''; duration?: number};
 type TToastOptionsWithShow = TToastOptions & {show: boolean};
 
-const initialToastOptions = {message: '', duration: 0, show: false};
+const initialToastOptions = {message: '' as const, duration: 0, show: false};
 
 export interface ToastProps {
   /** `duration: -1` means infinite duration */
@@ -20,6 +22,8 @@ export const ToastContext = createContext<ToastProps | null>(null);
 
 const ToastProvider = ({children}: PropsWithChildren) => {
   const [toastOptions, setToastOptions] = useState<TToastOptionsWithShow>(initialToastOptions);
+  const [translatedMessage] = useTranslation(toastOptions.message);
+
   const toastMessageRef = useRef(toastOptions.message);
   const closeTimeoutRef = useRef<number>();
 
@@ -66,7 +70,7 @@ const ToastProvider = ({children}: PropsWithChildren) => {
         variants={{[showString]: showAnimation, [hideString]: hideAnimation}}
         animate={toastOptions.show ? showString : hideString}
       >
-        <Toast message={toastOptions.message} />
+        <Toast message={translatedMessage} />
       </motion.div>
       {children}
     </ToastContext.Provider>

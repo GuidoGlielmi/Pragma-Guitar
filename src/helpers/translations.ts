@@ -90,14 +90,14 @@ const translationsEs: Translation = {
 };
 
 const translationsEn: Translation = {
-  devices: 'devices',
+  devices: 'Devices',
   start: 'Start',
   stop: 'Stop',
   noteGenerator: 'Note Generator',
   metronome: 'Netronome',
   tuner: 'Tuner',
-  beat: 'beat',
-  tap: 'tap',
+  beat: 'Beat',
+  tap: 'Tap',
   playNote: 'Play Note',
   freeMode: 'Free Mode',
   inNoteRange: 'In Note Range',
