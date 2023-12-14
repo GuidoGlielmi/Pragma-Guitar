@@ -2,12 +2,12 @@ export class AudioEcosystem extends AudioContext {
   // the audio context is, among other things, a NODES factory.
   // each possible NODE represents a media processor of some kind
 
-  audio?: AudioScheduledSourceNode;
-  analyser: AnalyserNode;
-  gain?: GainNode;
+  private audio?: AudioScheduledSourceNode;
+  private analyser: AnalyserNode;
+  private gain?: GainNode;
 
-  micStream?: MediaStream; // .stop() renders the stream unusable
-  micSource?: MediaStreamAudioSourceNode; // a node is the main required element of an AudioContext
+  private micStream?: MediaStream; // .stop() renders the stream unusable
+  private micSource?: MediaStreamAudioSourceNode; // a node is the main required element of an AudioContext
 
   constructor() {
     super();
@@ -16,16 +16,37 @@ export class AudioEcosystem extends AudioContext {
     this.suspend();
   }
 
+  get areStreamsEmpty() {
+    return !!this.micStream;
+  }
+
+  getAnalyserFloatTimeDomainData(array: Float32Array) {
+    return this.analyser.getFloatTimeDomainData(array);
+  }
+
   async resume() {
     this.stopAudio();
-    super.resume();
+    return super.resume();
   }
 
   async suspend() {
     // a connected node resumes playback when resuming the AudioContext
-    this.pauseMic();
+    this.stopMic();
     this.audio?.disconnect();
     return super.suspend();
+  }
+
+  async getMicInputStream(deviceId?: string) {
+    // different mics can record at the same time by using .addTrack() on the stream obtained through .getUserMedia
+    this.micStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        deviceId,
+        echoCancellation: true,
+        autoGainControl: false,
+        noiseSuppression: true,
+      },
+    });
+    return this.micStream;
   }
 
   async getInputDevices() {
@@ -47,7 +68,7 @@ export class AudioEcosystem extends AudioContext {
     newAudioNode?: AudioScheduledSourceNode,
     lastNode: AudioNode = newAudioNode as AudioNode,
   ) {
-    this.pauseMic();
+    this.stopMic();
     // creating another node without stopping the other can cause it to resume when the context does
     this.stopAudio();
     this.audio = newAudioNode;
@@ -55,29 +76,17 @@ export class AudioEcosystem extends AudioContext {
     newAudioNode?.start();
   }
 
-  async getMicInputStream(deviceId?: string) {
-    // directly return MediaStream if already given permission
-    return navigator.mediaDevices.getUserMedia({
-      audio: {
-        deviceId,
-        echoCancellation: true,
-        autoGainControl: false,
-        noiseSuppression: true,
-      },
-    });
-  }
-
-  async startMic(deviceId?: string) {
+  async startMic() {
+    // stream enabled -> this.micStream?.getAudioTracks()[0].readyState === 'live';
     this.stopAudio();
-    this.micStream = await this.getMicInputStream(deviceId);
-    this.micStream.getAudioTracks()?.forEach(at => (at.enabled = true));
-    this.micSource = this.createMediaStreamSource(this.micStream);
+    this.micSource = this.createMediaStreamSource(this.micStream!);
     this.micSource.connect(this.analyser);
-    return this.micStream.getAudioTracks()[0].getSettings().deviceId;
+    return this.micStream?.getAudioTracks()[0].getSettings().deviceId;
   }
 
-  pauseMic() {
-    this.micStream?.getAudioTracks()?.forEach(at => (at.enabled = false));
+  stopMic() {
+    // the way the browser knows the mic is being used is if there is an active track on the micStream (not stopped)
+    this.micStream?.getAudioTracks().forEach(at => at.stop());
     this.micSource?.disconnect();
     this.micSource = undefined;
   }
