@@ -1,4 +1,4 @@
-import {createElement, lazy, Suspense} from 'react';
+import {createElement, lazy} from 'react';
 import {
   createBrowserRouter,
   createRoutesFromElements,

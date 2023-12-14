@@ -42,7 +42,6 @@ const Note = () => {
     pitchRange: [from, to],
     countdownInitialValue,
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-
   const correctNoteAudio = useInitialBufferLoad('/audio/correct.mp3');
 
   const condition = useCallback(
