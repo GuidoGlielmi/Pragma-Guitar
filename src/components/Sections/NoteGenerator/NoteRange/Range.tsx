@@ -5,21 +5,13 @@ const optionsEntries = Object.entries(options) as [keyof typeof options, TSectio
 
 type TRangeProps = {
   selectedIndex: number;
-  overflowHidden: boolean;
   setOverflowHidden: (v: boolean) => void;
   isNext: boolean;
 };
 
-const Range = ({selectedIndex, overflowHidden, setOverflowHidden, isNext}: TRangeProps) => {
+const Range = ({selectedIndex, setOverflowHidden, isNext}: TRangeProps) => {
   return (
-    <div
-      style={{
-        height: optionsEntries[selectedIndex][1].height,
-        transition: 'height 0.2s ease',
-        overflow: overflowHidden ? 'hidden' : 'visible',
-      }}
-      className='rangeSelectorSection'
-    >
+    <div style={{height: optionsEntries[selectedIndex][1].height}} className='rangeSelectorSection'>
       <AnimatePresence
         initial={false}
         onExitComplete={() => {

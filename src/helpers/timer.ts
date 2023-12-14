@@ -1,4 +1,6 @@
-export function* pollRemainingTime(countdownTimeInSeconds: number) {
+export function* pollRemainingTime(
+  countdownTimeInSeconds: number,
+): Generator<number, number, void> {
   const finalTime = new Date(
     new Date().getTime() + Math.max(countdownTimeInSeconds, 1) * 1000,
   ).getTime();

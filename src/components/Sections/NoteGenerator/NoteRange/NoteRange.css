@@ -41,6 +41,7 @@
   align-items: center;
   position: relative;
   width: 100%;
+  transition: height 0.2s ease;
 }
 
 .rangeOptions {

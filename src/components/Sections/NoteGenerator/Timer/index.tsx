@@ -8,15 +8,17 @@ import {pollRemainingTime} from '@/helpers/timer';
 import S from './Timer.module.css';
 import useTranslation from '@/hooks/useTranslation';
 
+const counterFPS = 50;
+
 const Timer = () => {
   const {started} = useContext(AudioContext) as AudioProps;
   const {generatePitch, countdownInitialValue, setCountdownInitialValue} = useContext(
     NoteGeneratorContext,
   ) as NoteGeneratorProps;
 
-  const [remainingMs, setRemainingMS] = useState(countdownInitialValue * 1000);
-
   const [countdownString] = useTranslation('countdown');
+
+  const [remainingMs, setRemainingMS] = useState(countdownInitialValue * 1000);
 
   useEffect(() => {
     setRemainingMS(countdownInitialValue * 1000);
@@ -29,16 +31,17 @@ const Timer = () => {
 
     const reset = () => {
       setRemainingMS(countdownInitialValue * 1000);
-      remainingCountdownTimeProvider.return();
+      remainingCountdownTimeProvider.return(0);
     };
 
     const intervalId = setInterval(() => {
-      const remainingMs = remainingCountdownTimeProvider.next().value!;
+      const remainingMs = remainingCountdownTimeProvider.next().value;
       if (remainingMs > 0) return setRemainingMS(remainingMs);
+
       reset();
       remainingCountdownTimeProvider = pollRemainingTime(countdownInitialValue);
       generatePitch();
-    }, 50);
+    }, counterFPS);
 
     return () => {
       reset();

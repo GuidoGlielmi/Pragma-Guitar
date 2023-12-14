@@ -27,7 +27,6 @@ const RangeSelector = () => {
       <Options selectedIndex={selectedIndex} setSection={sectionSelectionHandler} />
       <Range
         selectedIndex={selectedIndex}
-        overflowHidden={overflowHidden}
         setOverflowHidden={setOverflowHidden}
         isNext={selectedIndex > prevIndexRef.current}
       />
