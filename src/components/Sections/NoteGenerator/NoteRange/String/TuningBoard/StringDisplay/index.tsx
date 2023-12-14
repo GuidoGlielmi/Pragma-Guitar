@@ -1,13 +1,8 @@
-import {useContext, useRef, useEffect} from 'react';
-import {
-  NoteGeneratorTuningContext,
-  NoteGeneratorTuningProps,
-} from '@/contexts/NoteGeneratorTuningContext';
-import ChevronDown from '@/icons/ChevronDown';
-import NoteWithOctave from '@/components/common/NoteWithOctave';
+import {useRef, useEffect} from 'react';
 import S from './StringDisplay.module.css';
-import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
-import {AnimatePresence, motion} from 'framer-motion';
+import String from './String';
+import Note from './Note';
+import Buttons from './Buttons';
 
 interface StringDisplayProps {
   height: number;
@@ -24,11 +19,6 @@ const StringDisplay = ({
   selected,
   select,
 }: StringDisplayProps) => {
-  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-  const {stringModifiedChecker, incrementPitch, decrementPitch, removeString} = useContext(
-    NoteGeneratorTuningContext,
-  ) as NoteGeneratorTuningProps;
-
   const stringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,12 +28,6 @@ const StringDisplay = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const modifyTuningHandler = (n: number) => {
-    if (n > 0) incrementPitch(index);
-    else decrementPitch(index);
-    if (selected) changePitchRange(ps => [ps[0], ps[1] + n]);
-  };
-
   return (
     <div className={S.stringContainer} ref={stringRef}>
       <div>
@@ -51,70 +35,7 @@ const StringDisplay = ({
         <Note pitch={pitch} />
       </div>
       <String selected={selected} height={height} />
-      <div>
-        <div>
-          <button
-            title='Increase semitone'
-            className='button'
-            style={{
-              transform: 'rotateZ(180deg)',
-              ...(stringModifiedChecker(id) === true && {background: '#ff5151ad'}),
-            }}
-            onClick={() => modifyTuningHandler(1)}
-          >
-            <ChevronDown color='white' />
-          </button>
-          <button
-            title='Decrease semitone'
-            style={{
-              transform: 'translateY(2px)',
-              ...(stringModifiedChecker(id) === false && {background: '#ff5151ad'}),
-            }}
-            className='button'
-            onClick={() => modifyTuningHandler(-1)}
-          >
-            <ChevronDown color='white' />
-          </button>
-        </div>
-        <button title='Remove string' onClick={() => removeString(id)}>
-          X
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const Note = ({pitch}: {pitch: number}) => {
-  return (
-    <AnimatePresence mode='wait'>
-      <motion.div
-        key={pitch}
-        transition={{
-          opacity: {duration: 0.05},
-          color: {duration: 0.3, ease: 'easeIn'},
-        }}
-        initial={{opacity: 0, color: '#b53f3f'}}
-        animate={{
-          opacity: 1,
-          color: '#e2e2e2',
-        }}
-        exit={{opacity: 0}}
-      >
-        <NoteWithOctave pitch={pitch} />
-      </motion.div>
-    </AnimatePresence>
-  );
-};
-
-const String = ({selected, height}: {selected: boolean; height: number}) => {
-  return (
-    <div
-      style={{
-        ...(selected && {filter: 'drop-shadow(0 0 7px #999)'}),
-      }}
-    >
-      <div className={S.stringBall} />
-      <div className={S.string} style={{height}} />
+      <Buttons id={id} selected={selected} index={index} />
     </div>
   );
 };
