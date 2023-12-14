@@ -18,10 +18,11 @@
 .devicesContainer > div {
   width: 100%;
 }
+
 .devicesContainer > div,
 .titleContainer {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 2px;
   position: relative;
@@ -47,23 +48,9 @@
   background: #afafaf;
 }
 
-.titleContainer button svg {
-  width: 9px;
-  height: 9px;
-}
-
-.devicesContainer > div > button {
-  margin-right: 2px;
-}
-
-.devicesContainer > div > button svg {
-  width: 13px;
-  height: 13px;
-}
-
-.floatRight {
-  position: absolute;
-  right: 0;
+.devicesContainer svg {
+  width: 10px;
+  height: 10px;
 }
 
 .devicesContainer > button {

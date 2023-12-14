@@ -1,3 +1,8 @@
+.button {
+  all: unset;
+  cursor: pointer;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -75,10 +80,6 @@ button:focus-visible {
 .button:focus-visible {
   outline: unset;
 }
-.button {
-  all: unset;
-  cursor: pointer;
-}
 
 .introjs-tooltiptext {
   padding-bottom: 5px !important;
@@ -101,6 +102,13 @@ p {
 .painterFont {
   font-family: painter;
 }
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 @font-face {
   font-family: 'painter';
   src: url('../fonts/Painter.ttf') format('truetype');

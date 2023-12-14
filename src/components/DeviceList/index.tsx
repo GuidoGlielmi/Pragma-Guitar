@@ -17,6 +17,7 @@ const DeviceList = () => {
 
   const showDevices = async () => {
     if (devicesShown) return setDevicesShown(false);
+    if (devices.length > 0) return setDevicesShown(true);
     const allowed = await setDevices();
     if (allowed) setDevicesShown(true);
   };
@@ -31,12 +32,12 @@ const DeviceList = () => {
         <div>
           <div className={S.titleContainer}>
             <span>{devicesString}</span>
-            <button onClick={showDevices}>
-              <ChevronDown />
+            <button onClick={setDevices}>
+              <Refresh />
             </button>
           </div>
-          <button onClick={setDevices} className={devicesShown ? S.floatRight : ''}>
-            <Refresh />
+          <button onClick={showDevices}>
+            <ChevronDown />
           </button>
         </div>
         {devicesShown &&
