@@ -3,7 +3,7 @@ import Free from '@/components/Sections/NoteGenerator/NoteRange/Free';
 import StringNoteRange from '@/components/Sections/NoteGenerator/NoteRange/String';
 import NoteGeneratorTuningProvider from '@/contexts/NoteGeneratorTuningContext';
 
-export const options = {
+export const sections = {
   ['freeMode']: {element: <Free />, height: 0},
   ['inNoteRange']: {element: <CustomNoteRange />, height: 60},
   ['inString']: {

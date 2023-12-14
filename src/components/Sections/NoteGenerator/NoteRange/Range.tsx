@@ -1,7 +1,7 @@
 import {AnimatePresence, motion} from 'framer-motion';
-import {options} from '@/constants/noteGeneratorOptions';
+import {sections} from '@/constants/noteGeneratorOptions';
 
-const optionsEntries = Object.entries(options) as [keyof typeof options, TSection][];
+const optionsEntries = Object.entries(sections) as [keyof typeof sections, TSection][];
 
 type TRangeProps = {
   selectedIndex: number;
