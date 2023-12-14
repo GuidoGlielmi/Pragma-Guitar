@@ -16,7 +16,7 @@ const LANGUAGE_STORAGE_NAME = 'lang';
 const LOWER_OCTAVE_INDEX = -1;
 
 const LanguageProvider: FC<PropsWithChildren> = ({children}) => {
-  const [eng, setEng] = useLocalStorage(LANGUAGE_STORAGE_NAME, Language.en);
+  const [eng, setEng] = useLocalStorage(LANGUAGE_STORAGE_NAME, {initialValue: Language.en});
 
   const getNoteWithOctave = (pitch: TPitchToPlay): [string, string] => {
     if (pitch === null) return ['', ''];

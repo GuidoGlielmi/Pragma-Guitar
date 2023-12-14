@@ -45,7 +45,7 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
 
   const [countdownInitialValue, setCountdownInitialValue] = useLocalStorage(
     'countdownInitialValue',
-    DEFAULT_COUNTDOWN_INITIAL_VALUE,
+    {initialValue: DEFAULT_COUNTDOWN_INITIAL_VALUE},
   );
   const [from, to] = pitchRange;
 

@@ -63,10 +63,9 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     },
   );
 
-  const [fretsAmount, setFretsAmount] = useLocalStorage(
-    PERSISTED_FRET_AMOUNT_VARIABLE_NAME,
-    DEFAULT_FRETS_AMOUNT,
-  );
+  const [fretsAmount, setFretsAmount] = useLocalStorage(PERSISTED_FRET_AMOUNT_VARIABLE_NAME, {
+    initialValue: DEFAULT_FRETS_AMOUNT,
+  });
 
   const [selectedStringId, setSelectedStringId] = useState<TPitchToPlay>(null);
 

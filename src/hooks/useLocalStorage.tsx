@@ -3,9 +3,10 @@ import {useState, useEffect} from 'react';
 type TGetter<T, TPersistable> = (t: TPersistable | null) => T;
 type TSetter<T, TPersistable> = (t: T) => TPersistable;
 
-type TAccessors<T, TPersistable> = {
-  getter: TGetter<T, TPersistable>;
-  setter: TSetter<T, TPersistable>;
+type TOptions<T, TPersistable> = {
+  initialValue?: T;
+  getter?: TGetter<T, TPersistable>;
+  setter?: TSetter<T, TPersistable>;
 };
 
 function useLocalStorage<T, TPersistable = any>(
@@ -14,31 +15,17 @@ function useLocalStorage<T, TPersistable = any>(
 
 function useLocalStorage<T, TPersistable = any>(
   storageKey: string,
-  initialValue: T,
+  options: TOptions<T, TPersistable>,
 ): [T, React.Dispatch<React.SetStateAction<T>>];
 
-function useLocalStorage<T, TPersistable = any>(
-  storageKey: string,
-  accessors: TAccessors<T, TPersistable>,
-): [T, React.Dispatch<React.SetStateAction<T>>];
-
-function useLocalStorage<T, TPersistable = any>(
-  storageKey: string,
-  initialValue: T,
-  accessors: TAccessors<T, TPersistable>,
-): [T, React.Dispatch<React.SetStateAction<T>>];
-
-function useLocalStorage<T, TPersistable>(
-  storageKey: string,
-  initialValue?: T,
-  accessors?: TAccessors<T, TPersistable>,
-) {
+function useLocalStorage<T, TPersistable>(storageKey: string, options?: TOptions<T, TPersistable>) {
   const getInitialValue = (): T | undefined => {
     const storedValue: TPersistable | T | null = JSON.parse(localStorage.getItem(storageKey)!);
     // JSON can't directly parse strings, they should begin with quotes
-    return accessors?.getter
-      ? accessors?.getter(storedValue as TPersistable | null)
-      : (storedValue as T | null) ?? initialValue;
+
+    return options?.getter
+      ? options?.getter(storedValue as TPersistable | null)
+      : (storedValue as T | null) ?? options?.initialValue;
   };
   const [state, setState] = useState(() => getInitialValue());
 
@@ -46,7 +33,7 @@ function useLocalStorage<T, TPersistable>(
     if (state !== undefined)
       localStorage.setItem(
         storageKey,
-        JSON.stringify(accessors?.setter ? accessors.setter(state) : state),
+        JSON.stringify(options?.setter ? options.setter(state) : state),
       );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
@@ -54,7 +41,7 @@ function useLocalStorage<T, TPersistable>(
   useEffect(() => {
     setState(ps => {
       return ps !== undefined &&
-        JSON.stringify(accessors?.setter ? accessors.setter(ps) : ps) !==
+        JSON.stringify(options?.setter ? options.setter(ps) : ps) !==
           localStorage.getItem(storageKey)
         ? getInitialValue()
         : ps;
