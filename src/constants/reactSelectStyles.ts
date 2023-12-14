@@ -28,9 +28,10 @@ export const customStylesMaxContent = {
   option: (provided: any, state: any) => {
     return {
       ...provided,
-      color: '#464646',
+      color: state.isSelected ? 'white' : '#464646',
       cursor: 'pointer',
       background: state.isSelected ? '#646cff' : state.isFocused ? '#d7d7d7' : '#f7f7f7',
+      ...(state.isSelected && {textShadow: '0 0 4px #777'}),
     };
   },
 };

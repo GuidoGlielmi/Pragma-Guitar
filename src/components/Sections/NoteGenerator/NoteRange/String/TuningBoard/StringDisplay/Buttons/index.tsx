@@ -6,23 +6,18 @@ import {
 import ChevronDown from '@/icons/ChevronDown';
 import {useContext} from 'react';
 
-interface StringDisplayProps {
-  id: number;
-  index: number;
-  selected: boolean;
-}
-
-const Buttons = ({id, index, selected}: StringDisplayProps) => {
+const Buttons = ({id}: {id: number}) => {
   const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-  const {stringModifiedChecker, incrementPitch, decrementPitch, removeString} = useContext(
-    NoteGeneratorTuningContext,
-  ) as NoteGeneratorTuningProps;
+  const {selectedStringId, stringModifiedChecker, incrementPitch, decrementPitch, removeString} =
+    useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   const modifyTuningHandler = (n: number) => {
-    if (n > 0) incrementPitch(index);
-    else decrementPitch(index);
+    if (n > 0) incrementPitch(id);
+    else decrementPitch(id);
     if (selected) changePitchRange(ps => [ps[0], ps[1] + n]);
   };
+
+  const selected = id === selectedStringId;
 
   return (
     <div>

@@ -94,27 +94,29 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     setTuning(ps => convertTuningToState(getAllTunings().find(t => t.label === ps.label)!));
   };
 
-  const modifyPitches = (pitches: StringStateValue[], halfStepsAmount: number, i?: number) => {
-    let newPitches = JSON.parse(JSON.stringify(pitches)) as StringStateValue[];
-    if (i === undefined) {
-      newPitches = newPitches.map(p => ({
+  const modifyPitches = (pitches: StringStateValue[], halfStepsAmount: number, id?: number) => {
+    let newStrings = JSON.parse(JSON.stringify(pitches)) as StringStateValue[];
+    if (id === undefined) {
+      newStrings = newStrings.map(p => ({
         ...p,
         pitch: rangeLimiter(p.pitch + halfStepsAmount, ...pitchRangeLimits),
       }));
-    } else
-      newPitches[i].pitch = rangeLimiter(
-        newPitches[i].pitch + halfStepsAmount,
+    } else {
+      const foundIndex = newStrings.findIndex(s => s.id === id);
+      newStrings[foundIndex].pitch = rangeLimiter(
+        newStrings[foundIndex].pitch + halfStepsAmount,
         ...pitchRangeLimits,
       );
-    return newPitches;
+    }
+    return newStrings;
   };
 
-  const incrementPitch = (i?: number) => {
-    setTuning(ps => ({...ps, strings: modifyPitches(ps.strings, 1, i)}));
+  const incrementPitch = (id?: number) => {
+    setTuning(ps => ({...ps, strings: modifyPitches(ps.strings, 1, id)}));
   };
 
-  const decrementPitch = (i?: number) => {
-    setTuning(ps => ({...ps, strings: modifyPitches(ps.strings, -1, i)}));
+  const decrementPitch = (id?: number) => {
+    setTuning(ps => ({...ps, strings: modifyPitches(ps.strings, -1, id)}));
   };
 
   const addString = (higher: boolean) => {

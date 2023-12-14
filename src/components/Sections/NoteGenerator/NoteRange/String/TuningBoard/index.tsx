@@ -9,23 +9,22 @@ import StringGroupModifier from './StringGroupModifier';
 import S from './TuningBoard.module.css';
 
 const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
-  const {tuning, selectedStringId, setSelectedStringId} = useContext(
-    NoteGeneratorTuningContext,
-  ) as NoteGeneratorTuningProps;
+  const {tuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   return (
     <div ref={boardRef} className={S.tuningBoard}>
       <div>
         <div>
           <AnimatePresence initial={false}>
-            {[...tuning.strings].reverse().map((v, inverseIndex, arr) => {
-              const index = arr.length - 1 - inverseIndex;
+            {tuning.strings.map((_s, i, arr) => {
+              const inverseI = arr.length - 1 - i;
+              const inverseS = arr[inverseI];
               return (
                 <motion.div
-                  id={`${v.id}`}
-                  key={v.id}
+                  id={`${inverseS.id}`}
+                  key={inverseS.id}
                   style={{scrollMarginTop: 50}}
-                  layoutId={`${v.id}`}
+                  layoutId={`${inverseS.id}`}
                   initial={{opacity: 0, background: '#ffffff55'}}
                   animate={{
                     opacity: [0, 0, 0, 1],
@@ -34,13 +33,7 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
                   exit={{opacity: 0, x: '100%'}}
                   transition={{duration: 0.5, ease: [0, 1, 1, 1]}}
                 >
-                  <StringDisplay
-                    pitch={v}
-                    height={inverseIndex + 1}
-                    index={index}
-                    selected={selectedStringId === v.id}
-                    select={setSelectedStringId}
-                  />
+                  <StringDisplay string={inverseS} height={i + 1} />
                 </motion.div>
               );
             })}
