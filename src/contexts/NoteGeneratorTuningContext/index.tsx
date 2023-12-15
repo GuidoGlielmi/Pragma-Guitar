@@ -14,7 +14,7 @@ import {
   createString,
   createTuning,
 } from '../../constants/notes';
-import {rangeLimiter, setterRangeLimiter} from '../../helpers/valueRange';
+import {rangeLimiter, addToPrevValueRangeLimiterStateAction} from '../../helpers/valueRange';
 import useLocalStorage from '../../hooks/useLocalStorage';
 import {NoteGeneratorContext, NoteGeneratorProps} from '../NodeGeneratorContext';
 import {getHighestPitch, getLowestPitch} from '../../helpers/tuning';
@@ -80,8 +80,10 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     },
   );
 
-  const changeFretsAmount = (n: number) => {
-    setFretsAmount(setterRangeLimiter(n, {min: 0, max: MAX_FRETS_AMOUNT}));
+  const changeFretsAmount = (amountToAdd: number) => {
+    setFretsAmount(
+      addToPrevValueRangeLimiterStateAction(amountToAdd, {min: 0, max: MAX_FRETS_AMOUNT}),
+    );
   };
 
   const incrementFretsAmount = () => changeFretsAmount(1);
@@ -162,7 +164,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     if (!selectedString) {
       changePitchRange([getLowestPitch(tuning), getHighestPitch(tuning) + fretsAmount]);
       setSelectedStringId(null);
-    } else changePitchRange([getLowestPitch(tuning), getHighestPitch(tuning) + fretsAmount]);
+    } else changePitchRange([selectedString.pitch, selectedString.pitch + fretsAmount]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tuning, fretsAmount, selectedStringId]);
 

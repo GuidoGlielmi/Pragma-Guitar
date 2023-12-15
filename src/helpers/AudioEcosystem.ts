@@ -26,7 +26,7 @@ export class AudioEcosystem extends AudioContext {
 
   // -------------------------
 
-  private get micStopped() {
+  get #micStopped() {
     return !this.micStream || this.micStream.getAudioTracks()[0].readyState === 'ended';
   }
 
@@ -45,7 +45,7 @@ export class AudioEcosystem extends AudioContext {
 
   async startMic() {
     // functions shouldn't turn off anything but themselves!
-    if (this.micStopped) await this.getMicInputStream();
+    if (this.#micStopped) await this.getMicInputStream();
     this.micSource = this.createMediaStreamSource(this.micStream!);
     this.micSource.connect(this.analyser);
   }
@@ -98,31 +98,31 @@ export class AudioEcosystem extends AudioContext {
 
   // -------------------------
 
-  private buildOscillator(oscFrecuency: number) {
+  #buildOscillator(oscFrecuency: number) {
     const oscillatorNode = this.createOscillator();
     oscillatorNode.frequency.value = oscFrecuency;
     return oscillatorNode;
   }
 
-  private increaseOscVolume(oscNode: AudioScheduledSourceNode) {
+  #increaseOscVolume(oscNode: AudioScheduledSourceNode) {
     this.gain.gain.setValueAtTime(0, this.currentTime);
     this.gain.gain.linearRampToValueAtTime(1, this.#fadeStopTime);
-    oscNode?.connect(this.gain);
+    oscNode.connect(this.gain);
     this.gain.connect(this.destination);
   }
 
-  private decreaseOscVolume() {
+  #decreaseOscVolume() {
     this.gain.gain.setValueAtTime(this.gain.gain.value, this.currentTime);
     this.gain.gain.linearRampToValueAtTime(0.00001, this.#fadeStopTime);
   }
 
   setOscillatorFrecuency(frecuency: number) {
     if (frecuency) {
-      const osc = this.buildOscillator(frecuency);
-      this.increaseOscVolume(osc);
+      const osc = this.#buildOscillator(frecuency);
+      this.#increaseOscVolume(osc);
       this.startAudio(osc);
     } else {
-      this.decreaseOscVolume();
+      this.#decreaseOscVolume();
       this.stopAudio();
     }
   }
@@ -141,8 +141,8 @@ export class AudioEcosystem extends AudioContext {
     return audioNode;
   }
 
-  private stopBuffer() {
-    const gainNode = this.createFadeOutGain();
+  #stopBuffer() {
+    const gainNode = this.#createFadeOutGain();
     this.audio?.connect(gainNode);
     this.audio?.disconnect(this.destination);
     gainNode.connect(this.destination);
@@ -150,7 +150,7 @@ export class AudioEcosystem extends AudioContext {
   }
 
   playBuffer(buffer: AudioBuffer, overlapping: boolean = true) {
-    if (!overlapping) this.stopBuffer();
+    if (!overlapping) this.#stopBuffer();
     const audioNode = this.#createBufferSourceNode(buffer);
     this.audio = audioNode;
     audioNode.connect(this.destination);
@@ -159,7 +159,7 @@ export class AudioEcosystem extends AudioContext {
 
   // ------------------------
 
-  private createFadeOutGain() {
+  #createFadeOutGain() {
     const gainNode = this.createGain();
     gainNode.gain.setValueAtTime(gainNode.gain.value, this.currentTime);
     gainNode.gain.linearRampToValueAtTime(0.00001, this.#fadeStopTime);
