@@ -2,6 +2,7 @@
 import {useState, useEffect, useContext, useRef} from 'react';
 import {AudioContext, AudioProps, audioEcosystem} from '../contexts/AudioContext';
 import {setPreciseInterval} from '../helpers/timer';
+import useInitialBufferLoad from './useInitialBufferLoad';
 
 interface MetronomeProps {
   bpm: number;
@@ -9,18 +10,13 @@ interface MetronomeProps {
   initialDenominator?: number;
 }
 
-let firstClickAudioBuffer: AudioBuffer;
-let clickAudioBuffer: AudioBuffer;
-
 const defaultSubdivision = 2 ** 2;
-
-(async () => {
-  firstClickAudioBuffer = await audioEcosystem.loadAudioFile('/audio/metronome_oct_up.mp3');
-  clickAudioBuffer = await audioEcosystem.loadAudioFile('/audio/metronome.mp3');
-})();
 
 const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: MetronomeProps) => {
   const {started} = useContext(AudioContext) as AudioProps;
+
+  const firstClickAudioBuffer = useInitialBufferLoad('/audio/metronome_oct_up.mp3');
+  const clickAudioBuffer = useInitialBufferLoad('/audio/metronome.mp3');
 
   const [position, setPosition] = useState(-1);
   const [bar, setBar] = useState<[number, number]>([initialNumerator, initialDenominator]);
@@ -29,7 +25,9 @@ const useMetronome = ({bpm, initialNumerator = 4, initialDenominator = 4}: Metro
     const task = () => {
       setPosition(ps => {
         const nextShouldBeFirst = ps === numerator - 1 || ps === -1;
-        audioEcosystem.playBuffer(nextShouldBeFirst ? firstClickAudioBuffer : clickAudioBuffer);
+        audioEcosystem.playBuffer(
+          nextShouldBeFirst ? firstClickAudioBuffer.current! : clickAudioBuffer.current!,
+        );
         return nextShouldBeFirst ? 0 : ps + 1;
       });
     };
