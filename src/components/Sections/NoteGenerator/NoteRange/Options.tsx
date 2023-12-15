@@ -2,7 +2,7 @@ import {FC} from 'react';
 import './NoteRange.css';
 import useTranslation from '@/hooks/useTranslation';
 import NoteRangeToPlay from '../common/NoteRangeToPlay';
-import {sections} from '@/constants/noteGeneratorOptions';
+import {sections} from '@/constants/noteRangeOptions';
 
 type RangeOptionsProps = {
   selectedIndex: number;

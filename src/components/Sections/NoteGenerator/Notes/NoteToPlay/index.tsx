@@ -1,4 +1,4 @@
-import {AudioContext, AudioProps} from '@/contexts/AudioContext';
+import {AudioContext, AudioProps, audioEcosystem} from '@/contexts/AudioContext';
 import {getFrecuencyFromPitch, getMiddleOctavePitch} from '@/helpers/pitch';
 import {useContext} from 'react';
 import './NoteToPlay.css';
@@ -18,20 +18,25 @@ const NoteToPlay = () => {
 
   const anyOctave = from === null && to === null;
 
+  const startOscillatorHandler = () => {
+    const pitch = anyOctave ? getMiddleOctavePitch(pitchToPlay || 0) : pitchToPlay || 0;
+    audioEcosystem.pauseMic();
+    startOscillator(getFrecuencyFromPitch(pitch));
+  };
+
+  const stopOscillatorHandler = () => {
+    stopOscillator();
+    audioEcosystem.startMic();
+  };
+
   return (
     <button
       title='Press to listen'
       className='noteToPlay button'
-      onMouseDown={() => {
-        const pitch = anyOctave ? getMiddleOctavePitch(pitchToPlay || 0) : pitchToPlay || 0;
-        startOscillator(getFrecuencyFromPitch(pitch));
-      }}
-      onTouchStart={() => {
-        const pitch = anyOctave ? getMiddleOctavePitch(pitchToPlay || 0) : pitchToPlay || 0;
-        startOscillator(getFrecuencyFromPitch(pitch));
-      }}
-      onMouseUp={() => stopOscillator()}
-      onTouchEnd={() => stopOscillator()}
+      onMouseDown={startOscillatorHandler}
+      onTouchStart={startOscillatorHandler}
+      onMouseUp={stopOscillatorHandler}
+      onTouchEnd={stopOscillatorHandler}
     >
       <span>Play</span>
       <p style={{...(!anyOctave && {transform: 'translateX(-0.15em)'})}}>

@@ -1,5 +1,5 @@
 import {AnimatePresence, motion} from 'framer-motion';
-import {sections} from '@/constants/noteGeneratorOptions';
+import {sections} from '@/constants/noteRangeOptions';
 
 const optionsEntries = Object.entries(sections) as [keyof typeof sections, TSection][];
 
