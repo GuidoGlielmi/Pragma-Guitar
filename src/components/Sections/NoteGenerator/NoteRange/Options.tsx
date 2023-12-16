@@ -30,7 +30,7 @@ const Options: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
           </button>
         ))}
       </div>
-      <NoteRangeToPlay canWheel={optionsEntries[selectedIndex][0] === 'inNoteRange'} />
+      <NoteRangeToPlay canScroll={optionsEntries[selectedIndex][0] === 'inNoteRange'} />
     </>
   );
 };
