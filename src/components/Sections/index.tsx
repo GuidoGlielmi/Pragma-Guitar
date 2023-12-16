@@ -6,7 +6,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 
 const Sections = () => {
   return (
-    <Suspense fallback={<Skeleton width='min(40vw, 400px)' height='min(50vh, 500px)' />}>
+    <Suspense fallback={<Skeleton width='min(95vw, 400px)' height='min(50vh, 500px)' />}>
       <LazyMotion features={domAnimation}>
         <m.div
           key={location.pathname}
