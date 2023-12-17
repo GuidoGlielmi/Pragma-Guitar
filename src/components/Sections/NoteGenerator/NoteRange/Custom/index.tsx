@@ -4,18 +4,26 @@ import useTranslation from '@/hooks/useTranslation';
 import NoteWithOctaveSelect from '@/components/common/ReactSelect/NoteWithOctaveSelect';
 import {MAX_PITCH_INDEX} from '@/constants/notes';
 
+const CUSTOM_PITCH_RANGE_STORAGE_KEY = 'customPitchRange';
+
 const CustomNoteRange = () => {
   const {
     changePitchRange,
     pitchRange: [from, to],
+    pitchRange,
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   const [fromString, toString] = useTranslation(['from', 'to']);
 
   useEffect(() => {
-    changePitchRange([0, MAX_PITCH_INDEX]);
+    const customPitchRange = JSON.parse(localStorage.getItem(CUSTOM_PITCH_RANGE_STORAGE_KEY)!);
+    if (customPitchRange) changePitchRange(customPitchRange);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem(CUSTOM_PITCH_RANGE_STORAGE_KEY, JSON.stringify(pitchRange));
+  }, [pitchRange]);
 
   return (
     <div style={{display: 'flex', gap: 10, justifyContent: 'center'}}>
