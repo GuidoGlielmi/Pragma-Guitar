@@ -62,7 +62,7 @@
   border: 3px solid #82c9c3;
   border-radius: 5px;
   overflow: hidden;
-  background: #9ba0ff40;
+  background: linear-gradient(to top, #9ba0ff40 25%, #9ba0ff40 20%, #9ba0ff50, #9ba0ff40 80%);
   box-shadow: #111 0 0 8px inset;
 }
 
@@ -73,6 +73,11 @@
   position: relative;
   width: 45px;
   height: 100%;
+  cursor: grab;
+  user-select: none;
+}
+.rangeToPlayContainer > div:active {
+  cursor: grabbing;
 }
 
 .rangeToPlayContainer > div > * {

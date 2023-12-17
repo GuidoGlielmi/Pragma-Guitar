@@ -8,6 +8,7 @@ const Free = () => {
     changePitchRange([null, null]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return null;
 };
 
