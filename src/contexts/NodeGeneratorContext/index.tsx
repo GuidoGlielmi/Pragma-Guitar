@@ -9,12 +9,7 @@ import {
   FC,
   PropsWithChildren,
 } from 'react';
-import {
-  MAX_COUNTDOWN_VALUE,
-  MAX_PITCH_INDEX,
-  MIN_COUNTDOWN_VALUE,
-  pitchRangeLimits,
-} from '../../constants/notes';
+import {MAX_COUNTDOWN_VALUE, MAX_PITCH_INDEX, MIN_COUNTDOWN_VALUE} from '../../constants/notes';
 import {rangeLimiter} from '../../helpers/valueRange';
 import {AudioContext, AudioProps} from '../AudioContext';
 import {generateRandomIndex} from '../../helpers/tuning';
@@ -69,10 +64,11 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = ({children}) => {
       const newRange: TPitchRange =
         e instanceof Function ? e([ps[0] ?? 0, ps[1] ?? MAX_PITCH_INDEX]) : e;
       if (newRange[0] === null || newRange[1] === null) return [null, null];
+      if (newRange[0] > newRange[1]) return ps;
       if (newRange[0] === ps[0] && newRange[1] === ps[1]) return ps;
       return [
-        rangeLimiter(newRange[0], ...pitchRangeLimits),
-        rangeLimiter(newRange[1], ...pitchRangeLimits),
+        rangeLimiter(newRange[0], 0, newRange[1]),
+        rangeLimiter(newRange[1], newRange[0], MAX_PITCH_INDEX),
       ];
     });
   };
