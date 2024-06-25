@@ -64,7 +64,7 @@ const NoteGenerator = () => {
   }, [condition]);
 
   useEffect(() => {
-    if (correct && correctNoteAudio.current) audioEcosystem.playBuffer(correctNoteAudio.current);
+    if (correct && !!correctNoteAudio) audioEcosystem.playBuffer(correctNoteAudio);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [correct]);
 

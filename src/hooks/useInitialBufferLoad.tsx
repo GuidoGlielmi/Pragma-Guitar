@@ -1,15 +1,15 @@
-import {useRef, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {audioEcosystem} from '../contexts/AudioContext';
 
 const useInitialBufferLoad = (path: string) => {
-  const bufferRef = useRef<AudioBuffer>();
+  const [buffer, setBuffer] = useState<AudioBuffer>();
 
   useEffect(() => {
-    audioEcosystem.loadAudioFile(path).then(af => (bufferRef.current = af));
+    audioEcosystem.loadAudioFile(path).then(af => setBuffer(af));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return bufferRef;
+  return buffer;
 };
 
 export default useInitialBufferLoad;

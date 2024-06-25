@@ -1,7 +1,7 @@
 import {TLanguages} from '../helpers/translations';
 
-export const minBPS = 10;
-export const maxBPS = 300;
+export const minBPM = 10;
+export const maxBPM = 300;
 
 export const convertTuningToState = (t: ITuning): ITuningState => ({
   ...t,

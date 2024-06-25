@@ -20,9 +20,10 @@ const useNumberInput = ({
 
   const prevY = useRef(0);
 
-  const changeHandler = (value: number) => {
+  const changeHandler = (value: React.SetStateAction<number>) => {
     setValue(ps => {
-      const newValue = ~~(value === 0 ? value : Math.max(min, Math.min(value, max)) || ps);
+      const oldValue = value instanceof Function ? value(ps) : value;
+      const newValue = ~~(oldValue === 0 ? oldValue : Math.max(min, Math.min(oldValue, max)) || ps);
       return newValue;
     });
   };
@@ -80,7 +81,11 @@ const useNumberInput = ({
     input: (
       <input
         {...htmlProps}
-        style={{...style, cursor: dragging ? 'grabbing' : 'grab', userSelect: 'none'}}
+        style={{
+          ...style,
+          cursor: dragging ? 'grabbing' : 'grab',
+          userSelect: 'none',
+        }}
         value={value || ''}
         onBlur={() => setValue(ps => ps || min)}
         onChange={e => onChange.current(+e.target.value)}

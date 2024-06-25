@@ -9,7 +9,7 @@ export const routes = [
   {
     title: 'metronome',
     path: '/metronome',
-    element: () => import('../components/Sections/Metronome'),
+    element: () => import('../contexts/MetronomeContext'),
   },
   {title: 'tuner', path: '/tuner', element: () => import('../components/Sections/Tuner')},
 ] as {

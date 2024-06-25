@@ -84,3 +84,22 @@ export function controlledPollTask<T extends any[]>(
     },
   ];
 }
+
+export function setPreciseTimeout(
+  task: () => void,
+  timeout: number = 0,
+  fromTimestamp = performance.now(),
+) {
+  if (~~timeout <= 9) throw new Error('msInterval should be more than 10ms');
+
+  const targetTime = fromTimestamp + timeout;
+
+  const interval = setInterval(poll);
+  function poll() {
+    if (performance.now() < targetTime - HOLD_TIME) return;
+    clearInterval(interval);
+    while (performance.now() < targetTime);
+    task();
+  }
+  return interval;
+}

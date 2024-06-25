@@ -9,9 +9,12 @@
 
 .container h2 {
   display: flex;
-  align-items: center;
   gap: 15px;
   height: 30px;
+}
+
+.container h2 span {
+  align-self: center;
 }
 
 .container button,
@@ -20,7 +23,7 @@
   background-color: #cccccc;
   color: #1a1a1a;
   font-weight: 500;
-  height: 100%;
+  height: auto;
   padding: 0 7px !important;
 }
 

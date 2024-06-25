@@ -53,6 +53,11 @@ export interface Translation extends NotificationTranslation {
   save: string;
   cancel: string;
   microphoneAccess: string;
+  repeatMetronomePattern: string;
+  by: string;
+  every: string;
+  bars: string;
+  increasingTempo: string;
 }
 
 const translationsEs: Translation = {
@@ -86,6 +91,11 @@ const translationsEs: Translation = {
   save: 'Guardar',
   cancel: 'Cancelar',
   microphoneAccess: 'Se requiere permiso de micrófono',
+  repeatMetronomePattern: 'Repetir patrón al llegar a',
+  by: 'Por',
+  every: 'Cada',
+  bars: 'compases',
+  increasingTempo: 'Incrementar tempo',
   ...notificationTranslationEs,
 };
 
@@ -120,6 +130,11 @@ const translationsEn: Translation = {
   microphoneAccess: 'Microphone access required',
   save: 'Save',
   cancel: 'Cancel',
+  repeatMetronomePattern: 'Repeat pattern when reaching',
+  by: 'By',
+  every: 'Every',
+  bars: 'bars',
+  increasingTempo: 'Increasing tempo',
   ...notificationTranslationEn,
 };
 
