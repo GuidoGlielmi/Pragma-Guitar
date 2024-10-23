@@ -1,4 +1,4 @@
-const TickButton = ({color = '#ccc'}: {color?: string}) => {
+const TickButtonIcon = ({color = '#ccc'}: {color?: string}) => {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
@@ -18,4 +18,4 @@ const TickButton = ({color = '#ccc'}: {color?: string}) => {
   );
 };
 
-export default TickButton;
+export default TickButtonIcon;

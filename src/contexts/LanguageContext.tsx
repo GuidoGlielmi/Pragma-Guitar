@@ -1,7 +1,7 @@
-import {createContext, useMemo, FC, PropsWithChildren, Dispatch, SetStateAction} from 'react';
-import useLocalStorage from '../../hooks/useLocalStorage';
-import {Notes, OCTAVE_NOTES_AMOUNT, notes} from '../../constants/notes';
-import {Language} from '../../helpers/translations';
+import {Notes, OCTAVE_NOTES_AMOUNT, notes} from '@/constants';
+import {Dispatch, FC, PropsWithChildren, SetStateAction, createContext, useMemo} from 'react';
+import {Language} from '../helpers/translations';
+import useLocalStorageWithValue from '../hooks/useLocalStorageWithValue';
 
 export interface LanguageProps {
   setEng: Dispatch<SetStateAction<Language>>;
@@ -16,7 +16,9 @@ const LANGUAGE_STORAGE_NAME = 'lang';
 const LOWER_OCTAVE_INDEX = -1;
 
 const LanguageProvider: FC<PropsWithChildren> = ({children}) => {
-  const [eng, setEng] = useLocalStorage(LANGUAGE_STORAGE_NAME, {initialValue: Language.en});
+  const [eng, setEng] = useLocalStorageWithValue(LANGUAGE_STORAGE_NAME, {
+    initialValue: Language.en,
+  });
 
   const getNoteWithOctave = (pitch: TPitchToPlay): [string, string] => {
     if (pitch === null) return ['', ''];

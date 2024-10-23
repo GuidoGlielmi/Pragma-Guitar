@@ -1,8 +1,8 @@
-import {PropsWithChildren, useState, useEffect, useContext} from 'react';
-import QuestionMark from '../../icons/QuestionMark';
 import {Steps} from 'intro.js-react';
-import S from './OnboardingWrapper.module.css';
+import {PropsWithChildren, useContext, useEffect, useState} from 'react';
 import {LanguageContext, LanguageProps} from '../../contexts/LanguageContext';
+import QuestionMark from '../../icons/QuestionMark';
+import S from './OnboardingWrapper.module.css';
 
 type OnboardingWrapperProps = {
   steps: StepWithActionAndTranslation[];

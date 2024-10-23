@@ -1,4 +1,3 @@
-import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
@@ -6,18 +5,10 @@ import {
 import ChevronDown from '@/icons/ChevronDown';
 import {useContext} from 'react';
 
-const Buttons = ({id}: {id: number}) => {
-  const {changePitchRange} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
-  const {selectedStringId, stringModifiedChecker, incrementPitch, decrementPitch, removeString} =
-    useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
-
-  const modifyTuningHandler = (n: number) => {
-    if (n > 0) incrementPitch(id);
-    else decrementPitch(id);
-    if (selected) changePitchRange(ps => [ps[0], ps[1] + n]);
-  };
-
-  const selected = id === selectedStringId;
+const StringButtons = ({id}: {id: number}) => {
+  const {stringModifiedChecker, modifyPitch, removeString} = useContext(
+    NoteGeneratorTuningContext,
+  ) as NoteGeneratorTuningProps;
 
   return (
     <div>
@@ -29,7 +20,7 @@ const Buttons = ({id}: {id: number}) => {
             transform: 'rotateZ(180deg)',
             ...(stringModifiedChecker(id) === true && {background: '#ff5151ad'}),
           }}
-          onClick={() => modifyTuningHandler(1)}
+          onClick={() => modifyPitch(true, id)}
         >
           <ChevronDown color='white' />
         </button>
@@ -40,7 +31,7 @@ const Buttons = ({id}: {id: number}) => {
             ...(stringModifiedChecker(id) === false && {background: '#ff5151ad'}),
           }}
           className='button'
-          onClick={() => modifyTuningHandler(-1)}
+          onClick={() => modifyPitch(false, id)}
         >
           <ChevronDown color='white' />
         </button>
@@ -52,4 +43,4 @@ const Buttons = ({id}: {id: number}) => {
   );
 };
 
-export default Buttons;
+export default StringButtons;

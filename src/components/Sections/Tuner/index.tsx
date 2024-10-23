@@ -1,10 +1,11 @@
-import usePitch from '../../../hooks/usePitch';
-import './Tuner.css';
+import usePitchWithValue from '@/hooks/usePitchWithValue';
 import Board from './Board';
-import {centsOffFromPitch, closestPitchFromFrequency} from '../../../libs/Helpers';
+import './Tuner.css';
+import {closestPitchFromFrequency, centsOffFromPitch} from '@/helpers/pitch';
 
 const Tuner = () => {
-  const frecuency = usePitch();
+  const frecuency = usePitchWithValue();
+
   const pitch = closestPitchFromFrequency(frecuency);
   const detune = centsOffFromPitch(frecuency, pitch);
   return (

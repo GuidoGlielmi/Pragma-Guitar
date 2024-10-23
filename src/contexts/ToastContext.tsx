@@ -1,8 +1,8 @@
-import {createContext, useMemo, useState, PropsWithChildren, useRef} from 'react';
-import Toast from '../../components/common/Toast';
-import {motion} from 'framer-motion';
 import {Translation} from '@/helpers/translations';
 import useTranslation from '@/hooks/useTranslation';
+import {motion} from 'framer-motion';
+import {PropsWithChildren, createContext, useMemo, useRef, useState} from 'react';
+import Toast from '../components/common/Toast';
 
 type TToastOptions = {message: keyof Translation | ''; duration?: number};
 type TToastOptionsWithShow = TToastOptions & {show: boolean};

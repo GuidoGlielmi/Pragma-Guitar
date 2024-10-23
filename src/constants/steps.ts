@@ -1,4 +1,4 @@
-import {MAX_COUNTDOWN_VALUE} from './notes';
+import {MAX_COUNTDOWN_VALUE} from '.';
 
 export const noteGenerator = [
   {

@@ -1,18 +1,21 @@
 .container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 5px;
+  gap: 7px;
   position: fixed;
   top: 0;
   left: 0;
+  height: 35px;
   margin: 20px;
   color: #222;
   border-radius: 5px;
   z-index: 123123;
 }
+
 .container button {
   background-color: #ccc;
   color: #222;
-  padding: 3px 7px;
+  padding: 3px 9px;
+  font-weight: 600;
+  text-shadow: 1px 1px 1px #aaa;
 }

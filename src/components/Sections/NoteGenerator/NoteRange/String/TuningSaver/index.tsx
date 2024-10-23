@@ -1,13 +1,13 @@
-import {AnimatePresence, motion} from 'framer-motion';
-import Cancel from '@/icons/Cancel';
-import TickButton from '@/icons/TickButton';
-import S from './TuningSaver.module.css';
-import {useState, useContext, useEffect} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
 } from '@/contexts/NoteGeneratorTuningContext';
 import useTranslation from '@/hooks/useTranslation';
+import CancelIcon from '@/icons/Cancel';
+import TickButtonIcon from '@/icons/TickButton';
+import {AnimatePresence, motion} from 'framer-motion';
+import {useContext, useEffect, useState} from 'react';
+import S from './TuningSaver.module.css';
 
 const TuningSaver = () => {
   const {saveTuning, tuning} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
@@ -79,10 +79,10 @@ const TuningSaver = () => {
               </p>
             )}
             <button title={saveString} disabled={!tuningToSaveName} onClick={saveTuningHandler}>
-              <TickButton />
+              <TickButtonIcon />
             </button>
             <button title={cancelString} onClick={cancelSave}>
-              <Cancel />
+              <CancelIcon />
             </button>
           </>
         )}

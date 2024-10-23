@@ -1,7 +1,7 @@
 .navBar {
   display: flex;
-  margin: 10vh auto 0;
-  width: max(300px, 40vw);
+  margin: 5vh auto 0;
+  width: min(100%, 400px);
   max-width: 95vw;
 }
 .navBar > a {

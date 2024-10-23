@@ -1,7 +1,7 @@
 import {useContext} from 'react';
-import S from './Language.module.css';
 import {LanguageContext, LanguageProps} from '../../contexts/LanguageContext';
 import {Language} from '../../helpers/translations';
+import S from './Language.module.css';
 
 const Languages = () => {
   const {setEng} = useContext(LanguageContext) as LanguageProps;

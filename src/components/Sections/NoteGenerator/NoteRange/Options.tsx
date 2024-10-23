@@ -1,25 +1,24 @@
-import {FC} from 'react';
-import './NoteRange.css';
+import {NoteGeneratorTranslation} from '@/helpers/translations';
 import useTranslation from '@/hooks/useTranslation';
+import {FC} from 'react';
 import NoteRangeToPlay from '../common/NoteRangeToPlay';
-import {sections} from '@/constants/noteRangeOptions';
+import './NoteRange.css';
 
 type RangeOptionsProps = {
   selectedIndex: number;
   setSection: (i: number) => void;
+  sections: (keyof NoteGeneratorTranslation)[];
 };
 
-const optionsEntries = Object.entries(sections) as [keyof typeof sections, TSection][];
-
-const Options: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
-  const rangeOptionsTitles = useTranslation(optionsEntries.map(([k]) => k));
+const Options: FC<RangeOptionsProps> = ({selectedIndex, setSection, sections}) => {
+  const rangeOptionsTitles = useTranslation(sections);
 
   return (
     <>
       <div className='rangeOptions'>
-        {optionsEntries.map(([title], i) => (
+        {sections.map((title, i) => (
           <button
-            id={title.replaceAll(/ /g, '')}
+            id={title}
             key={title}
             style={{
               ...(selectedIndex === i && {borderBottom: '1px solid #646cff', color: 'white'}),
@@ -30,7 +29,7 @@ const Options: FC<RangeOptionsProps> = ({selectedIndex, setSection}) => {
           </button>
         ))}
       </div>
-      <NoteRangeToPlay canScroll={optionsEntries[selectedIndex][0] === 'inNoteRange'} />
+      <NoteRangeToPlay canScroll={sections[selectedIndex] === 'inNoteRange'} />
     </>
   );
 };

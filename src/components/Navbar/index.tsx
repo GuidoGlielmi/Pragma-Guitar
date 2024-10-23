@@ -1,6 +1,6 @@
 import {Link, useLocation} from 'react-router-dom';
-import {routes} from '../../constants/routes';
 import useTranslation from '../../hooks/useTranslation';
+import {routes} from '../../routes';
 import S from './NavBar.module.css';
 
 const NavBar = () => {

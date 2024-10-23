@@ -1,24 +1,25 @@
+import {Analytics} from '@vercel/analytics/react';
+import 'intro.js/introjs.css';
 import {createElement, lazy} from 'react';
+import ReactDOM from 'react-dom/client';
+import {SkeletonTheme} from 'react-loading-skeleton';
 import {
-  createBrowserRouter,
-  createRoutesFromElements,
   Navigate,
   Route,
   RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
 } from 'react-router-dom';
-import ReactDOM from 'react-dom/client';
-import {Analytics} from '@vercel/analytics/react';
 import App from './App.tsx';
-import './index.css';
 import {ErrorBoundary} from './ErrorBoundary/index.tsx';
-import 'intro.js/introjs.css';
-import AudioProvider from './contexts/AudioContext';
-import {routes} from './constants/routes.tsx';
-import LanguageProvider from './contexts/LanguageContext/index.tsx';
-import {SkeletonTheme} from 'react-loading-skeleton';
-import ToastProvider from './contexts/ToastContext/index.tsx';
+import AudioProvider from './contexts/AudioContext.tsx';
+import LanguageProvider from './contexts/LanguageContext.tsx';
+import ToastProvider from './contexts/ToastContext.tsx';
+import './index.css';
+import {routes} from './routes/index.tsx';
 
-const sections = createRoutesFromElements(
+// eslint-disable-next-line react-refresh/only-export-components
+const Router = createRoutesFromElements(
   <Route element={<App />}>
     {routes.map(r => (
       <Route key={r.path} path={r.path} element={createElement(lazy(r.element))} />
@@ -34,7 +35,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <LanguageProvider>
         <ToastProvider>
           <AudioProvider>
-            <RouterProvider router={createBrowserRouter(sections)} />
+            <RouterProvider router={createBrowserRouter(Router)} />
           </AudioProvider>
         </ToastProvider>
       </LanguageProvider>

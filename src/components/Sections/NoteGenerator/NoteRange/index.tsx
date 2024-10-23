@@ -1,8 +1,13 @@
-import {useRef, useState} from 'react';
-import './NoteRange.css';
+import NoteGeneratorTuningProvider from '@/contexts/NoteGeneratorTuningContext';
+import {NoteGeneratorTranslation} from '@/helpers/translations';
 import useTranslation from '@/hooks/useTranslation';
+import {useRef, useState} from 'react';
+import CustomNoteRange from './Custom';
+import Free from './Free';
+import './NoteRange.css';
 import Options from './Options';
-import Range from './Range';
+import RangeSelectorWrapper from './RangeSelectorWrapper';
+import StringNoteRange from './String';
 
 const RangeSelector = () => {
   const [overflowHidden, setOverflowHidden] = useState(false);
@@ -24,14 +29,39 @@ const RangeSelector = () => {
       style={{overflow: overflowHidden ? 'hidden' : 'visible'}}
     >
       <h3>{playNoteString}</h3>
-      <Options selectedIndex={selectedIndex} setSection={sectionSelectionHandler} />
-      <Range
+      <Options
         selectedIndex={selectedIndex}
-        setOverflowHidden={setOverflowHidden}
-        isNext={selectedIndex > prevIndexRef.current}
+        setSection={sectionSelectionHandler}
+        sections={sections.map(s => s.title)}
       />
+      <div style={{height: sections[selectedIndex].height}} className='rangeSelectorSection'>
+        <RangeSelectorWrapper
+          setOverflowHidden={setOverflowHidden}
+          isNext={selectedIndex > prevIndexRef.current}
+        >
+          {sections[selectedIndex].element}
+        </RangeSelectorWrapper>
+      </div>
     </div>
   );
 };
+
+const sections: {
+  title: keyof NoteGeneratorTranslation;
+  element: React.ReactElement;
+  height: number;
+}[] = [
+  {title: 'freeMode', element: <Free key='freeMode' />, height: 0},
+  {title: 'inNoteRange', element: <CustomNoteRange key='inNoteRange' />, height: 60},
+  {
+    title: 'inString',
+    element: (
+      <NoteGeneratorTuningProvider key='inString'>
+        <StringNoteRange />
+      </NoteGeneratorTuningProvider>
+    ),
+    height: 445,
+  },
+];
 
 export default RangeSelector;

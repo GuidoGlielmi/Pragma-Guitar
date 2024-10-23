@@ -1,14 +1,15 @@
-import S from './Board.module.css';
-import NoteWithOctave from '../../../common/NoteWithOctave';
 import {useEffect, useRef} from 'react';
+import NoteWithOctave from '../../../common/NoteWithOctave';
 import Band from './Band';
+import S from './Board.module.css';
 
 type BoardProps = {
   pitch: TPitchToPlay;
   detune: TPitchToPlay;
 };
 
-const third = 33;
+const THIRD = 33;
+const SIXTH = THIRD / 2;
 
 const Board = ({detune, pitch}: BoardProps) => {
   const prevNoteInfoRef = useRef<BoardProps>();
@@ -19,10 +20,10 @@ const Board = ({detune, pitch}: BoardProps) => {
 
   const lowerBandPercentage =
     prevNoteInfoRef.current === undefined
-      ? third / 2
-      : pitch === null || detune === null
-      ? (1 - prevNoteInfoRef.current.detune! / 100) * third - third / 2
-      : (1 - detune / 100) * third - third / 2;
+      ? SIXTH
+      : pitch !== null && detune !== null
+      ? (1 - detune / 100) * THIRD - SIXTH
+      : (1 - prevNoteInfoRef.current.detune! / 100) * THIRD - SIXTH;
 
   return (
     <section className={S.container}>
@@ -37,7 +38,7 @@ const Board = ({detune, pitch}: BoardProps) => {
           }
           percentage={lowerBandPercentage}
         />
-        <div style={{left: `${third + lowerBandPercentage}%`}}>
+        <div style={{left: `${THIRD + lowerBandPercentage}%`}}>
           <NoteWithOctave pitch={pitch ?? prevNoteInfoRef.current?.pitch ?? null} />
         </div>
         <Band
@@ -48,7 +49,7 @@ const Board = ({detune, pitch}: BoardProps) => {
               ? prevNoteInfoRef.current?.pitch + 1
               : null
           }
-          percentage={third * 2 + lowerBandPercentage}
+          percentage={THIRD * 2 + lowerBandPercentage}
         />
         <span className={S.xAxis} />
         <span className={S.value} />

@@ -1,14 +1,14 @@
-import {useEffect, useContext} from 'react';
-import {useLocation} from 'react-router-dom';
-import {AudioContext, AudioProps} from './contexts/AudioContext';
-import NavBar from './components/Navbar';
-import DeviceList from './components/DeviceList';
-import './App.css';
-import Languages from './components/Language';
+import {useContext, useEffect} from 'react';
 import 'react-loading-skeleton/dist/skeleton.css';
+import {useLocation} from 'react-router-dom';
+import './App.css';
+import DeviceList from './components/DeviceList';
 import EmailButton from './components/Email';
-import Sections from './components/Sections';
+import Languages from './components/Language';
+import NavBar from './components/Navbar';
+import SuspensedSection from './components/Sections';
 import StartButton from './components/StartButton';
+import {AudioContext, AudioProps} from './contexts/AudioContext';
 
 function App() {
   const location = useLocation();
@@ -26,7 +26,7 @@ function App() {
       <NavBar />
       <StartButton />
       <EmailButton />
-      <Sections />
+      <SuspensedSection />
     </main>
   );
 }

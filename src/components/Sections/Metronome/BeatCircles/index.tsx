@@ -1,6 +1,12 @@
+import {MetronomeContext, MetronomeProps} from '@/contexts/MetronomeContext';
+import {useContext} from 'react';
 import S from './BeatCircles.module.css';
 
-const BeatCircles = ({numerator, position}: {numerator: number; position: number}) => {
+const BeatCircles = ({beatPosition}: {beatPosition: number}) => {
+  const {
+    bar: [numerator],
+  } = useContext(MetronomeContext) as MetronomeProps;
+
   return (
     <div className={S.beatContainer}>
       {Array(numerator)
@@ -11,8 +17,8 @@ const BeatCircles = ({numerator, position}: {numerator: number; position: number
               key={i}
               className={S.beatUnit}
               style={{
-                boxShadow: !i && !position ? '0 0 3px white' : 'none',
-                background: i === position ? (!i ? 'white' : 'green') : 'black',
+                boxShadow: !i && !beatPosition ? '0 0 3px #fbff82' : 'none',
+                background: i === beatPosition ? (!i ? 'white' : 'green') : 'black',
               }}
             />
           );

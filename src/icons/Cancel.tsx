@@ -1,4 +1,4 @@
-const Cancel = ({color = '#ccc'}: {color?: string}) => {
+const CancelIcon = ({color = '#ccc'}: {color?: string}) => {
   return (
     <svg
       width='30px'
@@ -18,4 +18,4 @@ const Cancel = ({color = '#ccc'}: {color?: string}) => {
   );
 };
 
-export default Cancel;
+export default CancelIcon;

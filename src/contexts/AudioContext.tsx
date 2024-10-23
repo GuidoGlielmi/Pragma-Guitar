@@ -1,19 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import {
-  useContext,
-  createContext,
-  useMemo,
-  useState,
-  FC,
-  PropsWithChildren,
-  useEffect,
-} from 'react';
-import {AudioEcosystem} from '../../helpers/AudioEcosystem';
-import {ToastContext, ToastProps} from '../ToastContext';
-import useLocalStorage from '../../hooks/useLocalStorage';
+import {Section} from '@/routes';
+import {FC, PropsWithChildren, createContext, useContext, useMemo, useState} from 'react';
+import {AudioEcosystem} from '../helpers/AudioEcosystem';
+import useLocalStorageWithValue from '../hooks/useLocalStorageWithValue';
+import {ToastContext, ToastProps} from './ToastContext';
 
 export interface AudioProps {
-  started: boolean | null;
+  started: Section | null;
   start: () => Promise<void>;
   stop: () => Promise<void>;
   startOscillator: (frec: number) => void;
@@ -37,25 +30,23 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
   const {setToastOptions, close} = useContext(ToastContext) as ToastProps;
 
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useLocalStorage(DEFAULT_DEVICE_ID_STORAGE_KEY, {
-    initialValue: '',
-  });
+  const [selectedDeviceId, setSelectedDeviceId] = useLocalStorageWithValue(
+    DEFAULT_DEVICE_ID_STORAGE_KEY,
+    {
+      initialValue: '',
+    },
+  );
 
-  const [started, setStarted] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    audioEcosystem.onstatechange = function () {
-      setStarted(this.state === 'running');
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [started, setStarted] = useState<Section | null>(null);
 
   const start = async () => {
     await audioEcosystem.resume();
+    setStarted(window.location.pathname as Section);
   };
 
   const stop = async () => {
     await audioEcosystem.suspend();
+    setStarted(null);
   };
 
   const askDevicePermission = async (requestedDeviceId: string) => {
