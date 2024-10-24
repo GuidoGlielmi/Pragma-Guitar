@@ -14,8 +14,7 @@ const Timer = () => {
   const {
     generatePitch,
     countdownInitialValue,
-    increaseCountdownInitialValue,
-    decreaseCountdownInitialValue,
+    stepCountdownInitialValue,
     setCountdownInitialValue,
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
@@ -56,15 +55,15 @@ const Timer = () => {
   const remainingPercentage = (remainingMs / (countdownInitialValue * 1000)) * 100;
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') increaseCountdownInitialValue();
-    else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') decreaseCountdownInitialValue();
+    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') stepCountdownInitialValue(true);
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') stepCountdownInitialValue(false);
   };
 
   return (
     <div id='timerContainer' className={S.timerContainer}>
       <h3>{countdownString}</h3>
       <div className={S.countdownContainer}>
-        <button onClick={decreaseCountdownInitialValue} id='minus'>
+        <button onClick={() => stepCountdownInitialValue(false)} id='minus'>
           <MinusIcon />
         </button>
         <div>
@@ -79,7 +78,7 @@ const Timer = () => {
           />
           <ProgressRing percentage={remainingPercentage} />
         </div>
-        <button onClick={increaseCountdownInitialValue} id='plus'>
+        <button onClick={() => stepCountdownInitialValue(true)} id='plus'>
           <PlusIcon />
         </button>
       </div>

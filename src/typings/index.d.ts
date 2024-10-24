@@ -4,6 +4,7 @@ declare global {
   type TObserver<T> = (data: T) => void;
 
   type TPitchToPlay = number | null;
+  /** `[null, null]` represents free mode */
   type TPitchRange = [from: number, to: number] | [from: null, to: null];
   type TPitchRangeSetter = (
     range: TPitchRange | ((range: [number, number]) => TPitchRange),
@@ -13,6 +14,7 @@ declare global {
   type StepWithActionAndTranslation = Omit<Step, 'intro'> & {
     intro: {es: string; en: string};
     click?: boolean;
+    updatable?: boolean;
   };
 
   type Task<T extends any[] = undefined, R = void> = (...args: T) => R;
@@ -75,74 +77,68 @@ declare global {
 
   // -------------
 
-  interface IReducerAction<TType extends string, TPayload = any> {
+  interface IReducerAction<TType extends string, TPayload = never> {
     type: TType;
-    payload: TPayload;
-  }
-
-  interface IReducerActionWithoutPayload<key extends string> extends IReducerAction<key> {
-    payload?: never;
-  }
-
-  interface IReducerActionWithOptionalPayload<TType extends string, TPayload = any>
-    extends IReducerAction<TType> {
     payload?: TPayload;
+  }
+
+  interface IReducerActionWithPayload<key extends string, TPayload>
+    extends IReducerAction<key, TPayload> {
+    payload: TPayload;
   }
 
   // -------------
 
   /** Used by countdown */
-  interface SetPitchToPlayAction
-    extends IReducerActionWithOptionalPayload<'SET_PITCH_TO_PLAY', null> {}
+  interface SetPitchToPlayAction extends IReducerAction<'SET_PITCH_TO_PLAY', null> {}
 
-  interface SetPitchRangeAction extends IReducerAction<'SET_PITCH_RANGE', TPitchRangeSetterArgs> {}
+  interface SetPitchRangeAction
+    extends IReducerActionWithPayload<'SET_PITCH_RANGE', TPitchRangeSetterArgs> {}
 
   interface SetLowPitchRangeAction
-    extends IReducerAction<'SET_LOW_PITCH_RANGE', React.SetStateAction<number>> {}
+    extends IReducerActionWithPayload<'SET_LOW_PITCH_RANGE', React.SetStateAction<number>> {}
 
   interface SetHighPitchRangeAction
-    extends IReducerAction<'SET_HIGH_PITCH_RANGE', React.SetStateAction<number>> {}
+    extends IReducerActionWithPayload<'SET_HIGH_PITCH_RANGE', React.SetStateAction<number>> {}
 
-  interface SetCorrectAction extends IReducerActionWithoutPayload<'SET_CORRECT'> {}
+  /** Action to call when correct note was hit */
+  interface SetCorrectNoteAction extends IReducerAction<'CORRECT_NOTE'> {}
 
-  interface SetMaxStreaksAction extends IReducerAction<'SET_MAX_STREAKS', number[]> {}
+  interface SetMaxStreaksAction extends IReducerActionWithPayload<'SET_MAX_STREAKS', number[]> {}
 
   interface SetCountdownInitialValueAction
-    extends IReducerAction<'SET_COUNTDOWN_INITIAL_VALUE', number> {}
+    extends IReducerActionWithPayload<'SET_COUNTDOWN_INITIAL_VALUE', number> {}
 
-  interface IncreaseCountdownInitialValueAction
-    extends IReducerActionWithoutPayload<'INCREASE_COUNTDOWN_INITIAL_VALUE'> {}
+  interface StepCountdownInitialValueAction
+    extends IReducerActionWithPayload<'STEP_COUNTDOWN_INITIAL_VALUE', boolean> {}
 
-  interface DecreaseCountdownInitialValueAction
-    extends IReducerActionWithoutPayload<'DECREASE_COUNTDOWN_INITIAL_VALUE'> {}
-
-  interface StartAction extends IReducerAction<'TOGGLE_START', boolean> {}
-
+  interface StartAction extends IReducerActionWithPayload<'TOGGLE_START', boolean> {}
   type TNoteGeneratorAction =
     | StartAction
-    | SetCorrectAction
+    | SetCorrectNoteAction
     | SetMaxStreaksAction
     | SetPitchToPlayAction
     | SetCountdownInitialValueAction
     | SetPitchRangeAction
     | SetLowPitchRangeAction
     | SetHighPitchRangeAction
-    | IncreaseCountdownInitialValueAction
-    | DecreaseCountdownInitialValueAction;
+    | StepCountdownInitialValueAction;
 
   // -------------
 
-  interface SetNumeratorAction extends IReducerAction<'SET_NUMERATOR', number> {}
-  interface SetDenominatorAction extends IReducerAction<'SET_DENOMINATOR', number> {}
-  interface IncrementPositionAction
-    extends IReducerActionWithoutPayload<'INCREMENT_BEAT_POSITION'> {}
-  interface MetronomeOffAction extends IReducerActionWithoutPayload<'METRONOME_OFF'> {}
-  interface SetBpmUserAction extends IReducerAction<'SET_BPM_USER', React.SetStateAction<number>> {}
-  interface SetMaxBpmAction extends IReducerAction<'SET_MAX_BPM', number> {}
-  interface SetLoopedAction extends IReducerAction<'SET_LOOPED', boolean> {}
-  interface SetIncrementByAction extends IReducerAction<'SET_INCREMENT_BY', number> {}
-  interface StepIncrementByAction extends IReducerAction<'STEP_INCREMENT_BY', boolean> {}
-  interface SetTargetBarCountAction extends IReducerAction<'SET_TARGET_BAR_COUNT', number> {}
+  interface SetNumeratorAction extends IReducerActionWithPayload<'SET_NUMERATOR', number> {}
+  interface SetDenominatorAction extends IReducerActionWithPayload<'SET_DENOMINATOR', number> {}
+  interface SetBpmUserAction
+    extends IReducerActionWithPayload<'SET_BPM_USER', React.SetStateAction<number>> {}
+  interface SetMaxBpmAction extends IReducerActionWithPayload<'SET_MAX_BPM', number> {}
+  interface SetLoopedAction extends IReducerActionWithPayload<'SET_LOOPED', boolean> {}
+  interface SetIncrementByAction extends IReducerActionWithPayload<'SET_INCREMENT_BY', number> {}
+  interface StepIncrementByAction extends IReducerActionWithPayload<'STEP_INCREMENT_BY', boolean> {}
+  interface SetTargetBarCountAction
+    extends IReducerActionWithPayload<'SET_TARGET_BAR_COUNT', number> {}
+
+  interface IncrementPositionAction extends IReducerAction<'INCREMENT_BEAT_POSITION'> {}
+  interface MetronomeOffAction extends IReducerAction<'METRONOME_OFF'> {}
 
   type TMetronomeAction =
     | SetNumeratorAction
@@ -155,6 +151,4 @@ declare global {
     | SetIncrementByAction
     | StepIncrementByAction
     | SetTargetBarCountAction;
-
-  interface StartAction extends IReducerAction<'START', boolean> {}
 }

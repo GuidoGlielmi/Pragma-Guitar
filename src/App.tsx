@@ -21,6 +21,7 @@ function App() {
 
   return (
     <main>
+      <h1>Pragma Guitar</h1>
       <Languages />
       <DeviceList />
       <NavBar />

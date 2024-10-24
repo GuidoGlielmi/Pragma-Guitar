@@ -24,42 +24,58 @@ import {countdownValueLimiter, valueLimiter} from '../helpers/limiter';
 import {generateRandomIndex} from '../helpers/tuning';
 import {AudioContext, AudioProps, audioEcosystem} from './AudioContext';
 
-const initialState = {
+interface INoteGeneratorState {
+  /** Gets updated when hitting the correct {@link pitchToPlay} */
+  currStreak: number;
+  maxStreaks: number[];
+  /** Tells whether the current note was hit. Gets reset to false when generating a new {@link pitchToPlay} */
+  correct: boolean;
+  /** Remembers the value of {@link correct} for after generating a new {@link pitchToPlay}, to keep track of {@link currStreak} */
+  prevCorrect: boolean;
+  pitchToPlay: TPitchToPlay;
+  pitchRange: TPitchRange;
+  countdownInitialValue: number;
+}
+
+const initialState: INoteGeneratorState = {
   currStreak: 0,
-  maxStreaks: [] as number[],
+  maxStreaks: [],
   correct: false,
-  pitchToPlay: null as TPitchToPlay,
-  pitchRange: [null, null] as TPitchRange,
+  prevCorrect: false,
+  pitchToPlay: null,
+  pitchRange: [null, null],
   countdownInitialValue: DEFAULT_COUNTDOWN_INITIAL_VALUE,
 };
 
 function reducer(
-  prevState: typeof initialState,
+  prevState: INoteGeneratorState,
   action: TNoteGeneratorAction,
-): typeof initialState {
+): INoteGeneratorState {
   if (action.type === 'TOGGLE_START') {
     return {
       ...prevState,
       correct: false,
+      prevCorrect: false,
+      currStreak: 0,
       pitchToPlay: action.payload ? generatePitch() : null,
     };
   }
-  if (action.type === 'SET_CORRECT') {
-    if (prevState.correct === false) {
-      // only going from `false` to `true`
-      const storedMaxStreak = prevState.maxStreaks[prevState.countdownInitialValue];
-      const newCurrStreak = prevState.currStreak + 1;
+  if (action.type === 'CORRECT_NOTE') {
+    const newState: INoteGeneratorState = {
+      ...prevState,
+      correct: true,
+      prevCorrect: true,
+      currStreak: prevState.currStreak + 1,
+    };
+    if (prevState.prevCorrect === true) {
+      const storedMaxStreak = prevState.maxStreaks[prevState.countdownInitialValue - 1];
       const maxStreaks = [...prevState.maxStreaks];
-      if ((storedMaxStreak || 0) < newCurrStreak)
-        maxStreaks[prevState.countdownInitialValue] = newCurrStreak;
-      return {
-        ...prevState,
-        correct: true,
-        currStreak: newCurrStreak,
-        maxStreaks,
-      };
+      if ((storedMaxStreak ?? 0) < newState.currStreak) {
+        maxStreaks[prevState.countdownInitialValue - 1] = newState.currStreak;
+      }
+      newState.maxStreaks = maxStreaks;
     }
-    return prevState;
+    return newState;
   }
   if (action.type === 'SET_MAX_STREAKS') {
     return {
@@ -91,7 +107,7 @@ function reducer(
     return {
       ...setPitch(),
       pitchRange: getPitchRange([
-        prevState.pitchRange[1] ?? 0,
+        prevState.pitchRange[0] ?? 0,
         action.payload instanceof Function
           ? action.payload(prevState.pitchRange[1] ?? MAX_PITCH_INDEX)
           : action.payload,
@@ -101,26 +117,14 @@ function reducer(
   if (action.type === 'SET_COUNTDOWN_INITIAL_VALUE') {
     return setCountdownInitialValue(action.payload);
   }
-  if (action.type === 'INCREASE_COUNTDOWN_INITIAL_VALUE') {
-    return setCountdownInitialValue(prevState.countdownInitialValue + 1);
-  }
-  if (action.type === 'DECREASE_COUNTDOWN_INITIAL_VALUE') {
-    return setCountdownInitialValue(prevState.countdownInitialValue - 1);
+  if (action.type === 'STEP_COUNTDOWN_INITIAL_VALUE') {
+    return setCountdownInitialValue(prevState.countdownInitialValue + (action.payload ? 1 : -1));
   }
 
-  function setPitch(value?: TPitchToPlay) {
-    if (value === null) return {...prevState, correct: false, pitchToPlay: null};
-    return {
-      ...prevState,
-      pitchToPlay: generatePitch(),
-      correct: false,
-    };
-  }
-
-  function setCountdownInitialValue(value: number) {
+  function setCountdownInitialValue(value: number): typeof initialState {
     return {
       ...setPitch(),
-      currStreak: 0,
+      prevCorrect: false,
       countdownInitialValue: countdownValueLimiter(value),
     };
   }
@@ -138,6 +142,18 @@ function reducer(
       valueLimiter(newRange[0], 0, newRange[1]),
       valueLimiter(newRange[1], newRange[0], MAX_PITCH_INDEX),
     ];
+  }
+
+  /** When changing pitch, correct is set to false  */
+  function setPitch(value?: TPitchToPlay): typeof initialState {
+    if (value === null) return {...prevState, correct: false, pitchToPlay: null};
+    return {
+      ...prevState,
+      pitchToPlay: generatePitch(),
+      correct: false,
+      prevCorrect: prevState.correct,
+      ...(!prevState.correct && {currStreak: 0}),
+    };
   }
 
   function generatePitch() {
@@ -160,8 +176,7 @@ export interface NoteGeneratorProps {
   pitchToPlay: TPitchToPlay;
   countdownInitialValue: number;
   setCountdownInitialValue: (n: number) => void;
-  increaseCountdownInitialValue: () => void;
-  decreaseCountdownInitialValue: () => void;
+  stepCountdownInitialValue: (up: boolean) => void;
   /** Pass both tuple values as `null` for free mode */
   changePitchRange: TPitchRangeSetter;
   generatePitch: () => void;
@@ -193,8 +208,8 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = () => {
 
   useCorrectPitch({
     target: pitchToPlay,
-    exactOctave: from !== null && to !== null,
-    cb: () => dispatch({type: 'SET_CORRECT'}),
+    exactOctave: !(from === null && to === null),
+    cb: () => dispatch({type: 'CORRECT_NOTE'}),
     extraDependencies: [countdownInitialValue],
   });
 
@@ -203,8 +218,8 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = () => {
   });
 
   useEffect(() => {
-    dispatch({type: 'TOGGLE_START', payload: started === Section.NOTE_GENERATOR}); // <-------- starts here
-  }, [started, pitchRange]);
+    dispatch({type: 'TOGGLE_START', payload: started === Section.NOTE_GENERATOR}); // <- starts here
+  }, [started]);
 
   useEffect(() => {
     if (correct && !!correctNoteAudio) audioEcosystem.playBuffer(correctNoteAudio);
@@ -231,19 +246,15 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = () => {
     dispatch({type: 'SET_PITCH_TO_PLAY'});
   };
 
-  const increaseCountdownInitialValue = () => {
-    dispatch({type: 'INCREASE_COUNTDOWN_INITIAL_VALUE'});
-  };
-  const decreaseCountdownInitialValue = () => {
-    dispatch({type: 'DECREASE_COUNTDOWN_INITIAL_VALUE'});
+  const stepCountdownInitialValue = (up: boolean) => {
+    dispatch({type: 'STEP_COUNTDOWN_INITIAL_VALUE', payload: up});
   };
 
   const contextValue = useMemo(
     () => ({
       countdownInitialValue,
       setCountdownInitialValue,
-      increaseCountdownInitialValue,
-      decreaseCountdownInitialValue,
+      stepCountdownInitialValue,
       pitchRange,
       changePitchRange,
       pitchToPlay,
@@ -260,7 +271,7 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = () => {
 
   return (
     <NoteGeneratorContext.Provider value={contextValue}>
-      <OnboardingWrapper steps={noteGenerator} stepsToUpdate={started ? [12, 13] : undefined}>
+      <OnboardingWrapper steps={noteGenerator}>
         <div className='container'>
           <NoteGenerator />
         </div>

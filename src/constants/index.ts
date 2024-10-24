@@ -31,7 +31,7 @@ export const DEFAULT_BMP = 120;
 
 // ----------------------
 
-export const HOLD_TIME_TO_CONSIDER_PITCH_READING_TO_BE_ACCURATE = 1000 / 12;
+export const MS_HOLD_TIME_TO_CONSIDER_PITCH_READING_TO_BE_ACCURATE = 125;
 export const MAX_ACCEPTABLE_DETUNE = 15;
 
 // ----------------------

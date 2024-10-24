@@ -222,8 +222,9 @@ const MetronomeProvider: FC = () => {
   }, [started]);
 
   const nextShouldBeFirstAudio = beatPosition === numerator - 1 || beatPosition === -1;
+
   usePlayAudio(bpmToMs(bpm, denominator), () => {
-    dispatch({type: 'INCREMENT_BEAT_POSITION'});
+    dispatch({type: 'INCREMENT_BEAT_POSITION'}); // used to start metronome
   }).current = nextShouldBeFirstAudio ? firstClickAudioBuffer : clickAudioBuffer;
 
   const setDenominator = (d: number) => {
