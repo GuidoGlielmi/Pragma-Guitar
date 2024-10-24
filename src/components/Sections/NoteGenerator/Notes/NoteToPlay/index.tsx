@@ -31,6 +31,7 @@ const NoteToPlay = () => {
 
   return (
     <button
+      id='noteToPlay'
       title='Press to listen'
       className='noteToPlay button'
       onMouseDown={startOscillatorHandler}

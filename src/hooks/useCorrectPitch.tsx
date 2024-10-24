@@ -14,9 +14,7 @@ type TUseCorrectPitchProps = {
 };
 
 /**
- * Executes a callback when pitch reading matches the condition or target specified, and is held enough time for it to be consider a realistic reading.
- * @param {Function} o.condition Should be memoized
- * @param {TPitchToPlay} o.target Should be memoized
+ * Executes a callback when pitch reading matches the specified target, and is held enough time for it to be consider a realistic reading.
  */
 const useCorrectPitch = ({
   target,
@@ -26,11 +24,14 @@ const useCorrectPitch = ({
 }: TUseCorrectPitchProps) => {
   const timeoutRef = useRef<number>();
   const correctRef = useRef(false);
+
+  // convert all dependencies in refs to avoid excessive re-rendering
+  const exactOctaveRef = useRef<boolean>(exactOctave);
   const targetRef = useRef<TPitchToPlay>(target);
 
   usePitch(v => {
     if (correctRef.current || v === null) return;
-    if (!isCorrectPitch(v, targetRef.current, exactOctave)) {
+    if (!isCorrectPitch(v, targetRef.current, exactOctaveRef.current)) {
       // console.log('Hitting incorrect note');
       clearTimeout(timeoutRef.current);
       timeoutRef.current = undefined;
@@ -46,8 +47,10 @@ const useCorrectPitch = ({
   });
 
   useEffect(() => {
+    // this kind of implementation stops the excessive re-rendering of usePitch
     correctRef.current = false;
     targetRef.current = target;
+    exactOctaveRef.current = exactOctave;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target, exactOctave, ...extraDependencies]);
 };

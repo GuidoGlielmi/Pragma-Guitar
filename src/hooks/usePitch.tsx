@@ -7,15 +7,19 @@ const usePitch = (setFrecuency: (v: TPitchToPlay) => void) => {
   useEffect(() => {
     if (!started) return;
 
+    const setter = (v: TPitchToPlay) => {
+      v && setFrecuency(v);
+    };
+
     (async () => {
       const allowed = await startMic();
       if (!allowed) return;
-      micObservable.start(setFrecuency);
+      micObservable.start(setter);
     })();
     return () => {
       setFrecuency(null);
       stopMic();
-      micObservable.stop(setFrecuency);
+      micObservable.stop(setter);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);

@@ -46,11 +46,6 @@ body {
   background: linear-gradient(to bottom, #1a1a1a, #202020);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
 .selected {
   background: #ccc;
   color: #222;

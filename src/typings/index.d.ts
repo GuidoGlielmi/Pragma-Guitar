@@ -13,6 +13,7 @@ declare global {
   type StepWithActionAndTranslation = Omit<Step, 'intro'> & {
     intro: {es: string; en: string};
     click?: boolean;
+    updatable?: boolean;
   };
 
   type Task<T extends any[] = undefined, R = void> = (...args: T) => R;
@@ -75,49 +76,41 @@ declare global {
 
   // -------------
 
-  interface IReducerAction<TType extends string, TPayload = any> {
+  interface IReducerAction<TType extends string, TPayload = never> {
     type: TType;
-    payload: TPayload;
-  }
-
-  interface IReducerActionWithoutPayload<key extends string> extends IReducerAction<key> {
-    payload?: never;
-  }
-
-  interface IReducerActionWithOptionalPayload<TType extends string, TPayload = any>
-    extends IReducerAction<TType> {
     payload?: TPayload;
+  }
+
+  interface IReducerActionWithPayload<key extends string, TPayload>
+    extends IReducerAction<key, TPayload> {
+    payload: TPayload;
   }
 
   // -------------
 
   /** Used by countdown */
-  interface SetPitchToPlayAction
-    extends IReducerActionWithOptionalPayload<'SET_PITCH_TO_PLAY', null> {}
+  interface SetPitchToPlayAction extends IReducerAction<'SET_PITCH_TO_PLAY', null> {}
 
-  interface SetPitchRangeAction extends IReducerAction<'SET_PITCH_RANGE', TPitchRangeSetterArgs> {}
+  interface SetPitchRangeAction
+    extends IReducerActionWithPayload<'SET_PITCH_RANGE', TPitchRangeSetterArgs> {}
 
   interface SetLowPitchRangeAction
-    extends IReducerAction<'SET_LOW_PITCH_RANGE', React.SetStateAction<number>> {}
+    extends IReducerActionWithPayload<'SET_LOW_PITCH_RANGE', React.SetStateAction<number>> {}
 
   interface SetHighPitchRangeAction
-    extends IReducerAction<'SET_HIGH_PITCH_RANGE', React.SetStateAction<number>> {}
+    extends IReducerActionWithPayload<'SET_HIGH_PITCH_RANGE', React.SetStateAction<number>> {}
 
-  interface SetCorrectAction extends IReducerActionWithoutPayload<'SET_CORRECT'> {}
+  interface SetCorrectAction extends IReducerAction<'CORRECT_NOTE'> {}
 
-  interface SetMaxStreaksAction extends IReducerAction<'SET_MAX_STREAKS', number[]> {}
+  interface SetMaxStreaksAction extends IReducerActionWithPayload<'SET_MAX_STREAKS', number[]> {}
 
   interface SetCountdownInitialValueAction
-    extends IReducerAction<'SET_COUNTDOWN_INITIAL_VALUE', number> {}
+    extends IReducerActionWithPayload<'SET_COUNTDOWN_INITIAL_VALUE', number> {}
 
-  interface IncreaseCountdownInitialValueAction
-    extends IReducerActionWithoutPayload<'INCREASE_COUNTDOWN_INITIAL_VALUE'> {}
+  interface StepCountdownInitialValueAction
+    extends IReducerActionWithPayload<'STEP_COUNTDOWN_INITIAL_VALUE', boolean> {}
 
-  interface DecreaseCountdownInitialValueAction
-    extends IReducerActionWithoutPayload<'DECREASE_COUNTDOWN_INITIAL_VALUE'> {}
-
-  interface StartAction extends IReducerAction<'TOGGLE_START', boolean> {}
-
+  interface StartAction extends IReducerActionWithPayload<'TOGGLE_START', boolean> {}
   type TNoteGeneratorAction =
     | StartAction
     | SetCorrectAction
@@ -127,8 +120,7 @@ declare global {
     | SetPitchRangeAction
     | SetLowPitchRangeAction
     | SetHighPitchRangeAction
-    | IncreaseCountdownInitialValueAction
-    | DecreaseCountdownInitialValueAction;
+    | StepCountdownInitialValueAction;
 
   // -------------
 
