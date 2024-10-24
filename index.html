@@ -2,24 +2,51 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/pragma-guitar.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <meta property="og:title" content="Pragma Guitar" />
     <meta property="og:site_name" content="Pragma Guitar" />
     <meta property="og:description" content="Guitar exercises to have fun practicing" />
     <meta property="og:url" content="https://pragma-guitar.vercel.app" />
-    <meta property="og:image" content="https://pragma-guitar.vercel.app/pragma-guitar.svg" />
+    <meta property="og:image" content="/pragma-guitar.svg" />
     <meta property="og:image:type" content="image/png" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta property="twitter:title" content="Pragma Guitar" />
-    <meta property="twitter:description" content="Guitar exercises to have fun practicing" />
-    <meta property="twitter:image" content="https://pragma-guitar.vercel.app/pragma-guitar.svg" />
-    <meta name="theme-color" content="#646cff" />
+    <meta
+      property="twitter:description"
+      content="Guitar and string instruments exercises to have fun practicing"
+    />
+    <meta property="twitter:image" content="/pragma-guitar.svg" />
+
+    <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Pragma" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="canonical" href="https://pragma-guitar.vercel.app" />
+    <meta
+      name="description"
+      content="Guitar and string instruments exercises to have fun practicing"
+    />
+    <meta name="theme-color" content="#0e0505" />
+    <meta name="thumbnail" content="/favicon.svg" />
     <title>Pragma Guitar</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Pragma Guitar",
+        "url": "https://pragma-guitar.vercel.app",
+        "description": "Guitar and string instruments exercises to have fun practicing",
+        "logo": "/favicon-48x48.png"
+      }
+    </script>
   </body>
 </html>
