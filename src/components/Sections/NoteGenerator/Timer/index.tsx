@@ -1,20 +1,22 @@
-import {useContext, useEffect, useState} from 'react';
-import Minus from '@/icons/Minus';
-import Plus from '@/icons/Plus';
-import ProgressRing from '@/icons/ProgressRing';
+import {COUNTER_FPS} from '@/constants';
 import {AudioContext, AudioProps} from '@/contexts/AudioContext';
-import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NoteGeneratorContext';
 import {pollRemainingTime} from '@/helpers/timer';
-import S from './Timer.module.css';
 import useTranslation from '@/hooks/useTranslation';
-
-const counterFPS = 50;
+import MinusIcon from '@/icons/Minus';
+import PlusIcon from '@/icons/Plus';
+import ProgressRing from '@/icons/ProgressRing';
+import {useContext, useEffect, useState} from 'react';
+import S from './Timer.module.css';
 
 const Timer = () => {
   const {started} = useContext(AudioContext) as AudioProps;
-  const {generatePitch, countdownInitialValue, setCountdownInitialValue} = useContext(
-    NoteGeneratorContext,
-  ) as NoteGeneratorProps;
+  const {
+    generatePitch,
+    countdownInitialValue,
+    stepCountdownInitialValue,
+    setCountdownInitialValue,
+  } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
   const [countdownString] = useTranslation('countdown');
 
@@ -41,31 +43,28 @@ const Timer = () => {
       reset();
       remainingCountdownTimeProvider = pollRemainingTime(countdownInitialValue);
       generatePitch();
-    }, counterFPS);
+    }, COUNTER_FPS);
 
     return () => {
       reset();
       clearInterval(intervalId);
     };
-  }, [started, countdownInitialValue, generatePitch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [started, countdownInitialValue]);
 
   const remainingPercentage = (remainingMs / (countdownInitialValue * 1000)) * 100;
 
-  const decreaseCountdownInitialValue = () => {
-    setCountdownInitialValue(ps => (ps === 1 ? ps : ps - 1));
-  };
-
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') setCountdownInitialValue(ps => ps + 1);
-    else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') decreaseCountdownInitialValue();
+    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') stepCountdownInitialValue(true);
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') stepCountdownInitialValue(false);
   };
 
   return (
     <div id='timerContainer' className={S.timerContainer}>
       <h3>{countdownString}</h3>
       <div className={S.countdownContainer}>
-        <button onClick={decreaseCountdownInitialValue} id='minus'>
-          <Minus />
+        <button onClick={() => stepCountdownInitialValue(false)} id='minus'>
+          <MinusIcon />
         </button>
         <div>
           <input
@@ -79,8 +78,8 @@ const Timer = () => {
           />
           <ProgressRing percentage={remainingPercentage} />
         </div>
-        <button onClick={() => setCountdownInitialValue(ps => ps + 1)} id='plus'>
-          <Plus />
+        <button onClick={() => stepCountdownInitialValue(true)} id='plus'>
+          <PlusIcon />
         </button>
       </div>
     </div>

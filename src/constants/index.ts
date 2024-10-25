@@ -1,36 +1,53 @@
-import {TLanguages} from '../helpers/translations';
+import {TLanguages} from '@/helpers/translations';
 
-export const minBPM = 10;
-export const maxBPM = 300;
+// ----------------------
+export const REFERENCE_FREQUENCY = 440;
+export const NOTES_IN_OCTAVE_AMOUNT = 12;
+export const SEMITONE_OFFSET = 69;
+export const CENTS_IN_WHOLE_TONE = 100;
+export const CENTS_IN_OCTAVE = NOTES_IN_OCTAVE_AMOUNT * CENTS_IN_WHOLE_TONE;
+export const C5_PITCH = 72;
+export const firstHalfOctavesAmount = C5_PITCH / 12;
 
-export const convertTuningToState = (t: ITuning): ITuningState => ({
-  ...t,
-  strings: t.strings.map((v, i) => ({
-    id: Math.random(),
-    originalIndex: i,
-    originalPitch: v,
-    pitch: v,
-  })),
-});
+// ----------------------
 
-export const convertStateToTuning = (t: ITuningState): ITuning => ({
-  ...t,
-  strings: t.strings.map(p => p.pitch),
-});
+export const MAX_FRETS_AMOUNT = 50;
+export const DEFAULT_FRETS_AMOUNT = 24;
 
-export const createTuning = (label: string, pitches: StringStateValue[]): ITuning => ({
-  label,
-  strings: pitches.map(p => p.pitch),
-  deletable: true,
-});
+// ----------------------
 
-export const createString = (pitch: number): StringStateValue => ({
-  id: Math.random(),
-  originalPitch: null,
-  pitch,
-});
+export const MIN_COUNTDOWN_VALUE = 1;
+export const MAX_COUNTDOWN_VALUE = 60;
+export const COUNTER_FPS = 50;
+export const DEFAULT_COUNTDOWN_INITIAL_VALUE = 5;
 
-export const staticTunings = [
+// ----------------------
+
+export const BEAT_COUNT_MIN_VALUE = 1;
+export const INCREMENTER_MIN_VALUE = 0;
+export const MIN_BPM = 10;
+export const MAX_BPM = 300;
+export const DEFAULT_BMP = 120;
+
+// ----------------------
+
+export const MS_HOLD_TIME_TO_CONSIDER_PITCH_READING_TO_BE_ACCURATE = 125;
+export const MAX_ACCEPTABLE_DETUNE = 15;
+
+// ----------------------
+
+export const CUSTOM_PITCH_RANGE_STORAGE_KEY = 'customPitchRange';
+export const PERSISTED_TUNINGS_VARIABLE_NAME = 'customTunings';
+export const PERSISTED_FRET_AMOUNT_VARIABLE_NAME = 'fretsAmount';
+export const PERSISTED_PREFERRED_TUNING_VARIABLE_NAME = 'preferredTuning';
+export const PERSISTED_MAX_STREAKS_VARIABLE_NAME = 'maxStreaks';
+export const PERSISTED_COUNTDOWN_INITIAL_VALUE_VARIABLE_NAME = 'countdownInitialValue';
+export const LOOPING_MAX_BMP_VARIABLE_NAME = 'loopingMaxBpm';
+export const BAR_COUNT_UNTIL_INCREMENT_VARIABLE_NAME = 'barCountUntilIncrement';
+
+// ----------------------
+
+export const defaultTunings = [
   // Standard Tuning
   {label: 'Standard Tuning', strings: [40, 45, 50, 55, 59, 64]},
 
@@ -57,6 +74,8 @@ export const staticTunings = [
   {label: 'C6 Modal', strings: [48, 45, 48, 55, 60, 67]},
   {label: 'Nashville', strings: [52, 57, 62, 67, 71, 76]},
 ] as ITuning[];
+
+export const tunings = defaultTunings.map(t => ({...t, deletable: false}));
 
 export interface Notes {
   C: string;
@@ -113,6 +132,3 @@ export const OCTAVE_NOTES_AMOUNT = 12;
 
 export const MAX_PITCH_INDEX = OCTAVE_NOTES_AMOUNT * OCTAVES_COVERED - 1;
 export const pitchRangeLimits = [0, MAX_PITCH_INDEX] as [number, number];
-
-export const MIN_COUNTDOWN_VALUE = 0;
-export const MAX_COUNTDOWN_VALUE = 60;

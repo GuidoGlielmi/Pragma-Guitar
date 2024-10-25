@@ -1,5 +1,7 @@
-import Select from 'react-select';
 import {metronomeStyles} from '@/constants/reactSelectStyles';
+import {MetronomeContext, MetronomeProps} from '@/contexts/MetronomeContext';
+import {useContext} from 'react';
+import Select from 'react-select';
 import S from './Bar.module.css';
 
 const numeratorOptions = Array(16)
@@ -8,13 +10,13 @@ const numeratorOptions = Array(16)
 
 const denominatorOptions = [2, 4, 8, 16].map(e => ({label: e, value: e}));
 
-type BarProps = {
-  numerator: number;
-  denominator: number;
-  setBar: React.Dispatch<React.SetStateAction<[number, number]>>;
-};
+const Bar = () => {
+  const {
+    bar: [numerator, denominator],
+    setNumerator,
+    setDenominator,
+  } = useContext(MetronomeContext) as MetronomeProps;
 
-const Bar = ({numerator, denominator, setBar}: BarProps) => {
   return (
     <div className={S.metric}>
       <Select
@@ -22,8 +24,8 @@ const Bar = ({numerator, denominator, setBar}: BarProps) => {
         isSearchable={false}
         styles={metronomeStyles}
         options={numeratorOptions}
-        value={{label: numerator, value: numerator}}
-        onChange={e => setBar(ps => [e!.value, ps[1]])}
+        value={numeratorOptions.find(o => o.label === numerator)}
+        onChange={e => setNumerator(e!.value)}
       />
       <p className={S.b}>/</p>
       <Select
@@ -31,8 +33,8 @@ const Bar = ({numerator, denominator, setBar}: BarProps) => {
         isSearchable={false}
         styles={metronomeStyles}
         options={denominatorOptions}
-        value={{label: denominator, value: denominator}}
-        onChange={e => setBar(ps => [ps[0], e!.value])}
+        value={denominatorOptions.find(d => d.label === denominator)}
+        onChange={e => setDenominator(e!.value)}
       />
     </div>
   );

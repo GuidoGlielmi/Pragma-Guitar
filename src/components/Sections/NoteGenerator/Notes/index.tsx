@@ -1,19 +1,16 @@
-import {AnimatePresence, motion} from 'framer-motion';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NoteGeneratorContext';
 import ArrowRight from '@/icons/ArrowRight';
 import Tick from '@/icons/Tick';
+import {AnimatePresence, motion} from 'framer-motion';
+import {useContext} from 'react';
 import Ellipsis from '../../../common/Ellipsis';
 import Streak from '../Streak';
-import NoteToPlay from './NoteToPlay';
 import NotePlayed from './NotePlayed';
+import NoteToPlay from './NoteToPlay';
 import './Notes.css';
 
-interface NotesProps {
-  frecuency: TPitchToPlay;
-  correct: boolean;
-  currStreak: number;
-}
-
-const Notes = ({correct, frecuency, currStreak}: NotesProps) => {
+const Notes = () => {
+  const {correct} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
   return (
     <motion.div
       style={{overflow: 'hidden'}}
@@ -32,7 +29,7 @@ const Notes = ({correct, frecuency, currStreak}: NotesProps) => {
       <div className='notesDisplay'>
         <NoteToPlay />
         <ArrowRight />
-        <NotePlayed frecuency={frecuency} />
+        <NotePlayed />
       </div>
       <AnimatePresence mode='wait'>
         <motion.div
@@ -46,7 +43,7 @@ const Notes = ({correct, frecuency, currStreak}: NotesProps) => {
           {correct ? (
             <>
               <Tick />
-              <Streak multiplier={currStreak} />
+              <Streak />
             </>
           ) : (
             <Ellipsis />

@@ -1,9 +1,9 @@
 import {AudioContext, AudioProps, audioEcosystem} from '@/contexts/AudioContext';
+import {LanguageContext, LanguageProps} from '@/contexts/LanguageContext';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NoteGeneratorContext';
 import {getFrecuencyFromPitch, getMiddleOctavePitch} from '@/helpers/pitch';
 import {useContext} from 'react';
 import './NoteToPlay.css';
-import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
-import {LanguageContext, LanguageProps} from '@/contexts/LanguageContext';
 
 const NoteToPlay = () => {
   const {getNoteWithOctave} = useContext(LanguageContext) as LanguageProps;
@@ -31,6 +31,7 @@ const NoteToPlay = () => {
 
   return (
     <button
+      id='noteToPlay'
       title='Press to listen'
       className='noteToPlay button'
       onMouseDown={startOscillatorHandler}

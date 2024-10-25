@@ -5,13 +5,13 @@
   align-items: center;
   gap: 5px;
   position: fixed;
+  top: 20px;
   right: 0;
-  margin: 20px;
+  margin-right: 20px;
   padding: 5px 5px 5px 10px;
   background-color: #ccc;
   color: #222;
   border-radius: 5px;
-  line-height: 1em;
   z-index: 123123;
 }
 

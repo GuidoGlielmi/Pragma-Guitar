@@ -1,9 +1,9 @@
-import {useContext, forwardRef} from 'react';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
 } from '@/contexts/NoteGeneratorTuningContext';
 import {AnimatePresence, motion} from 'framer-motion';
+import {forwardRef, useContext} from 'react';
 import StringDisplay from './StringDisplay';
 import StringGroupModifier from './StringGroupModifier';
 import S from './TuningBoard.module.css';
@@ -17,14 +17,14 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
         <div>
           <AnimatePresence initial={false}>
             {tuning.strings.map((_s, i, arr) => {
-              const inverseI = arr.length - 1 - i;
-              const inverseS = arr[inverseI];
+              const inverseIndex = arr.length - 1 - i;
+              const inverseIndexString = arr[inverseIndex];
               return (
                 <motion.div
-                  id={`${inverseS.id}`}
-                  key={inverseS.id}
+                  id={`${inverseIndexString.id}`}
+                  key={inverseIndexString.id}
                   style={{scrollMarginTop: 50}}
-                  layoutId={`${inverseS.id}`}
+                  layoutId={`${inverseIndexString.id}`}
                   initial={{opacity: 0, background: '#ffffff55'}}
                   animate={{
                     opacity: [0, 0, 0, 1],
@@ -33,7 +33,7 @@ const TuningBoard = forwardRef<HTMLDivElement>((_props, boardRef) => {
                   exit={{opacity: 0, x: '100%'}}
                   transition={{duration: 0.5, ease: [0, 1, 1, 1]}}
                 >
-                  <StringDisplay string={inverseS} height={i + 1} />
+                  <StringDisplay string={inverseIndexString} height={i + 1} />
                 </motion.div>
               );
             })}

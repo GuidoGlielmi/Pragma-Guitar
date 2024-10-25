@@ -1,12 +1,12 @@
-import {useRef, useEffect, useContext} from 'react';
-import S from './StringDisplay.module.css';
-import String from './String';
-import Note from './Note';
-import Buttons from './Buttons';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
 } from '@/contexts/NoteGeneratorTuningContext';
+import {useContext, useEffect, useRef} from 'react';
+import StringButtons from './Buttons';
+import Note from './Note';
+import String from './String';
+import S from './StringDisplay.module.css';
 
 interface StringDisplayProps {
   string: StringStateValue;
@@ -33,6 +33,7 @@ const StringDisplay = ({string: {id, pitch, originalPitch}, height}: StringDispl
     <div className={S.stringContainer} ref={stringRef}>
       <div>
         <input
+          aria-label="Set string's pitch range"
           type='checkbox'
           name='string'
           checked={selected}
@@ -41,7 +42,7 @@ const StringDisplay = ({string: {id, pitch, originalPitch}, height}: StringDispl
         <Note pitch={pitch} />
       </div>
       <String selected={selected} height={height} />
-      <Buttons id={id} />
+      <StringButtons id={id} />
     </div>
   );
 };

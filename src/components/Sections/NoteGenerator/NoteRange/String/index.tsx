@@ -1,16 +1,16 @@
-import {useContext, useRef} from 'react';
-import Select from 'react-select';
-import {customStylesMaxContent} from '@/constants/reactSelectStyles';
-import S from './String.module.css';
+import { TuningOptionWithButton } from '@/components/common/ReactSelect/TuningOptionWithButton';
+import { customStylesMaxContent } from '@/constants/reactSelectStyles';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
 } from '@/contexts/NoteGeneratorTuningContext';
-import TuningBoard from './TuningBoard';
-import {TuningOptionWithButton} from '@/components/common/ReactSelect/TuningOptionWithButton';
-import FretModifier from './FretModifier';
-import TuningSaver from './TuningSaver';
 import useTranslation from '@/hooks/useTranslation';
+import { useContext, useRef } from 'react';
+import Select from 'react-select';
+import FretModifier from './FretModifier';
+import S from './String.module.css';
+import TuningBoard from './TuningBoard';
+import TuningSaver from './TuningSaver';
 
 enum AddStringMessages {
   Upper = 'Add Upper string',
@@ -48,9 +48,9 @@ const StringNoteRange = () => {
             return t1.label === t2[0].label;
           }}
           styles={customStylesMaxContent}
-          options={tunings as ISelectableTuning[]}
+          options={tunings}
           // menuIsOpen={true}
-          value={tuning as ISelectableTuning}
+          value={tuning}
           onChange={e => {
             setTuning(e!.label);
           }}

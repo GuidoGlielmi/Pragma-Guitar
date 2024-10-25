@@ -1,9 +1,11 @@
-import {useEffect, useState} from 'react';
-import {AnimatePresence, motion} from 'framer-motion';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NoteGeneratorContext';
 import Flame from '@/icons/Flame';
+import {AnimatePresence, motion} from 'framer-motion';
+import {useContext, useEffect, useState} from 'react';
 import './Streak.css';
 
-const Streak = ({multiplier}: {multiplier: number}) => {
+const Streak = () => {
+  const {currStreak: multiplier} = useContext(NoteGeneratorContext) as NoteGeneratorProps;
   const [showed, setShowed] = useState(false);
 
   useEffect(() => {

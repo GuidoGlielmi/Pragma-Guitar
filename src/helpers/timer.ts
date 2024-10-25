@@ -1,3 +1,5 @@
+import {getSnappedValue} from './pitch';
+
 export function* pollRemainingTime(
   countdownTimeInSeconds: number,
 ): Generator<number, number, void> {
@@ -10,6 +12,14 @@ export function* pollRemainingTime(
     currentTime = new Date().getTime();
   }
 }
+
+export const simpleDebounce = (fn: () => void, delay = 50): (() => void) => {
+  let timer: number | undefined;
+  return () => {
+    clearTimeout(timer);
+    timer = setTimeout(fn, delay);
+  };
+};
 
 export const debounce = <T extends any[]>(
   fn: Task<T, void | (() => void)>,
@@ -85,21 +95,57 @@ export function controlledPollTask<T extends any[]>(
   ];
 }
 
-export function setPreciseTimeout(
-  task: () => void,
-  timeout: number = 0,
-  fromTimestamp = performance.now(),
-) {
+export function setPreciseTimeout(task: () => void, timeout = 0, fromTime = performance.now()) {
   if (~~timeout <= 9) throw new Error('msInterval should be more than 10ms');
 
-  const targetTime = fromTimestamp + timeout;
+  const targetTime = fromTime + timeout;
 
   const interval = setInterval(poll);
+
   function poll() {
     if (performance.now() < targetTime - HOLD_TIME) return;
     clearInterval(interval);
     while (performance.now() < targetTime);
     task();
   }
+
   return interval;
 }
+
+export const bpmToFrecuency = (bpm: number) => (1 / (bpm / 60)) * 1000;
+
+const defaultSubdivision = 2 ** 2;
+export const bpmToMs = (bpm: number, denominator: number) =>
+  bpmToFrecuency(bpm) * (defaultSubdivision / 2 ** Math.log2(denominator));
+
+export const getTapContext = (snapValue = 5) => {
+  let prevTime: number | undefined;
+  const values: number[] = [];
+
+  const resetter = simpleDebounce(() => {
+    values.length = 0;
+    prevTime = undefined;
+  }, 3_000);
+
+  return () => {
+    resetter();
+
+    const currTime = new Date().getTime();
+    if (prevTime === undefined) {
+      prevTime = currTime;
+      return null;
+    }
+
+    const deltaTimeInMinutes = (currTime - prevTime) / 1000 / 60;
+    const bpm = 1 / deltaTimeInMinutes;
+    const value = getSnappedValue(~~bpm, snapValue);
+
+    prevTime = currTime;
+    values.push(value);
+    return ~~arrayAvg(values);
+  };
+};
+
+export const arraySum = (arr: number[]) => arr.reduce((p, c) => p + c, 0);
+
+export const arrayAvg = (arr: number[]) => arraySum(arr) / arr.length;

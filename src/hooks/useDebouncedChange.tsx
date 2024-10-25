@@ -1,28 +1,32 @@
-import {useState, useEffect, useRef} from 'react';
+import {useEffect, useRef} from 'react';
 
-const useDebouncedChange = <T,>(newValue: T, timeWindow: number) => {
-  const [changedValue, setChangedValue] = useState<T>(newValue);
-  const prevValueRef = useRef<T>(newValue);
+/**
+ * It sets a state only if it's value doesn't change for a specificed window of time
+ */
+const useDebouncedChange = <T,>(
+  value: T,
+  setValue: (v: T) => void,
+  timeWindow: number,
+  condition?: (prevValue: T, value: T) => boolean,
+) => {
+  const prevValueRef = useRef<T>(value);
   const timeoutRef = useRef<number>();
 
   useEffect(() => {
-    if (newValue !== prevValueRef.current) {
+    clearTimeout(timeoutRef.current);
+    if (value !== prevValueRef.current) {
       // console.log(`change intention from "${prevValueRef.current} to "${value}"`);
-      clearTimeout(timeoutRef.current);
+      // this is necessary if there are more than 2 possible values
       timeoutRef.current = setTimeout(() => {
-        prevValueRef.current = newValue;
-        setChangedValue(newValue);
-        timeoutRef.current = undefined;
+        if (condition && !condition(prevValueRef.current, value)) return;
+        prevValueRef.current = value;
+        setValue(value);
       }, timeWindow);
-    } else {
-      // console.log('change intention withdrawn');
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = undefined;
+      return;
     }
+    // console.log('change intention withdrawn');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newValue]);
-
-  return [changedValue, setChangedValue] as [T, React.Dispatch<React.SetStateAction<T>>];
+  }, [value]);
 };
 
 export default useDebouncedChange;

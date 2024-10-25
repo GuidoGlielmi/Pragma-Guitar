@@ -22,7 +22,25 @@ const notificationTranslationEn: NotificationTranslation = {
   microphoneCloser: 'Get closer to the microphone',
 };
 
-export interface Translation extends NotificationTranslation {
+export interface NoteGeneratorTranslation {
+  freeMode: string;
+  inNoteRange: string;
+  inString: string;
+}
+
+const noteGeneratorTranslationsEs: NoteGeneratorTranslation = {
+  freeMode: 'Modo Libre',
+  inNoteRange: 'Sobre Rango',
+  inString: 'Sobre Cuerda',
+};
+
+const noteGeneratorTranslationsEn: NoteGeneratorTranslation = {
+  freeMode: 'Free Mode',
+  inNoteRange: 'In Note Range',
+  inString: 'In String',
+};
+
+export interface Translation extends NotificationTranslation, NoteGeneratorTranslation {
   devices: string;
   start: string;
   stop: string;
@@ -70,9 +88,6 @@ const translationsEs: Translation = {
   beat: 'Compás',
   tap: 'Pulse',
   playNote: 'Tocar Nota',
-  freeMode: 'Modo Libre',
-  inNoteRange: 'Sobre Rango',
-  inString: 'Sobre Cuerda',
   anyOctave: 'Cualquier Octava',
   exactOctave: 'Octava Exacta',
   countdown: 'Conteo',
@@ -96,6 +111,7 @@ const translationsEs: Translation = {
   every: 'Cada',
   bars: 'compases',
   increasingTempo: 'Incrementar tempo',
+  ...noteGeneratorTranslationsEs,
   ...notificationTranslationEs,
 };
 
@@ -109,9 +125,6 @@ const translationsEn: Translation = {
   beat: 'Beat',
   tap: 'Tap',
   playNote: 'Play Note',
-  freeMode: 'Free Mode',
-  inNoteRange: 'In Note Range',
-  inString: 'In String',
   anyOctave: 'Any Octave',
   exactOctave: 'Exact Octave',
   countdown: 'Countdown',
@@ -135,6 +148,7 @@ const translationsEn: Translation = {
   every: 'Every',
   bars: 'bars',
   increasingTempo: 'Increasing tempo',
+  ...noteGeneratorTranslationsEn,
   ...notificationTranslationEn,
 };
 

@@ -14,7 +14,19 @@
   align-items: stretch;
   gap: 10px;
 }
+
 .container > :last-child {
   display: flex;
   gap: 10px;
+}
+.container > :last-child span {
+  margin: auto;
+}
+
+.container > :last-child > div {
+  display: flex;
+}
+
+.container > :last-child > input[type='checkbox'] {
+  width: min-content;
 }

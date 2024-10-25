@@ -1,4 +1,4 @@
-const Reset = ({color = 'white'}) => {
+const ResetIcon = ({color = 'white'}) => {
   return (
     <svg
       fill={color}
@@ -15,4 +15,4 @@ const Reset = ({color = 'white'}) => {
   );
 };
 
-export default Reset;
+export default ResetIcon;

@@ -1,6 +1,6 @@
+import {LanguageContext, LanguageProps} from '@/contexts/LanguageContext';
 import {useContext} from 'react';
 import S from './NoteWithOctave.module.css';
-import {LanguageContext, LanguageProps} from '@/contexts/LanguageContext';
 
 const NoteWithOctave = ({
   pitch,

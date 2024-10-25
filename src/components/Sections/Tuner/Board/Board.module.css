@@ -3,10 +3,11 @@
   justify-content: center;
   align-items: flex-end;
   position: relative;
-  max-width: 95%;
-  width: 400px;
+  /* max-width: 95%; */
+  /* width: 400px; */
+  width: min(100%, 400px);
   height: 300px;
-  margin: 0 30px;
+  /* margin: 0 30px; */
   overflow: hidden;
   background-image: linear-gradient(to bottom, #333, #111);
   perspective: 1000px;
@@ -101,7 +102,7 @@
 
 @media (max-width: 768px) {
   .container {
-    margin: auto;
+    /* margin: auto; */
     padding: 5px 15px;
   }
 }

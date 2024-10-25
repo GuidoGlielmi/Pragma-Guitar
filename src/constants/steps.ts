@@ -1,4 +1,4 @@
-import {MAX_COUNTDOWN_VALUE} from './notes';
+import {MAX_COUNTDOWN_VALUE} from '.';
 
 export const noteGenerator = [
   {
@@ -27,7 +27,7 @@ export const noteGenerator = [
   },
   {
     title: 'Free Mode',
-    element: '#FreeMode',
+    element: '#freeMode',
     intro: {
       en: 'You can play the note regardless of its octave',
       es: 'Toque las notas sin tener en cuenta su octava',
@@ -35,14 +35,14 @@ export const noteGenerator = [
   },
   {
     title: 'Custom Interval',
-    element: '#InNoteRange',
+    element: '#inNoteRange',
     intro: {en: 'Or select any custom interval you desire', es: 'O seleccione un intervalo'},
     click: true,
     position: 'top',
   },
   {
     title: 'Notes of a String',
-    element: '#InString',
+    element: '#inString',
     intro: {
       en: 'Here you can select, customize and save tunings, starting from a list of the most common ones',
       es: 'Aquí puede seleccionar, modificar y guardar tonalidades, con una lista de las más comunes a su disposición',
@@ -60,24 +60,6 @@ export const noteGenerator = [
     },
   },
   {
-    title: 'Subtract one Second',
-    element: '#minus',
-    intro: {
-      en: 'You can subtract seconds one by one...',
-      es: 'Puede substraer segundos de a uno...',
-    },
-  },
-  {
-    title: 'Add one Second',
-    element: '#plus',
-    intro: {en: 'Add them one by one...', es: 'Añadirlos de a uno...'},
-  },
-  {
-    title: 'Enter any value',
-    element: '#updateFrecuency',
-    intro: {en: 'Or enter any value in this box', es: 'O ingresar el valor que desee'},
-  },
-  {
     title: "Up and at 'em!",
     element: '#start',
     intro: {
@@ -88,11 +70,12 @@ export const noteGenerator = [
   },
   {
     title: 'Your Note to Play',
-    element: '.noteToPlay',
+    element: '#noteToPlay',
     intro: {
       en: 'This box will show you the generated note for you to play. You can also press it to hear what it sounds like',
       es: 'Este cuadro le mostrará la nota que deberá tocar. También puede presionarlo para escuchar cómo suena',
     },
+    updatable: true,
   },
   {
     title: 'Note you Played',
@@ -101,5 +84,6 @@ export const noteGenerator = [
       en: 'And this box shows you what you are playing. \n Come on! whistle a little to see how it goes...',
       es: 'Y este cuadro te muestra lo que estás jugando. \n¡Vamos! silba un poco a ver como va...',
     },
+    updatable: true,
   },
 ] as StepWithActionAndTranslation[];

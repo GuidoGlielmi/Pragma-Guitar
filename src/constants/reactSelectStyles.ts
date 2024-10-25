@@ -1,31 +1,40 @@
 import {GroupBase, StylesConfig} from 'react-select';
 
-export const customStyles = {
-  control: (defaultStyles: any) => ({
+export const customStyles: StylesConfig<
+  {
+    value: number;
+  },
+  false,
+  GroupBase<{
+    value: number;
+  }>
+> = {
+  control: defaultStyles => ({
     ...defaultStyles,
     minWidth: 120,
     height: 30,
     minHeight: 30,
   }),
-  indicatorsContainer: (provided: any, _state: any) => ({
+  indicatorsContainer: provided => ({
     ...provided,
     height: 30,
     minHeight: 30,
   }),
-  option: (provided: any, _state: any) => ({
+  option: (provided, state) => ({
     ...provided,
     color: '#333',
+    ...(state.isDisabled && {backgroundColor: '#00000011'}),
   }),
 };
 
-export const customStylesMaxContent = {
+export const customStylesMaxContent: StylesConfig<any, false, GroupBase<any>> = {
   ...customStyles,
-  container: (provided: any) => ({
+  container: provided => ({
     ...provided,
     width: 'max-content',
     margin: 'auto',
   }),
-  option: (provided: any, state: any) => {
+  option: (provided, state) => {
     return {
       ...provided,
       color: state.isSelected ? 'white' : '#464646',
@@ -36,50 +45,7 @@ export const customStylesMaxContent = {
   },
 };
 
-export const metronomeStyles = {
-  control: (defaultStyles: any) => ({
-    ...defaultStyles,
-    minHeight: 'unset',
-    padding: 0,
-    background: 'transparent',
-    color: 'white',
-    border: 0,
-    maxWidth: '100%',
-    maxHeight: '100%',
-  }),
-  singleValue: (provided: any, _state: any) => ({
-    ...provided,
-    fontFamily: 'painter',
-    color: 'white',
-  }),
-  valueContainer: (provided: any, _state: any) => ({
-    ...provided,
-    color: 'white',
-    padding: 0,
-    width: '100%',
-    display: 'block',
-    flex: 'unset',
-  }),
-  dropdownIndicator: (provided: any, _state: any) => ({
-    ...provided,
-    padding: 0,
-  }),
-  indicatorsContainer: (provided: any, _state: any) => ({
-    ...provided,
-    width: '100%',
-    opacity: 0,
-    // padding: 5,
-  }),
-  option: (provided: any, _state: any) => ({
-    ...provided,
-    color: '#333',
-    padding: 2,
-  }),
-  menu: (provided: any, _state: any) => ({
-    ...provided,
-    width: 40,
-  }),
-} as StylesConfig<
+export const metronomeStyles: StylesConfig<
   {
     label: number;
     value: number;
@@ -89,4 +55,47 @@ export const metronomeStyles = {
     label: number;
     value: number;
   }>
->;
+> = {
+  control: defaultStyles => ({
+    ...defaultStyles,
+    minHeight: 'unset',
+    padding: 0,
+    background: 'transparent',
+    color: 'white',
+    border: 0,
+    maxWidth: '100%',
+    maxHeight: '100%',
+  }),
+  singleValue: provided => ({
+    ...provided,
+    fontFamily: 'painter',
+    color: 'white',
+  }),
+  valueContainer: provided => ({
+    ...provided,
+    color: 'white',
+    padding: 0,
+    width: '100%',
+    display: 'block',
+    flex: 'unset',
+  }),
+  dropdownIndicator: provided => ({
+    ...provided,
+    padding: 0,
+  }),
+  indicatorsContainer: provided => ({
+    ...provided,
+    width: '100%',
+    opacity: 0,
+    // padding: 5,
+  }),
+  option: provided => ({
+    ...provided,
+    color: '#333',
+    padding: 2,
+  }),
+  menu: provided => ({
+    ...provided,
+    width: 40,
+  }),
+};

@@ -16,6 +16,11 @@ export class AudioEcosystem extends AudioContext {
     this.suspend();
   }
 
+  async suspend() {
+    this.stopAudio();
+    await super.suspend();
+  }
+
   get areStreamsEmpty() {
     return !!this.micStream;
   }
@@ -82,8 +87,8 @@ export class AudioEcosystem extends AudioContext {
 
   stopAudio() {
     this.audio?.stop(this.#stopTime);
+    this.audio?.disconnect(); // necessary to avoid resuming the audio on AudioContext.resume()
     this.audio = undefined;
-    // when an AudioNode get stopped and no references are left it will disconnect itself and it is thus not needed to explicitly call disconnect() after stop().
   }
 
   // -------------------------
@@ -142,15 +147,17 @@ export class AudioEcosystem extends AudioContext {
   }
 
   #stopBuffer() {
-    const gainNode = this.#createFadeOutGain();
-    this.audio?.connect(gainNode);
-    this.audio?.disconnect(this.destination);
-    gainNode.connect(this.destination);
+    // const gainNode = this.#createFadeOutGain();
+    // this.audio?.connect(gainNode);
+    // this.audio?.disconnect(this.destination);
+    // gainNode.connect(this.destination);
     this.stopAudio();
   }
 
   playBuffer(buffer: AudioBuffer, overlapping: boolean = true) {
     if (!overlapping) this.#stopBuffer();
+    this.audio?.stop();
+
     const audioNode = this.#createBufferSourceNode(buffer);
     this.audio = audioNode;
     audioNode.connect(this.destination);

@@ -1,33 +1,39 @@
-import {useContext} from 'react';
-import ChevronDown from '@/icons/ChevronDown';
-import Reset from '@/icons/Reset';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
 } from '@/contexts/NoteGeneratorTuningContext';
+import ChevronDown from '@/icons/ChevronDown';
+import ResetIcon from '@/icons/Reset';
+import {useContext} from 'react';
 import S from './StringGroupModifier.module.css';
 
 const StringGroupModifier = () => {
-  const {reset, incrementPitch, decrementPitch} = useContext(
-    NoteGeneratorTuningContext,
-  ) as NoteGeneratorTuningProps;
+  const {reset, modifyPitch} = useContext(NoteGeneratorTuningContext) as NoteGeneratorTuningProps;
 
   return (
     <div className={S.allStringsButtonsContainer}>
-      <button className={S.resetButton} onClick={reset} style={{padding: 0}} title='Reset tuning'>
-        <Reset />
+      <button
+        className={S.resetButton}
+        onClick={reset}
+        style={{padding: 0}}
+        title='Reset tuning'
+        aria-label='Reset tuning'
+      >
+        <ResetIcon />
       </button>
       <div>
         <button
+          aria-label='Increase all strings by a half step'
           title='Increase all strings'
-          onClick={() => incrementPitch()}
+          onClick={() => modifyPitch(true)}
           style={{transform: 'rotateZ(180deg)'}}
         >
           <ChevronDown color='white' />
         </button>
         <button
+          aria-label='Decrease all strings by a half step'
           title='Decrease all strings'
-          onClick={() => decrementPitch()}
+          onClick={() => modifyPitch(false)}
           style={{transform: 'translateY(2px)'}}
         >
           <ChevronDown color='white' />

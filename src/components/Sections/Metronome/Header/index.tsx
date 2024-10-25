@@ -1,28 +1,32 @@
 import {MetronomeContext, MetronomeProps} from '@/contexts/MetronomeContext';
-import useTap from '@/hooks/useTap';
+import {getTapContext} from '@/helpers/timer';
 import useTranslation from '@/hooks/useTranslation';
-import {useContext, useEffect} from 'react';
+import {FC, PropsWithChildren, useContext, useRef} from 'react';
 
-const Header = () => {
-  const {bpmInput, setBpm} = useContext(MetronomeContext) as MetronomeProps;
+const MetronomeHeader: FC<PropsWithChildren> = ({children}) => {
+  const {setBpm} = useContext(MetronomeContext) as MetronomeProps;
 
-  const [tapButton, tappedBpm] = useTap();
+  const [beatString, tapString] = useTranslation(['beat', 'tap']);
 
-  useEffect(() => {
-    if (tappedBpm) setBpm(tappedBpm);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tappedBpm]);
-  const [beatString] = useTranslation('beat');
+  const tapContextRef: Readonly<React.MutableRefObject<() => number | null>> = useRef(
+    getTapContext(),
+  );
 
   return (
     <div>
       <h2>
         <span>{beatString}</span>
-        {bpmInput}
-        {tapButton}
+        {children}
+        <button
+          onClick={() => {
+            setBpm(ps => tapContextRef.current() ?? ps);
+          }}
+        >
+          {tapString}
+        </button>
       </h2>
     </div>
   );
 };
 
-export default Header;
+export default MetronomeHeader;

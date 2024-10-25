@@ -1,18 +1,23 @@
-import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NodeGeneratorContext';
+import {LanguageContext, LanguageProps} from '@/contexts/LanguageContext';
+import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NoteGeneratorContext';
+import usePitchWithValue from '@/hooks/usePitchWithValue';
 import {useContext} from 'react';
 import './NotePlayed.css';
-import {centsOffFromPitch, closestPitchFromFrequency} from '@/libs/Helpers';
-import {LanguageContext, LanguageProps} from '@/contexts/LanguageContext';
+import {closestPitchFromFrequency, centsOffFromPitch} from '@/helpers/pitch';
 
 const MAX_SHADOW_Y_POSITION = 8;
 
-const NotePlayed = ({frecuency}: {frecuency: TPitchToPlay}) => {
+const NotePlayed = () => {
   const {getNoteWithOctave} = useContext(LanguageContext) as LanguageProps;
   const {
     pitchRange: [from, to],
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
+
+  const frecuency = usePitchWithValue();
+
   const pitch = closestPitchFromFrequency(frecuency) as number;
   const detune = centsOffFromPitch(frecuency, pitch);
+
   const [notePlayed, octavePlayed] = getNoteWithOctave(pitch);
 
   const computedShadowYPosition = MAX_SHADOW_Y_POSITION * -(((detune || 0) * 2) / 100);

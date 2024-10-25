@@ -1,10 +1,10 @@
 import {useContext, useState} from 'react';
-import ChevronDown from '../../icons/ChevronDown';
 import {AudioContext, AudioProps} from '../../contexts/AudioContext';
-import S from './DeviceList.module.css';
-import Refresh from '../../icons/Refresh';
 import useTranslation from '../../hooks/useTranslation';
+import ChevronDown from '../../icons/ChevronDown';
+import Refresh from '../../icons/Refresh';
 import OutsideClickCloser from '../common/OutsideClickCloser';
+import S from './DeviceList.module.css';
 
 const DeviceList = () => {
   const {devices, setDevices, selectedDeviceId, setSelectedDeviceId} = useContext(
