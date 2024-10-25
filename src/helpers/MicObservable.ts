@@ -9,7 +9,7 @@ const pitchDetector = PitchDetector.forFloat32Array(buflen);
 const buf = new Float32Array(buflen);
 
 class MicObservable {
-  private observable = new Observable<TPitchToPlay>();
+  private observable = new Observable<number>();
   private updateInterval: number | undefined;
 
   isRunning() {
@@ -18,10 +18,10 @@ class MicObservable {
 
   updatePitch() {
     const frecuency = getPitch(pitchDetector, buf);
-    this.observable.notify(frecuency);
+    if (frecuency !== null) this.observable.notify(frecuency);
   }
 
-  start(func: TObserver<TPitchToPlay>) {
+  start(func: TObserver<number>) {
     this.observable.subscribe(func);
     if (!this.isRunning()) {
       this.updatePitch();
@@ -29,7 +29,7 @@ class MicObservable {
     }
   }
 
-  stop(func: TObserver<TPitchToPlay>) {
+  stop(func: TObserver<number>) {
     clearInterval(this.updateInterval);
     this.observable.unsubscribe(func);
     this.updateInterval = undefined;

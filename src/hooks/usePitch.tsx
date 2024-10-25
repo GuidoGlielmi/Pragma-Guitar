@@ -4,11 +4,7 @@ import {AudioContext, AudioProps} from '../contexts/AudioContext';
 
 const usePitch = (setFrecuency: (v: TPitchToPlay) => void) => {
   const {started, startMic, stopMic} = useContext(AudioContext) as AudioProps;
-  const setterRef: Readonly<MutableRefObject<(v: TPitchToPlay) => void>> = useRef(
-    (v: TPitchToPlay) => {
-      v && setFrecuency(v);
-    },
-  );
+  const setterRef: Readonly<MutableRefObject<(v: number) => void>> = useRef(setFrecuency);
 
   useEffect(() => {
     if (!started) return;

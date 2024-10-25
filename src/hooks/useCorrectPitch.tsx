@@ -1,8 +1,5 @@
-import {
-  MAX_ACCEPTABLE_DETUNE,
-  MS_HOLD_TIME_TO_CONSIDER_PITCH_READING_TO_BE_ACCURATE,
-} from '@/constants';
-import {areSameNote, centsOffFromPitch, closestPitchFromFrequency} from '@/helpers/pitch';
+import {MS_HOLD_TIME_TO_CONSIDER_PITCH_READING_TO_BE_ACCURATE} from '@/constants';
+import {isCorrectPitch} from '@/helpers/pitch';
 import {useEffect, useRef} from 'react';
 import usePitch from './usePitch';
 
@@ -54,15 +51,5 @@ const useCorrectPitch = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [target, exactOctave, ...extraDependencies]);
 };
-
-function isCorrectPitch(frecuency: TPitchToPlay, target: TPitchToPlay, exactOctave: boolean) {
-  if (frecuency === null || target === null) return false;
-
-  const pitch = closestPitchFromFrequency(frecuency) as number;
-  if (!(exactOctave ? pitch === target : areSameNote(pitch, target))) return false;
-
-  const detune = centsOffFromPitch(frecuency, target) as number;
-  return Math.abs(detune) > MAX_ACCEPTABLE_DETUNE;
-}
 
 export default useCorrectPitch;

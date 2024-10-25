@@ -88,12 +88,14 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
   };
 
   const startMic = async () => {
-    return askDevicePermission(selectedDeviceId)
-      .then(() => {
-        audioEcosystem.startMic();
-        return true;
-      })
-      .catch(() => false);
+    try {
+      await askDevicePermission(selectedDeviceId);
+      await audioEcosystem.startMic();
+      return true;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
   };
 
   const startOscillator = (frec: number) => audioEcosystem.setOscillatorFrecuency(frec);

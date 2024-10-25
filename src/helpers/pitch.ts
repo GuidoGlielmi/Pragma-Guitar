@@ -1,6 +1,7 @@
 import {
   C5_PITCH,
   CENTS_IN_OCTAVE,
+  MAX_ACCEPTABLE_DETUNE,
   NOTES_IN_OCTAVE_AMOUNT,
   REFERENCE_FREQUENCY,
   SEMITONE_OFFSET,
@@ -78,3 +79,25 @@ export const getFrecuencyDamper = (strength = 3) => {
 export function getSnappedValue(value: number, snapUnit = 5, multiplier = 1) {
   return Math.round((value * multiplier) / snapUnit) * snapUnit;
 }
+
+export function isCorrectPitch(
+  frecuency: TPitchToPlay,
+  target: TPitchToPlay,
+  exactOctave: boolean,
+) {
+  if (frecuency === null || target === null) return false;
+
+  const pitch = closestPitchFromFrequency(frecuency) as number;
+  if (!(exactOctave ? pitch === target : areSameNote(pitch, target))) return false;
+
+  const detune = centsOffFromPitch(frecuency, target) as number;
+  return Math.abs(detune) > MAX_ACCEPTABLE_DETUNE;
+}
+
+// const FRECUENCY_SNAP_RATIO = 12;
+
+// function snapFrequency(frequency: number) {
+//   const steps = Math.round(FRECUENCY_SNAP_RATIO * 12 * Math.log2(frequency / REFERENCE_FREQUENCY));
+//   const snappedFrequency = REFERENCE_FREQUENCY * Math.pow(2, steps / (FRECUENCY_SNAP_RATIO * 12));
+//   return ~~snappedFrequency;
+// }
