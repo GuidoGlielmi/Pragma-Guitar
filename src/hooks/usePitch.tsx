@@ -1,32 +1,44 @@
-import {micObservable} from '@/helpers/MicObservable';
+import {ToastContext, ToastProps} from '@/contexts/ToastContext';
 import {MutableRefObject, useContext, useEffect, useRef} from 'react';
 import {AudioContext, AudioProps} from '../contexts/AudioContext';
 
 const usePitch = (setFrecuency: (v: TPitchToPlay) => void) => {
-  const {started, startMic, stopMic} = useContext(AudioContext) as AudioProps;
-  const setterRef: Readonly<MutableRefObject<(v: number) => void>> = useRef(setFrecuency);
+  const {started, startMic} = useContext(AudioContext) as AudioProps;
+  const {close, setToastOptions} = useContext(ToastContext) as ToastProps;
+
+  const timeout = useRef<number>();
+  const setterRef: Readonly<MutableRefObject<(v: GetPitchReturnType) => void>> = useRef(
+    ({frecuency}: GetPitchReturnType) => {
+      const prepareToast = () => {
+        if (timeout.current !== undefined) return;
+        timeout.current = setTimeout(() => {
+          timeout.current = undefined;
+          setToastOptions({message: 'noAudioDetected', duration: -1});
+        }, 5000);
+      };
+
+      if (frecuency === null) prepareToast();
+      else {
+        close();
+        clearTimeout(timeout.current);
+        timeout.current = undefined;
+        setFrecuency(frecuency);
+      }
+    },
+  );
 
   useEffect(() => {
-    if (!started) return;
-
     (async () => {
-      const allowed = await startMic();
+      const allowed = await startMic(setterRef.current);
       if (!allowed) return;
-      micObservable.start(setterRef.current);
     })();
     return () => {
+      close();
       setFrecuency(null);
-      stopMic();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      micObservable.stop(setterRef.current);
+      clearTimeout(timeout.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [started]);
-
-  return [
-    () => micObservable.start(setterRef.current),
-    () => micObservable.stop(setterRef.current),
-  ] as [suscriber: () => void, unsuscriber: () => void];
 };
 
 export default usePitch;

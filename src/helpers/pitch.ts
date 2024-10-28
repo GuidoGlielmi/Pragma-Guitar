@@ -1,6 +1,7 @@
 import {
   C5_PITCH,
   CENTS_IN_OCTAVE,
+  HIGHER_MIC_AMPLITUDE_THRESHOLD,
   MAX_ACCEPTABLE_DETUNE,
   NOTES_IN_OCTAVE_AMOUNT,
   REFERENCE_FREQUENCY,
@@ -9,6 +10,7 @@ import {
 } from '@/constants';
 import {PitchDetector} from 'pitchy';
 import {audioEcosystem} from '../contexts/AudioContext';
+import {AudioEcosystem} from './AudioEcosystem';
 
 /** Returns the same type of {@link frequency} */
 export const closestPitchFromFrequency = (frequency: TPitchToPlay) => {
@@ -55,18 +57,30 @@ export const getOctave = (pitch: TPitchToPlay) => {
   return pitch !== null ? Math.floor(pitch / 12) - 1 : null;
 };
 
-export const getPitch = (
-  pitchDetector: PitchDetector<Float32Array>,
-  buf: Float32Array,
-  minFrecuency = 60,
-  maxFrecuency = 10000,
-): TPitchToPlay => {
-  audioEcosystem.getAnalyserFloatTimeDomainData(buf);
-  const [frecuency, clarity] = pitchDetector.findPitch(buf, audioEcosystem.sampleRate);
-  // console.log({frecuency, clarity});
-  if (frecuency < minFrecuency || frecuency > maxFrecuency || clarity < 0.9) return null;
-  return frecuency;
+const pitchDetector = PitchDetector.forFloat32Array(AudioEcosystem.buflen);
+
+/**
+ * Returns `undefined` if audio levels is too low, otherwise
+ */
+export const getPitch = (audioEcosystem: AudioEcosystem): GetPitchReturnType => {
+  audioEcosystem.getAnalyserFloatTimeDomainData(AudioEcosystem.buf);
+  const [frecuency] = pitchDetector.findPitch(AudioEcosystem.buf, audioEcosystem.sampleRate);
+  const micAmplitude = getMicAmplitude();
+  // console.log({frecuency, micAmplitude});
+  return {
+    frecuency: micAmplitude > HIGHER_MIC_AMPLITUDE_THRESHOLD ? frecuency : null,
+    amplitude: micAmplitude,
+  };
 };
+
+export function getMicAmplitude() {
+  const bufferLength = audioEcosystem.getAnalyserFrequencyBitCount();
+  let sum = 0;
+  for (let i = 0; i < bufferLength; i++) {
+    sum += Math.abs(AudioEcosystem.buf[i]); // Values between -1.0 and 1.0
+  }
+  return sum / bufferLength; // Values between 0 and 1
+}
 
 export const getFrecuencyDamper = (strength = 3) => {
   let prevF: number;

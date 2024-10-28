@@ -3,6 +3,8 @@ import {Step} from 'intro.js';
 declare global {
   type TObserver<T> = (data: T) => void;
 
+  type GetPitchReturnType = {frecuency: number | null; amplitude: number};
+
   type TPitchToPlay = number | null;
   /** `[null, null]` represents free mode */
   type TPitchRange = [from: number, to: number] | [from: null, to: null];

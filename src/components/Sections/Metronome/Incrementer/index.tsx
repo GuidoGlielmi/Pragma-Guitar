@@ -44,24 +44,21 @@ const Incrementer = () => {
       </div>
       <div>
         <div>
-          <input
-            style={{width: 'min-content'}}
-            type='checkbox'
-            checked={looped}
-            onChange={e => setLooped(e.target.checked)}
-          />
+          <input type='checkbox' checked={looped} onChange={e => setLooped(e.target.checked)} />
           <span>{repeatMetronomePatternString}</span>{' '}
         </div>
-        <input
-          value={maxBpm}
-          onChange={e => {
-            setMaxBpm(e.target.valueAsNumber);
-          }}
-          type='number'
-        />
-        <span style={{cursor: 'help'}} title='Beats por minuto'>
-          bpm
-        </span>{' '}
+        <div>
+          <input
+            value={maxBpm}
+            onChange={e => {
+              setMaxBpm(e.target.valueAsNumber);
+            }}
+            type='number'
+          />
+          <span style={{cursor: 'help'}} title='Beats por minuto'>
+            bpm
+          </span>
+        </div>
       </div>
     </div>
   );

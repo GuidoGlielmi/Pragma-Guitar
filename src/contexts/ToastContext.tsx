@@ -4,14 +4,18 @@ import {motion} from 'framer-motion';
 import {PropsWithChildren, createContext, useMemo, useRef, useState} from 'react';
 import Toast from '../components/common/Toast';
 
-type TToastOptions = {message: keyof Translation | ''; duration?: number};
-type TToastOptionsWithShow = TToastOptions & {show: boolean};
+interface IToastOptions {
+  message: keyof Translation | '';
+  /** In ms. `duration: -1` means infinite duration */
+  duration?: number;
+}
+type TToastOptionsWithShow = IToastOptions & {show: boolean};
 
 const initialToastOptions = {message: '' as const, duration: 0, show: false};
 
 export interface ToastProps {
   /** `duration: -1` means infinite duration */
-  setToastOptions: (toastOptions: TToastOptions) => void;
+  setToastOptions: (toastOptions: IToastOptions) => void;
   close: (closer?: (message: string) => boolean) => void;
 }
 
@@ -27,7 +31,7 @@ const ToastProvider = ({children}: PropsWithChildren) => {
   const toastMessageRef = useRef(toastOptions.message);
   const closeTimeoutRef = useRef<number>();
 
-  const setToastOptionsHandler = (to: TToastOptions) => {
+  const setToastOptionsHandler = (to: IToastOptions) => {
     clearTimeout(closeTimeoutRef.current);
     setToastOptions({...to, show: true});
     toastMessageRef.current = to.message;
@@ -40,6 +44,7 @@ const ToastProvider = ({children}: PropsWithChildren) => {
   };
 
   const close = (closer?: (message: string) => boolean) => {
+    if (toastOptions.show) return;
     if (closer === undefined || closer(toastMessageRef.current)) {
       clearTimeout(closeTimeoutRef.current);
       setToastOptions(ps => ({...ps, show: false}));

@@ -6,16 +6,17 @@ main {
   display: flex;
   flex-direction: column;
   gap: 5vh;
+  position: relative;
   /* min-width: max-content; */
   height: 100%;
-  padding: 5vw;
+  padding: 12vh 5vw 5vw 5vw;
   background: #2b2a33;
 }
 
 main > *:last-child {
   align-self: center;
-  max-width: 450px;
-  margin: 0 0 7vh;
+  width: 100%;
+  margin: 0 0 12vh;
 }
 
 main > button {
@@ -24,10 +25,46 @@ main > button {
   margin: 0 auto;
 }
 
+.gaugeContainer {
+  position: fixed;
+  left: 0;
+  margin: 10px;
+  bottom: 0;
+  padding: 10px;
+  z-index: 100000;
+  background: #00000052;
+  border-radius: 10px;
+}
+
+.gaugeContainer > div {
+  position: relative;
+  width: min(100px, 22vw);
+}
+
+.gaugeNeedle {
+  position: absolute;
+  width: 3px;
+  height: 185%;
+  left: 50%;
+  bottom: -93%;
+  transition: transform 0.5s cubic-bezier(0.15, 0.41, 0.17, 1.02);
+}
+
+.gaugeNeedle::before {
+  content: '';
+  position: absolute;
+  height: 46%;
+  width: 100%;
+  box-shadow: -5px 2px 0 #00000042;
+}
+
 @media (min-width: 786px) {
   main {
     width: 55vw;
     margin: auto;
+    background: #2b2a33;
+  }
+  .gaugeContainer {
     background: #2b2a33;
   }
 }

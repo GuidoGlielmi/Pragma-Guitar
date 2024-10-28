@@ -6,7 +6,7 @@ import {Outlet} from 'react-router-dom';
 
 const SuspensedSection = () => {
   return (
-    <Suspense fallback={<Skeleton width='min(95vw, 400px)' height='min(50vh, 500px)' />}>
+    <Suspense fallback={<Skeleton width='min(95vw, 400px, 100%)' height='min(50vh, 500px)' />}>
       <LazyMotion features={domAnimation}>
         <m.div
           key={location.pathname}

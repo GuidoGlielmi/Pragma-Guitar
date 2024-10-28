@@ -1,6 +1,13 @@
 import {TLanguages} from '@/helpers/translations';
 
 // ----------------------
+
+export const GAUGE_MAX_DEGREE_RANGE = 75;
+export const LOWER_MIC_AMPLITUDE_THRESHOLD = 0.01;
+export const HIGHER_MIC_AMPLITUDE_THRESHOLD = 0.1;
+
+// ----------------------
+
 export const REFERENCE_FREQUENCY = 440;
 export const NOTES_IN_OCTAVE_AMOUNT = 12;
 export const SEMITONE_OFFSET = 69;
@@ -44,6 +51,7 @@ export const PERSISTED_MAX_STREAKS_VARIABLE_NAME = 'maxStreaks';
 export const PERSISTED_COUNTDOWN_INITIAL_VALUE_VARIABLE_NAME = 'countdownInitialValue';
 export const LOOPING_MAX_BMP_VARIABLE_NAME = 'loopingMaxBpm';
 export const BAR_COUNT_UNTIL_INCREMENT_VARIABLE_NAME = 'barCountUntilIncrement';
+export const DEFAULT_DEVICE_ID_STORAGE_KEY = 'defaultDeviceId';
 
 // ----------------------
 

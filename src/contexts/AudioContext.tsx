@@ -1,4 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
+import {DEFAULT_DEVICE_ID_STORAGE_KEY} from '@/constants';
+import {MicObservable} from '@/helpers/MicObservable';
 import {Section} from '@/routes';
 import {FC, PropsWithChildren, createContext, useContext, useMemo, useState} from 'react';
 import {AudioEcosystem} from '../helpers/AudioEcosystem';
@@ -11,8 +13,12 @@ export interface AudioProps {
   stop: () => Promise<void>;
   startOscillator: (frec: number) => void;
   stopOscillator: () => void;
-  startMic: () => Promise<boolean>;
+  /**
+   * @param observer callback to get the frecuency and amplitude recorded
+   */
+  startMic: (observer: TObserver<GetPitchReturnType>) => Promise<boolean>;
   stopMic: () => void;
+  subscribeMicListener: (observer: TObserver<GetPitchReturnType>) => void;
   devices: MediaDeviceInfo[];
   setDevices: () => Promise<boolean>;
   selectedDeviceId: string | undefined;
@@ -20,9 +26,9 @@ export interface AudioProps {
 }
 
 const microphoneAccessMessage = 'microphoneAccess';
-const DEFAULT_DEVICE_ID_STORAGE_KEY = 'defaultDeviceId';
 
 export const audioEcosystem = new AudioEcosystem();
+const micObservable = new MicObservable(audioEcosystem);
 
 export const AudioContext = createContext<AudioProps | null>(null);
 
@@ -36,7 +42,6 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
       initialValue: '',
     },
   );
-
   const [started, setStarted] = useState<Section | null>(null);
 
   const start = async () => {
@@ -47,6 +52,7 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
   const stop = async () => {
     await audioEcosystem.suspend();
     setStarted(null);
+    if (!started) micObservable.stop();
   };
 
   const askDevicePermission = async (requestedDeviceId: string) => {
@@ -87,10 +93,13 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
     }
   };
 
-  const startMic = async () => {
+  const startMic = async (listener: TObserver<GetPitchReturnType>) => {
+    if (!started) return false;
     try {
       await askDevicePermission(selectedDeviceId);
       await audioEcosystem.startMic();
+      micObservable.subscribe(listener);
+      micObservable.start();
       return true;
     } catch (err) {
       console.log(err);
@@ -100,7 +109,9 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
 
   const startOscillator = (frec: number) => audioEcosystem.setOscillatorFrecuency(frec);
   const stopOscillator = () => audioEcosystem.setOscillatorFrecuency(0);
-
+  const subscribeMicListener = (listener: TObserver<GetPitchReturnType>) => {
+    micObservable.subscribe(listener);
+  };
   const contextValue = useMemo(
     () => ({
       started,
@@ -110,6 +121,7 @@ const AudioProvider: FC<PropsWithChildren> = ({children}) => {
       stopOscillator,
       startMic,
       stopMic: () => audioEcosystem.stopMic(),
+      subscribeMicListener,
       devices,
       setDevices: setDevicesHandler,
       selectedDeviceId,

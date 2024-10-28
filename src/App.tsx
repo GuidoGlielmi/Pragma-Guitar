@@ -4,6 +4,7 @@ import {useLocation} from 'react-router-dom';
 import './App.css';
 import DeviceList from './components/DeviceList';
 import EmailButton from './components/Email';
+import GaugeMeter from './components/GaugeMeter';
 import Languages from './components/Language';
 import NavBar from './components/Navbar';
 import SuspensedSection from './components/Sections';
@@ -27,6 +28,7 @@ function App() {
       <NavBar />
       <StartButton />
       <EmailButton />
+      <GaugeMeter />
       <SuspensedSection />
     </main>
   );

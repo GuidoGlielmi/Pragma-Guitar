@@ -14,7 +14,7 @@ import {bpmLimiter} from '@/helpers/limiter';
 import {bpmToMs} from '@/helpers/timer';
 import useInitialBufferLoad from '@/hooks/useInitialBufferLoad';
 import useLocalStorage from '@/hooks/useLocalStorage';
-import usePlayAudio from '@/hooks/usePlayAudio';
+import usePlayAudioLooped from '@/hooks/usePlayAudioLooped';
 import React, {FC, createContext, useContext, useEffect, useMemo, useReducer} from 'react';
 import S from '../components/Sections/Metronome/Metronome.module.css';
 import {AudioContext, AudioProps} from './AudioContext';
@@ -223,9 +223,13 @@ const MetronomeProvider: FC = () => {
 
   const nextShouldBeFirstAudio = beatPosition === numerator - 1 || beatPosition === -1;
 
-  usePlayAudio(bpmToMs(bpm, denominator), () => {
-    dispatch({type: 'INCREMENT_BEAT_POSITION'}); // used to start metronome
-  }).current = nextShouldBeFirstAudio ? firstClickAudioBuffer : clickAudioBuffer;
+  usePlayAudioLooped(
+    bpmToMs(bpm, denominator),
+    () => {
+      dispatch({type: 'INCREMENT_BEAT_POSITION'}); // used to start metronome
+    },
+    nextShouldBeFirstAudio ? firstClickAudioBuffer : clickAudioBuffer,
+  );
 
   const setDenominator = (d: number) => {
     dispatch({type: 'SET_DENOMINATOR', payload: d});

@@ -9,6 +9,9 @@ export class AudioEcosystem extends AudioContext {
   private micStream?: MediaStream; // .stop() renders the stream unusable
   private micSource?: MediaStreamAudioSourceNode; // a node is the main required element of an AudioContext
 
+  static buflen = 2048;
+  static buf = new Float32Array(AudioEcosystem.buflen);
+
   constructor() {
     super();
     this.analyser = this.createAnalyser();
@@ -26,7 +29,11 @@ export class AudioEcosystem extends AudioContext {
   }
 
   getAnalyserFloatTimeDomainData(array: Float32Array) {
-    return this.analyser.getFloatTimeDomainData(array);
+    this.analyser.getFloatTimeDomainData(array);
+  }
+
+  getAnalyserFrequencyBitCount() {
+    return this.analyser.frequencyBinCount;
   }
 
   // -------------------------

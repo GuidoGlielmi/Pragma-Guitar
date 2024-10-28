@@ -13,6 +13,7 @@ const EmailButton = () => {
       style={{
         display: 'flex',
         position: 'fixed',
+        zIndex: 100000,
         bottom: 0,
         right: 0,
         margin: 10,

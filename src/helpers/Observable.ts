@@ -12,4 +12,8 @@ export class Observable<T> {
   notify(data: T) {
     this.observers.forEach(observer => observer(data));
   }
+
+  unsubscribeAll() {
+    this.observers.clear();
+  }
 }
