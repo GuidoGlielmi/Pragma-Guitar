@@ -94,10 +94,14 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
   const [tuning, setTuning] = useLocalStorageWithValue<ITuningState, string>(
     PERSISTED_PREFERRED_TUNING_VARIABLE_NAME,
     {
-      getter: label =>
-        convertTuningToState(getAllTunings().find(t => t.label === label) ?? getAllTunings()[0]),
+      getter: label => {
+        return convertTuningToState(
+          getAllTunings().find(t => t.label === label) ?? getAllTunings()[0],
+        );
+      },
       setter: t => t?.label || '',
       initialValue: convertTuningToState(defaultTunings[0]),
+      dependencies: [persistedTunings],
     },
   );
 

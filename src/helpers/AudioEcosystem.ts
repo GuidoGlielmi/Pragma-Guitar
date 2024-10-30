@@ -20,7 +20,7 @@ export class AudioEcosystem extends AudioContext {
   }
 
   async suspend() {
-    this.stopAudio();
+    this.stopAudio(true);
     await super.suspend();
   }
 
@@ -92,9 +92,9 @@ export class AudioEcosystem extends AudioContext {
     newAudioNode?.start();
   }
 
-  stopAudio() {
+  stopAudio(force = false) {
     this.audio?.stop(this.#stopTime);
-    this.audio?.disconnect(); // necessary to avoid resuming the audio on AudioContext.resume()
+    if (force) this.audio?.disconnect(); // necessary to avoid resuming the audio on AudioContext.resume()
     this.audio = undefined;
   }
 
@@ -154,10 +154,10 @@ export class AudioEcosystem extends AudioContext {
   }
 
   #stopBuffer() {
-    // const gainNode = this.#createFadeOutGain();
-    // this.audio?.connect(gainNode);
-    // this.audio?.disconnect(this.destination);
-    // gainNode.connect(this.destination);
+    const gainNode = this.#createFadeOutGain();
+    this.audio?.connect(gainNode);
+    this.audio?.disconnect(this.destination);
+    gainNode.connect(this.destination);
     this.stopAudio();
   }
 

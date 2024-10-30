@@ -67,6 +67,7 @@ declare global {
   interface TOptions<T, TPersistable> {
     getter?: TGetter<T, TPersistable>;
     setter?: TSetter<T, TPersistable>;
+    dependencies?: any[];
   }
 
   interface TOptionsWithInitialCallback<T, TPersistable> extends TOptions<T, TPersistable> {

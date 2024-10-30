@@ -1,11 +1,11 @@
-import { TuningOptionWithButton } from '@/components/common/ReactSelect/TuningOptionWithButton';
-import { customStylesMaxContent } from '@/constants/reactSelectStyles';
+import {TuningOptionWithButton} from '@/components/common/ReactSelect/TuningOptionWithButton';
+import {customStylesMaxContent} from '@/constants/reactSelectStyles';
 import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
 } from '@/contexts/NoteGeneratorTuningContext';
 import useTranslation from '@/hooks/useTranslation';
-import { useContext, useRef } from 'react';
+import {useContext, useRef} from 'react';
 import Select from 'react-select';
 import FretModifier from './FretModifier';
 import S from './String.module.css';

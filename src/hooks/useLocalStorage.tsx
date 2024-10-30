@@ -12,7 +12,7 @@ function useLocalStorage<T, TPersisted = T>(
       options?.initialGetter?.(options?.getter ? options.getter(persistedValue) : persistedValue);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [...(options.dependencies || [])]);
 
   useEffect(() => {
     if (value === undefined || firstRenderRef.current) {

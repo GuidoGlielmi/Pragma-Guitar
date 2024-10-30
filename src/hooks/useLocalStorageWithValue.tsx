@@ -24,7 +24,10 @@ function useLocalStorageWithValue<T, TPersistable = T>(
   useLocalStorage(key, value, {
     getter: options?.getter,
     setter: options?.setter,
-    initialGetter: initialStoredValue => setValue(initialStoredValue),
+    initialGetter: initialStoredValue => {
+      setValue(initialStoredValue);
+    },
+    dependencies: options?.dependencies,
   });
 
   return [value, setValue] as [T | undefined, React.Dispatch<React.SetStateAction<T | undefined>>];

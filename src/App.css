@@ -60,7 +60,7 @@ main > button {
 
 @media (min-width: 786px) {
   main {
-    width: 55vw;
+    width: min(55vw, 600px);
     margin: auto;
     background: #2b2a33;
   }
