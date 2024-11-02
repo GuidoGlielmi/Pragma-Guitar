@@ -50,7 +50,7 @@ const StringNoteRange = () => {
           styles={customStylesMaxContent}
           options={tunings}
           // menuIsOpen={true}
-          value={tuning}
+          value={tunings.find(t => t.label === tuning.label)!}
           onChange={e => {
             setTuning(e!.label);
           }}

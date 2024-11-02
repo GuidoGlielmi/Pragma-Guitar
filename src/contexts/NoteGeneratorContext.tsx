@@ -213,7 +213,7 @@ const NoteGeneratorProvider: FC<PropsWithChildren> = () => {
     extraDependencies: [countdownInitialValue],
   });
 
-  useLocalStorage<number[]>(PERSISTED_MAX_STREAKS_VARIABLE_NAME, maxStreaks, {
+  useLocalStorage(PERSISTED_MAX_STREAKS_VARIABLE_NAME, maxStreaks, {
     initialGetter: v => dispatch({payload: v, type: 'SET_MAX_STREAKS'}),
   });
 

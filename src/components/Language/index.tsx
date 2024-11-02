@@ -9,7 +9,7 @@ const Languages = () => {
     <div className={S.container}>
       {Object.keys(Language).map(languageKey => (
         <button key={languageKey} onClick={() => setEng(languageKey as Language)}>
-          {languageKey.toUpperCase()}
+          <span>{languageKey.toUpperCase()}</span>
         </button>
       ))}
     </div>

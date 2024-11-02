@@ -52,6 +52,7 @@ export const PERSISTED_COUNTDOWN_INITIAL_VALUE_VARIABLE_NAME = 'countdownInitial
 export const LOOPING_MAX_BMP_VARIABLE_NAME = 'loopingMaxBpm';
 export const BAR_COUNT_UNTIL_INCREMENT_VARIABLE_NAME = 'barCountUntilIncrement';
 export const DEFAULT_DEVICE_ID_STORAGE_KEY = 'defaultDeviceId';
+export const LANGUAGE_VARIABLE_NAME = 'lang';
 
 // ----------------------
 

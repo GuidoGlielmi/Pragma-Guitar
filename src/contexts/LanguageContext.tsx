@@ -1,4 +1,4 @@
-import {Notes, OCTAVE_NOTES_AMOUNT, notes} from '@/constants';
+import {LANGUAGE_VARIABLE_NAME, Notes, OCTAVE_NOTES_AMOUNT, notes} from '@/constants';
 import {Dispatch, FC, PropsWithChildren, SetStateAction, createContext, useMemo} from 'react';
 import {Language} from '../helpers/translations';
 import useLocalStorageWithValue from '../hooks/useLocalStorageWithValue';
@@ -12,11 +12,10 @@ export interface LanguageProps {
 
 export const LanguageContext = createContext<LanguageProps | null>(null);
 
-const LANGUAGE_STORAGE_NAME = 'lang';
 const LOWER_OCTAVE_INDEX = -1;
 
 const LanguageProvider: FC<PropsWithChildren> = ({children}) => {
-  const [eng, setEng] = useLocalStorageWithValue(LANGUAGE_STORAGE_NAME, {
+  const [eng, setEng] = useLocalStorageWithValue(LANGUAGE_VARIABLE_NAME, {
     initialValue: Language.en,
   });
 

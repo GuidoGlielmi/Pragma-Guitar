@@ -120,7 +120,7 @@ const translationsEn: Translation = {
   start: 'Start',
   stop: 'Stop',
   noteGenerator: 'Note Generator',
-  metronome: 'Netronome',
+  metronome: 'Metronome',
   tuner: 'Tuner',
   beat: 'Beat',
   tap: 'Tap',

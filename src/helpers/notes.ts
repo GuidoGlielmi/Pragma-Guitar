@@ -1,5 +1,6 @@
-export const convertTuningToState = (t: ITuning): ITuningState => ({
+export const convertTuningToState = (t: ITuning | IPersistedTuning): ITuningState => ({
   ...t,
+  deletable: !(t as any).deletable ?? true,
   strings: t.strings.map((v, i) => ({
     id: Math.random(),
     originalIndex: i,

@@ -1,18 +1,30 @@
 import {useEffect, useRef} from 'react';
 
-function useLocalStorage<T, TPersisted = T>(
+function useLocalStorage<T, TPersistable = T>(
   key: string,
-  value: T | undefined,
-  options: TOptionsWithInitialCallback<T, TPersisted>,
+  value: T,
+  options: TOptionsWithSetterAndInitialGetter<T, TPersistable>,
+): void;
+
+function useLocalStorage<T, TPersistable = T>(
+  key: string,
+  value: T,
+  options: TOptionsWithInitialCallback<T>,
+): void;
+
+function useLocalStorage<T, TPersistable = T>(
+  key: string,
+  value: T,
+  options: Partial<TOptionsWithSetterAndInitialGetter<T, TPersistable>>,
 ) {
   const firstRenderRef = useRef(true);
   useEffect(() => {
     const persistedValue = JSON.parse(localStorage.getItem(key)!);
     if (persistedValue !== undefined && persistedValue !== null) {
-      options?.initialGetter?.(options?.getter ? options.getter(persistedValue) : persistedValue);
+      options?.initialGetter?.(persistedValue);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...(options.dependencies || [])]);
+  }, []);
 
   useEffect(() => {
     if (value === undefined || firstRenderRef.current) {

@@ -6,6 +6,7 @@ import {
   defaultTunings,
   tunings,
 } from '@/constants';
+import useMultipleLocalStorage from '@/hooks/useMultipleLocalStorage';
 import {
   FC,
   PropsWithChildren,
@@ -71,14 +72,7 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     NoteGeneratorContext,
   ) as NoteGeneratorProps;
 
-  const [persistedTunings, setPersistedTunings] = useLocalStorageWithValue<
-    ITuning[],
-    IPersistedTuning[]
-  >(PERSISTED_TUNINGS_VARIABLE_NAME, {
-    getter: t => (t ?? []).map(t => ({...t, deletable: true})),
-    setter: t => (t || []).map(t => ({...t, deletable: undefined})), // JSON.stringify ignores undefined
-    initialValue: [],
-  });
+  const [selectedStringId, setSelectedStringId] = useState<TPitchToPlay>(null);
 
   const [fretsAmount, setFretsAmount] = useLocalStorageWithValue(
     PERSISTED_FRET_AMOUNT_VARIABLE_NAME,
@@ -87,23 +81,42 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     },
   );
 
-  const [selectedStringId, setSelectedStringId] = useState<TPitchToPlay>(null);
+  const [persistedTunings, setPersistedTunings] = useState<ITuning[]>([]);
+  const [tuning, setTuning] = useState(convertTuningToState(defaultTunings[0]));
+
+  useMultipleLocalStorage(
+    [
+      PERSISTED_TUNINGS_VARIABLE_NAME,
+      persistedTunings,
+      {
+        setter: (t: ITuning[]): IPersistedTuning[] =>
+          (t ?? []).map(t => ({...t, deletable: undefined})), // JSON.stringify ignores undefined
+        initialGetter: ([v = []]: [IPersistedTuning[]]) => {
+          setPersistedTunings(v.map(t => ({...t, deletable: true})));
+        },
+      },
+    ],
+    [
+      PERSISTED_PREFERRED_TUNING_VARIABLE_NAME,
+      tuning,
+      {
+        setter: (v: ITuning) => v?.label || '',
+        initialGetter: ([persistedTunings = [], preferredTuningLabel]: [
+          IPersistedTuning[],
+          string,
+        ]) => {
+          setTuning(
+            convertTuningToState(
+              [...tunings, ...persistedTunings].find(t => t.label === preferredTuningLabel) ??
+                tunings[0],
+            ),
+          );
+        },
+      },
+    ],
+  );
 
   const getAllTunings = () => [...persistedTunings, ...tunings];
-
-  const [tuning, setTuning] = useLocalStorageWithValue<ITuningState, string>(
-    PERSISTED_PREFERRED_TUNING_VARIABLE_NAME,
-    {
-      getter: label => {
-        return convertTuningToState(
-          getAllTunings().find(t => t.label === label) ?? getAllTunings()[0],
-        );
-      },
-      setter: t => t?.label || '',
-      initialValue: convertTuningToState(defaultTunings[0]),
-      dependencies: [persistedTunings],
-    },
-  );
 
   const changeFretsAmount = (amountToAdd: number) => {
     setFretsAmount(fretsLimiterStateAction(amountToAdd));
@@ -115,7 +128,9 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
     return convertTuningToState(getAllTunings().find(t => t.label === label)!);
   };
 
-  const setTuningHandler = (label: string) => setTuning(getTuningState(label));
+  const setTuningHandler = (label: string) => {
+    setTuning(getTuningState(label));
+  };
 
   const reset = () => setTuning(ps => getTuningState(ps.label));
 
@@ -169,7 +184,8 @@ const NoteGeneratorTuningProvider: FC<PropsWithChildren<NoteGeneratorTuningProvi
 
   const deleteTuning = (label: string) => {
     const originalTuning = persistedTunings.find(t => t.label === label)!;
-    setTuning(convertTuningToState(getAllTunings().find(t => t !== originalTuning)!));
+    const newTuning = convertTuningToState(getAllTunings().find(t => t !== originalTuning)!);
+    setTuning(newTuning);
     setPersistedTunings(ps => ps.filter(t => t !== originalTuning));
   };
 

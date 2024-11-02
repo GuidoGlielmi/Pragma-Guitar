@@ -62,20 +62,38 @@ declare global {
   // ---------
 
   type TGetter<T, TPersistable> = (storedValue?: TPersistable) => T;
-  type TSetter<T, TPersistable> = (storedValue?: T) => TPersistable;
+  type TSetter<T, TPersistable> = (value: T) => TPersistable;
+  type TSetterRequired<T, TPersistable> = (storedValue: T) => TPersistable;
 
-  interface TOptions<T, TPersistable> {
+  interface TGetterAndSetter<T, TPersistable> {
     getter?: TGetter<T, TPersistable>;
     setter?: TSetter<T, TPersistable>;
-    dependencies?: any[];
   }
 
-  interface TOptionsWithInitialCallback<T, TPersistable> extends TOptions<T, TPersistable> {
-    initialGetter: (storedValue: T) => void | undefined;
+  interface TRequiredGetterAndSetter<T, TPersistable> {
+    getter: TGetter<T, TPersistable>;
+    setter: TSetter<T, TPersistable>;
   }
 
-  interface TOptionsWithInitialValue<T, TPersistable> extends TOptions<T, TPersistable> {
+  interface TOptionsWithInitialCallback<TPersistable> {
+    /** Returns persisted values in order, being `undefined` if not found in storage */
+    initialGetter?: (storedValues: TPersistable) => void | undefined;
+  }
+
+  interface TOptionsWithSetterAndInitialGetter<T, TPersistable>
+    extends TOptionsWithInitialCallback<TPersistable> {
+    /** Returns persisted values in order, being `undefined` if not found in storage */
+    setter: TSetter<T, TPersistable>;
+  }
+
+  interface TOptionsWithInitialValue<T> {
     initialValue: T;
+  }
+
+  interface TOptionsWithInitialValueAndGetterAndSetter<T, TPersistable>
+    extends TRequiredGetterAndSetter<T, TPersistable> {
+    initialValue: T;
+    setter: (storedValue: T) => TPersistable;
   }
 
   // -------------
