@@ -3,11 +3,11 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import {useLocation} from 'react-router-dom';
 import './App.css';
 import DeviceList from './components/DeviceList';
-import EmailButton from './components/Email';
 import GaugeMeter from './components/GaugeMeter';
 import Languages from './components/Language';
 import NavBar from './components/Navbar';
 import SuspensedSection from './components/Sections';
+import Social from './components/Social';
 import StartButton from './components/StartButton';
 import {AudioContext, AudioProps} from './contexts/AudioContext';
 
@@ -27,7 +27,7 @@ function App() {
       <DeviceList />
       <NavBar />
       <StartButton />
-      <EmailButton />
+      <Social />
       <GaugeMeter />
       <SuspensedSection />
     </main>

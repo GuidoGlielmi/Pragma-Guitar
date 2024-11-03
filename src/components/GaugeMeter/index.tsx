@@ -5,7 +5,7 @@ import {
 } from '@/constants';
 import {AudioContext, AudioProps} from '@/contexts/AudioContext';
 import {useContext, useEffect, useState} from 'react';
-import GaugeArchIcon from '../common/icons/GaugeArch';
+import GaugeArchIcon from '../../icons/GaugeArch';
 
 const GaugeMeter = () => {
   const {started, subscribeMicListener} = useContext(AudioContext) as AudioProps;
