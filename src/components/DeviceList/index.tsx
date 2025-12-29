@@ -1,17 +1,16 @@
 import {useContext, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {AudioContext, AudioProps} from '../../contexts/AudioContext';
-import useTranslation from '../../hooks/useTranslation';
 import ChevronDown from '../../icons/ChevronDown';
 import Refresh from '../../icons/Refresh';
 import OutsideClickCloser from '../common/OutsideClickCloser';
 import S from './DeviceList.module.css';
 
 const DeviceList = () => {
+  const {t} = useTranslation('app');
   const {devices, setDevices, selectedDeviceId, setSelectedDeviceId} = useContext(
     AudioContext,
   ) as AudioProps;
-
-  const [devicesString] = useTranslation('devices');
 
   const [devicesShown, setDevicesShown] = useState(false);
 
@@ -31,7 +30,7 @@ const DeviceList = () => {
       <div className={S.devicesContainer}>
         <div>
           <div className={S.titleContainer}>
-            <span>{devicesString}</span>
+            <span>{t('devices')}</span>
             <button onClick={setDevices}>
               <Refresh />
             </button>

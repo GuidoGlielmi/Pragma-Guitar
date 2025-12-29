@@ -1,0 +1,42 @@
+{
+  "0": {
+    "title": "Note Generator",
+    "description": "This exercise trains you in pitch recognition.\n It can be used to sing over or in any instrument you want to learn the notes across its entire range. It's perfect for learning how to improvise, and even free yourself from even having to look at the fingerboard.\n The idea is to play the notes displayed on the screen as fast as you can as they appear"
+  },
+  "1": {
+    "title": "Toggle On/Off",
+    "description": "You can start your timer here"
+  },
+  "2": {
+    "title": "Note Range",
+    "description": "In this section, you can select the interval between which the notes are going to appear"
+  },
+  "3": {
+    "title": "Free Mode",
+    "description": "You can play the note regardless of its octave"
+  },
+  "4": {
+    "title": "Custom Interval",
+    "description": "Or select any custom interval you desire"
+  },
+  "5": {
+    "title": "Notes of a String",
+    "description": "Here you can select, customize and save tunings, starting from a list of the most common ones"
+  },
+  "6": {
+    "title": "Countdown",
+    "description": "In this section, you will see a countdown showing the time you have left to play the right note. You can choose any value you want, from 1 to ${MAX_COUNTDOWN_VALUE} seconds"
+  },
+  "7": {
+    "title": "Up and at 'em!",
+    "description": "Now let's do a little demonstration by pressing the \"Start\" button..."
+  },
+  "8": {
+    "title": "Your Note to Play",
+    "description": "This box will show you the generated note for you to play. You can also press it to hear what it sounds like"
+  },
+  "9": {
+    "title": "Note you Played",
+    "description": "And this box shows you what you are playing. \n Come on! whistle a little to see how it goes..."
+  }
+}

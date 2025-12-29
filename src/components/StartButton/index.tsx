@@ -1,11 +1,11 @@
 import {AudioContext, AudioProps} from '@/contexts/AudioContext';
-import useTranslation from '@/hooks/useTranslation';
 import {useContext, useEffect} from 'react';
+import {useTranslation} from 'react-i18next';
 
 const StartButton = () => {
   const {start, stop, started} = useContext(AudioContext) as AudioProps;
 
-  const [startString, stopString] = useTranslation(['start', 'stop']);
+  const {t} = useTranslation('app');
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => e.key === 'Enter' && (started ? stop : start)();
@@ -16,7 +16,7 @@ const StartButton = () => {
 
   return (
     <button onClick={started ? stop : start} id='start'>
-      {started ? stopString : startString}
+      {started ? t('stop') : t('start')}
     </button>
   );
 };

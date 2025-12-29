@@ -2,11 +2,11 @@ import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
 } from '@/contexts/NoteGeneratorTuningContext';
-import useTranslation from '@/hooks/useTranslation';
 import CancelIcon from '@/icons/Cancel';
 import TickButtonIcon from '@/icons/TickButton';
 import {AnimatePresence, motion} from 'framer-motion';
 import {useContext, useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import S from './TuningSaver.module.css';
 
 const TuningSaver = () => {
@@ -17,13 +17,7 @@ const TuningSaver = () => {
   const [tuningToSaveName, setTuningToSaveName] = useState(tuning.deletable ? tuning.label : '');
   const [nameUnavailable, setNameUnavailable] = useState(false);
 
-  const [saveTuningString, nameString, nameInUseString, saveString, cancelString] = useTranslation([
-    'saveTuning',
-    'name',
-    'nameAlreadyUsed',
-    'save',
-    'cancel',
-  ]);
+  const {t} = useTranslation('app');
 
   useEffect(() => {
     setTuningToSaveName(tuning.deletable ? tuning.label : '');
@@ -54,7 +48,7 @@ const TuningSaver = () => {
             title='Save Tuning'
             onClick={() => setShowTuningToSave(true)}
           >
-            {saveTuningString}
+            {t('saveTuning')}
           </button>
         ) : (
           <>
@@ -62,7 +56,7 @@ const TuningSaver = () => {
               value={tuningToSaveName}
               onChange={e => setTuningToSaveName(e.target.value)}
               style={nameUnavailable ? {borderColor: 'red'} : {}}
-              placeholder={nameString}
+              placeholder={t('name')}
             />
             {nameUnavailable && (
               <p
@@ -75,13 +69,13 @@ const TuningSaver = () => {
                   transform: 'translateY(110%)',
                 }}
               >
-                {nameInUseString}
+                {t('nameAlreadyUsed')}
               </p>
             )}
-            <button title={saveString} disabled={!tuningToSaveName} onClick={saveTuningHandler}>
+            <button title={t('save')} disabled={!tuningToSaveName} onClick={saveTuningHandler}>
               <TickButtonIcon />
             </button>
-            <button title={cancelString} onClick={cancelSave}>
+            <button title={t('cancel')} onClick={cancelSave}>
               <CancelIcon />
             </button>
           </>

@@ -2,11 +2,11 @@ import {COUNTER_FPS} from '@/constants';
 import {AudioContext, AudioProps} from '@/contexts/AudioContext';
 import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NoteGeneratorContext';
 import {pollRemainingTime} from '@/helpers/timer';
-import useTranslation from '@/hooks/useTranslation';
 import MinusIcon from '@/icons/Minus';
 import PlusIcon from '@/icons/Plus';
 import ProgressRing from '@/icons/ProgressRing';
 import {useContext, useEffect, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import S from './Timer.module.css';
 
 const Timer = () => {
@@ -18,7 +18,7 @@ const Timer = () => {
     setCountdownInitialValue,
   } = useContext(NoteGeneratorContext) as NoteGeneratorProps;
 
-  const [countdownString] = useTranslation('countdown');
+  const {t} = useTranslation('app');
 
   const [remainingMs, setRemainingMS] = useState(countdownInitialValue * 1000);
 
@@ -61,7 +61,7 @@ const Timer = () => {
 
   return (
     <div id='timerContainer' className={S.timerContainer}>
-      <h3>{countdownString}</h3>
+      <h3>{t('countdown')}</h3>
       <div className={S.countdownContainer}>
         <button onClick={() => stepCountdownInitialValue(false)} id='minus'>
           <MinusIcon />

@@ -1,7 +1,7 @@
 import NoteGeneratorTuningProvider from '@/contexts/NoteGeneratorTuningContext';
 import {NoteGeneratorTranslation} from '@/helpers/translations';
-import useTranslation from '@/hooks/useTranslation';
 import {useRef, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import CustomNoteRange from './Custom';
 import Free from './Free';
 import './NoteRange.css';
@@ -14,7 +14,7 @@ const RangeSelector = () => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const prevIndexRef = useRef(selectedIndex);
 
-  const [playNoteString] = useTranslation('playNote');
+  const {t} = useTranslation('app');
 
   const sectionSelectionHandler = (i: number) => {
     setOverflowHidden(true);
@@ -28,7 +28,7 @@ const RangeSelector = () => {
       className='rangeSelectorContainer'
       style={{overflow: overflowHidden ? 'hidden' : 'visible'}}
     >
-      <h3>{playNoteString}</h3>
+      <h3>{t('playNote')}</h3>
       <Options
         selectedIndex={selectedIndex}
         setSection={sectionSelectionHandler}

@@ -4,7 +4,7 @@ import {
 } from '@/contexts/NoteGeneratorTuningContext';
 import {useContext} from 'react';
 
-import useTranslation from '@/hooks/useTranslation';
+import {useTranslation} from 'react-i18next';
 import S from './FretModifier.module.css';
 
 const FretModifier = () => {
@@ -12,11 +12,11 @@ const FretModifier = () => {
     NoteGeneratorTuningContext,
   ) as NoteGeneratorTuningProps;
 
-  const [fretsString] = useTranslation('frets');
+  const {t} = useTranslation('app');
 
   return (
     <div className={S.fretsContainer}>
-      <h4>{fretsString}</h4>
+      <h4>{t('frets')}</h4>
       <button onClick={decrementFretsAmount} aria-label='Increase frets amount by 1'>
         -
       </button>

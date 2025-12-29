@@ -1,0 +1,42 @@
+{
+  "0": {
+    "title": "Generador de Notas",
+    "description": "Este ejercicio entrena en el reconocimiento de tonos.\n Se puede utilizar para el canto o sobre cualquier instrumento en el que desees aprender a hallar sus notas. Es perfecto para aprender a improvisar, e incluso liberarte de tener que mirar el diapasón.\n La idea es tocar las notas que se muestran en pantalla lo más rápido que puedas a medida que aparecen."
+  },
+  "1": {
+    "title": "Encender/Apagar",
+    "description": "Comience el conteo aquí"
+  },
+  "2": {
+    "title": "Rango de Notas",
+    "description": "En esta sección puede seleccionar el intervalo dentro del cual las notas se generarán"
+  },
+  "3": {
+    "title": "Modo Libre",
+    "description": "Toque las notas sin tener en cuenta su octava"
+  },
+  "4": {
+    "title": "Intervalo Personalizado",
+    "description": "O seleccione un intervalo"
+  },
+  "5": {
+    "title": "Notas de una Cuerda",
+    "description": "Aquí puede seleccionar, modificar y guardar tonalidades, con una lista de las más comunes a su disposición"
+  },
+  "6": {
+    "title": "Cuenta Regresiva",
+    "description": "En esta sección, verá una cuenta regresiva que muestra el tiempo restante para tocar la nota correcta. Puede elegir cualquier valor, de 1 a ${MAX_COUNTDOWN_VALUE} segundos"
+  },
+  "7": {
+    "title": "¡Arriba y a ello!",
+    "description": "Hagamos una pequeña demostración presionando el botón \"Comenzar\"..."
+  },
+  "8": {
+    "title": "Tu Nota a Tocar",
+    "description": "Este cuadro le mostrará la nota que deberá tocar. También puede presionarlo para escuchar cómo suena"
+  },
+  "9": {
+    "title": "Nota que Tocaste",
+    "description": "Y este cuadro te muestra lo que estás jugando. \n¡Vamos! silba un poco a ver como va..."
+  }
+}

@@ -1,6 +1,6 @@
 import {NoteGeneratorTranslation} from '@/helpers/translations';
-import useTranslation from '@/hooks/useTranslation';
 import {FC} from 'react';
+import {useTranslation} from 'react-i18next';
 import NoteRangeToPlay from '../common/NoteRangeToPlay';
 import './NoteRange.css';
 
@@ -11,7 +11,7 @@ type RangeOptionsProps = {
 };
 
 const Options: FC<RangeOptionsProps> = ({selectedIndex, setSection, sections}) => {
-  const rangeOptionsTitles = useTranslation(sections);
+  const {t} = useTranslation('noteGenerator');
 
   return (
     <>
@@ -25,7 +25,7 @@ const Options: FC<RangeOptionsProps> = ({selectedIndex, setSection, sections}) =
             }}
             onClick={() => setSection(i)}
           >
-            {rangeOptionsTitles[i]}
+            {t(title)}
           </button>
         ))}
       </div>

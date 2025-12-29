@@ -1,6 +1,12 @@
 import {Step} from 'intro.js';
+import {appEn, micEn, noteGeneratorEn, routesEn} from '../i18n/locales/en';
 
 declare global {
+  type TranslationKeysApp = keyof typeof appEn;
+  type TranslationKeysNoteGenerator = keyof typeof noteGeneratorEn;
+  type TranslationKeysMic = keyof typeof micEn;
+  type TranslationKeysRoutes = keyof typeof routesEn;
+
   type TObserver<T> = (data: T) => void;
 
   type GetPitchReturnType = {frecuency: number | null; amplitude: number};
@@ -14,7 +20,7 @@ declare global {
   type TPitchRangeSetterArgs = Parameters<TPitchRangeSetter>[0];
 
   type StepWithActionAndTranslation = Omit<Step, 'intro'> & {
-    intro: {es: string; en: string};
+    // intro: {es: string; en: string};
     click?: boolean;
     updatable?: boolean;
   };

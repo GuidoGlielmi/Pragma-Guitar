@@ -1,6 +1,6 @@
 import {Steps} from 'intro.js-react';
-import {PropsWithChildren, useContext, useState} from 'react';
-import {LanguageContext, LanguageProps} from '../../contexts/LanguageContext';
+import {PropsWithChildren, useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import QuestionMark from '../../icons/QuestionMark';
 import S from './OnboardingWrapper.module.css';
 
@@ -9,8 +9,7 @@ type OnboardingWrapperProps = {
 };
 
 const OnboardingWrapper = ({children, steps}: PropsWithChildren<OnboardingWrapperProps>) => {
-  const {eng} = useContext(LanguageContext) as LanguageProps;
-
+  const {t} = useTranslation('noteGeneratorOnboarding');
   const [enabled, setEnabled] = useState(false);
   const [stepsInstance, setStepsInstance] = useState<Steps | null>(null);
 
@@ -34,7 +33,11 @@ const OnboardingWrapper = ({children, steps}: PropsWithChildren<OnboardingWrappe
         }}
         ref={steps => setStepsInstance(steps)}
         enabled={enabled}
-        steps={steps.map(s => ({...s, intro: s.intro[eng ? 'en' : 'es']}))}
+        steps={steps.map((s, i) => ({
+          ...s,
+          title: t((i + '.title') as any),
+          intro: t((i + '.description') as any),
+        }))}
         initialStep={0}
         onExit={() => setEnabled(false)}
       />

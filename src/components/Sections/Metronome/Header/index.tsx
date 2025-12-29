@@ -1,12 +1,12 @@
 import {MetronomeContext, MetronomeProps} from '@/contexts/MetronomeContext';
 import {getTapContext} from '@/helpers/timer';
-import useTranslation from '@/hooks/useTranslation';
 import {FC, PropsWithChildren, useContext, useRef} from 'react';
+import {useTranslation} from 'react-i18next';
 
 const MetronomeHeader: FC<PropsWithChildren> = ({children}) => {
   const {setBpm} = useContext(MetronomeContext) as MetronomeProps;
 
-  const [beatString, tapString] = useTranslation(['beat', 'tap']);
+  const {t} = useTranslation('app');
 
   const tapContextRef: Readonly<React.MutableRefObject<() => number | null>> = useRef(
     getTapContext(),
@@ -15,14 +15,14 @@ const MetronomeHeader: FC<PropsWithChildren> = ({children}) => {
   return (
     <div>
       <h2>
-        <span>{beatString}</span>
+        <span>{t('beat')}</span>
         {children}
         <button
           onClick={() => {
             setBpm(ps => tapContextRef.current() ?? ps);
           }}
         >
-          {tapString}
+          {t('tap')}
         </button>
       </h2>
     </div>

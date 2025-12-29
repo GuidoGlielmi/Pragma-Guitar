@@ -1,7 +1,7 @@
 import {BEAT_COUNT_MIN_VALUE, INCREMENTER_MIN_VALUE} from '@/constants';
 import {MetronomeContext, MetronomeProps} from '@/contexts/MetronomeContext';
-import useTranslation from '@/hooks/useTranslation';
 import {useContext} from 'react';
+import {useTranslation} from 'react-i18next';
 import S from './Incrementer.module.css';
 
 const Incrementer = () => {
@@ -16,14 +16,13 @@ const Incrementer = () => {
     barCountUntilIncrement,
   } = useContext(MetronomeContext) as MetronomeProps;
 
-  const [byString, everyString, repeatMetronomePatternString, barsString, increasingTempoString] =
-    useTranslation(['by', 'every', 'repeatMetronomePattern', 'bars', 'increasingTempo']);
+  const {t} = useTranslation('app');
 
   return (
     <div className={S.container}>
-      <h3>{increasingTempoString}</h3>
+      <h3>{t('increasingTempo')}</h3>
       <div>
-        <span>{byString}</span>{' '}
+        <span>{t('by')}</span>{' '}
         <input
           value={incrementBy}
           onChange={e => setIncrementBy(e.target.valueAsNumber || INCREMENTER_MIN_VALUE)}
@@ -34,18 +33,18 @@ const Incrementer = () => {
         </span>{' '}
       </div>
       <div>
-        <span>{everyString}</span>{' '}
+        <span>{t('every')}</span>{' '}
         <input
           value={barCountUntilIncrement}
           onChange={e => setBarCountUntilIncrement(e.target.valueAsNumber || BEAT_COUNT_MIN_VALUE)}
           type='number'
         />
-        <span>{barsString}</span>{' '}
+        <span>{t('bars')}</span>{' '}
       </div>
       <div>
         <div>
           <input type='checkbox' checked={looped} onChange={e => setLooped(e.target.checked)} />
-          <span>{repeatMetronomePatternString}</span>{' '}
+          <span>{t('repeatMetronomePattern')}</span>{' '}
         </div>
         <div>
           <input

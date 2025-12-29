@@ -10,6 +10,7 @@ import SuspensedSection from './components/Sections';
 import Social from './components/Social';
 import StartButton from './components/StartButton';
 import {AudioContext, AudioProps} from './contexts/AudioContext';
+import './i18n/config';
 
 function App() {
   const location = useLocation();

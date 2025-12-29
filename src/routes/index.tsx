@@ -1,5 +1,3 @@
-import {Translation} from '../helpers/translations';
-
 const noteGeneratorPath = '/note-generator';
 const metronomePath = '/metronome';
 const tunerPath = '/tuner';
@@ -26,7 +24,8 @@ export const routes = [
   },
   {title: 'tuner', path: tunerPath, element: () => import('../components/Sections/Tuner')},
 ] as {
-  title: keyof Translation;
+  title: TranslationKeysRoutes;
+  // title: 'noteGenerator' | 'metronome' | 'tuner';
   path: Section;
   element: () => Promise<any>;
 }[];

@@ -1,8 +1,8 @@
 import {AudioContext, AudioProps} from '@/contexts/AudioContext';
 import {NoteGeneratorContext, NoteGeneratorProps} from '@/contexts/NoteGeneratorContext';
-import useTranslation from '@/hooks/useTranslation';
 import {AnimatePresence} from 'framer-motion';
 import {useContext} from 'react';
+import {useTranslation} from 'react-i18next';
 import './NoteGenerator.css';
 import RangeSelector from './NoteRange';
 import Notes from './Notes';
@@ -14,7 +14,7 @@ const NoteGenerator = () => {
     NoteGeneratorContext,
   ) as NoteGeneratorProps;
 
-  const [bestStreakString] = useTranslation('bestStreak');
+  const {t} = useTranslation('app');
 
   return (
     <div className='noteContainer sectionBorder'>
@@ -22,7 +22,7 @@ const NoteGenerator = () => {
       <Timer />
       <AnimatePresence>{started && <Notes />}</AnimatePresence>
       <div className='painterFont'>
-        {bestStreakString}: {maxStreaks[countdownInitialValue - 1] || 0}
+        {t('bestStreak')}: {maxStreaks[countdownInitialValue - 1] || 0}
       </div>
     </div>
   );

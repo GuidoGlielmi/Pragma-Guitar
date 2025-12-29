@@ -4,8 +4,8 @@ import {
   NoteGeneratorTuningContext,
   NoteGeneratorTuningProps,
 } from '@/contexts/NoteGeneratorTuningContext';
-import useTranslation from '@/hooks/useTranslation';
 import {useContext, useRef} from 'react';
+import {useTranslation} from 'react-i18next';
 import Select from 'react-select';
 import FretModifier from './FretModifier';
 import S from './String.module.css';
@@ -24,11 +24,7 @@ const StringNoteRange = () => {
 
   const boardRef = useRef<HTMLDivElement>(null);
 
-  const [tuningString, addLowerString, addUpperString] = useTranslation([
-    'tuning',
-    'addLowerString',
-    'addUpperString',
-  ]);
+  const {t} = useTranslation('app');
 
   const addStringHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     if (e.currentTarget.title === AddStringMessages.Upper) {
@@ -54,15 +50,15 @@ const StringNoteRange = () => {
           onChange={e => {
             setTuning(e!.label);
           }}
-          placeholder={tuningString}
+          placeholder={t('tuning')}
         />
         <FretModifier />
         <button title={AddStringMessages.Upper} onClick={addStringHandler}>
-          {addUpperString}
+          {t('addUpperString')}
         </button>
         <TuningBoard ref={boardRef} />
         <button title={AddStringMessages.Lower} onClick={addStringHandler}>
-          {addLowerString}
+          {t('addLowerString')}
         </button>
         <TuningSaver />
       </div>
